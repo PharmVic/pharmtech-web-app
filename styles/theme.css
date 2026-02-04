@@ -1,0 +1,6 @@
+/* Theme colors and styles */
+:root {
+  --primary: #110000; /* #100 from doc */
+  --primary-foreground: #ffffff;
+  /* Add more theme variables here */
+}

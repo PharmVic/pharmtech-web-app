@@ -1,0 +1,125 @@
+import { supabase } from "@/lib/supabaseClient";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft, ShoppingCart } from "lucide-react";
+
+export const dynamic = "force-dynamic";
+
+export default async function CategoryProductsPage({
+    params,
+}: {
+    params: Promise<{ slug: string }>;
+}) {
+    const { slug } = await params;
+
+    // 1. Get Category ID using Slug
+    console.log("Fetching category for slug:", slug);
+    const { data: category, error: catError } = await supabase
+        .from("product_categories")
+        .select("id, name, description") // Added description if it exists
+        .eq("slug", slug)
+        .maybeSingle(); // Safe for 0 rows
+
+    if (catError) console.error("Supabase Error:", catError);
+    if (!category) console.error("Category NOT found for slug:", slug);
+
+    if (catError || !category) {
+        notFound();
+    }
+
+    // 2. Fetch Products for this Category
+    const { data: products, error: prodError } = await supabase
+        .from("products")
+        .select("*")
+        .eq("category_id", category.id)
+        .order("is_featured", { ascending: false }) // Featured first
+        .order("created_at", { ascending: false });
+
+    return (
+        <div className="bg-gray-50 min-h-screen py-12">
+            <div className="container mx-auto px-4">
+
+                {/* Breadcrumb / Back */}
+                <div className="mb-8">
+                    <Link href="/products" className="inline-flex items-center text-gray-500 hover:text-blue-600 transition-colors">
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Back to Categories
+                    </Link>
+                </div>
+
+                {/* Header */}
+                <div className="mb-12">
+                    <h1 className="text-4xl font-bold text-gray-900 mb-2">{category.name}</h1>
+                    <p className="text-gray-500">Browse our selection of {category.name.toLowerCase()}.</p>
+                </div>
+
+                {/* Products Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {products?.map((product) => (
+                        <div key={product.id} className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group flex flex-col h-full">
+
+                            {/* Product Image */}
+                            <div className="relative h-64 bg-gray-100 overflow-hidden">
+                                {product.image_url ? (
+                                    <img
+                                        src={product.image_url}
+                                        alt={product.name}
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                                        <span className="text-sm">No Image</span>
+                                    </div>
+                                )}
+
+                                {/* Badge if featured */}
+                                {product.is_featured && (
+                                    <div className="absolute top-4 left-4 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-full shadow-sm">
+                                        Featured
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Product Details */}
+                            <div className="p-6 flex flex-col flex-grow">
+                                <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1" title={product.name}>
+                                    {product.name}
+                                </h3>
+                                <p className="text-sm text-gray-500 mb-4 line-clamp-2 flex-grow">
+                                    {product.description || "No description available."}
+                                </p>
+
+                                <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
+                                    <div className="flex flex-col">
+                                        <span className="text-xs text-gray-400 uppercase font-semibold">Price</span>
+                                        <span className="text-xl font-bold text-blue-600">
+                                            {product.price ? `$${product.price.toLocaleString()}` : "Contact Us"}
+                                        </span>
+                                    </div>
+                                    <button className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors">
+                                        <ShoppingCart className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Empty State */}
+                {(!products || products.length === 0) && (
+                    <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-dashed border-gray-200">
+                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+                            <ShoppingCart className="w-8 h-8" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-2">No Products Found</h2>
+                        <p className="text-gray-500 mb-6">We haven't added any products to this category yet.</p>
+                        <Link href="/products" className="btn btn-primary rounded-pill px-6 py-2">
+                            Browse Other Categories
+                        </Link>
+                    </div>
+                )}
+
+            </div>
+        </div>
+    );
+}

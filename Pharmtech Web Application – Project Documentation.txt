@@ -1,0 +1,332 @@
+# Pharmtech Web Application – Project Documentation (Cursor/Antigravity Ready)
+
+## 1) Project Overview
+Build a modern business web application for **Pharmtech** (CCTV, Solar, Networking, Starlink, Automation, Access Control).
+
+The app has:
+- A **public homepage** showing product categories, featured products (with images), and key business actions (Get a Quote, Solar Calculator, WhatsApp, Contact).
+- A **Products** section with categories:
+  - CCTV
+  - Solar
+  - Networking
+  - Automation
+  - Access Control
+- A **Customer Dashboard** (Sign up / Sign in) where customers can:
+  - View their profile
+  - See their points
+  - View referrals
+  - View orders/requests
+- A **Rewards system**:
+  - Customers earn points when they patronize (purchase/request)
+  - Customers earn points when they refer others who patronize
+  - Points can later be used to buy products (redemption workflow)
+
+We will use **Supabase** for:
+- Database (Postgres)
+- Authentication
+- Storage (product images and homepage assets)
+
+## 2) Tech Stack
+- Next.js (App Router)
+- TypeScript
+- Tailwind CSS (for app UI)
+- Supabase (Auth + DB + Storage)
+- Optional: ShadCN UI (if needed)
+- Solar Calculator is already in `/app/calculator/` (keep it working)
+
+## 3) Key Pages and Routes
+
+### Public Pages
+- `/` (Homepage)
+  - Hero section (carousel-like style based on provided CSS)
+  - Quick action icons: Products, Get a Quote, Solar Calculator, Contact, etc.
+  - Featured product categories + product cards with images
+  - CTA buttons (WhatsApp, Call, Request Quote)
+  - The homepage should also support images uploaded into a folder for display
+
+- `/products`
+  - Shows product categories
+  - Each category links to `/products/[category]`
+
+- `/products/[category]`
+  - List of products in that category
+  - Each product card: image, name, short description, price (optional), button (Request Quote / WhatsApp)
+
+- `/calculator`
+  - Solar Load Calculator (already exists)
+  - Must produce a quote preview as an image (save/share)
+
+- `/quote`
+  - Basic “Get a Quote” form (optional)
+  - Or integrate “Get Quote” as a modal
+
+### Auth Pages
+- `/auth/sign-in`
+- `/auth/sign-up`
+
+### Dashboard Pages (protected)
+- `/dashboard`
+  - Overview: points, referrals, recent requests/orders
+
+- `/dashboard/profile`
+- `/dashboard/points`
+- `/dashboard/referrals`
+- `/dashboard/orders` (or `/dashboard/requests`)
+
+### Admin Pages (protected – admin role)
+- `/admin`
+- `/admin/products`
+  - Create/Edit products
+  - Upload images to Supabase storage
+- `/admin/categories`
+- `/admin/rewards-rules` (optional)
+
+## 4) Folder Structure (MUST CREATE)
+Create these folders and files exactly:
+
+/app
+  /(public)
+    /page.tsx                    # Homepage
+    /products/page.tsx
+    /products/[category]/page.tsx
+    /calculator/page.tsx         # already exists (keep)
+    /auth/sign-in/page.tsx
+    /auth/sign-up/page.tsx
+
+  /(dashboard)
+    /dashboard/page.tsx
+    /dashboard/profile/page.tsx
+    /dashboard/points/page.tsx
+    /dashboard/referrals/page.tsx
+    /dashboard/orders/page.tsx
+
+  /(admin)
+    /admin/page.tsx
+    /admin/products/page.tsx
+    /admin/categories/page.tsx
+
+/components
+  /Navbar.tsx
+  /Footer.tsx
+  /HomepageHero.tsx
+  /HomepageActionIcons.tsx
+  /CategoryGrid.tsx
+  /ProductCard.tsx
+  /QuotePreview.tsx             # already exists in components/ (KEEP + fix defensive props)
+  /UploadImage.tsx              # reusable upload component (Supabase storage)
+
+/lib
+  /supabaseClient.ts            # browser client
+  /supabaseServer.ts            # server client helper
+  /pricing.ts                   # already exists (keep for pricing rules)
+  /products.ts                  # fetch helpers
+  /rewards.ts                   # points/rewards logic
+
+/styles
+  /theme.css                    # paste provided CSS here (adapt to Tailwind if needed)
+  /globals.css                  # Next global css
+
+/public
+  /homepage                      # NEW: folder for homepage images (static)
+    hero-1.jpg
+    hero-2.jpg
+    hero-3.jpg
+  /logo.png
+
+Notes:
+- The `/public/homepage` folder is where we can drop homepage images now or later.
+- Additionally, product images must be uploaded to Supabase Storage.
+
+## 5) Supabase Setup
+We will use Supabase.
+
+### Environment Variables
+Create `.env.local`:
+- NEXT_PUBLIC_SUPABASE_URL=
+- NEXT_PUBLIC_SUPABASE_ANON_KEY=
+- SUPABASE_SERVICE_ROLE_KEY= (server-side only)
+
+### Supabase Storage Buckets
+Create buckets:
+- `products` (public)
+- `homepage` (public) [optional if you want to upload homepage images to Supabase instead of /public folder]
+
+## 6) Database Schema (Supabase Postgres)
+
+### Tables
+
+#### 6.1 profiles
+- id (uuid, pk, references auth.users)
+- full_name (text)
+- phone (text)
+- address (text)
+- role (text) default 'customer'  // 'customer' or 'admin'
+- points_balance (int) default 0
+- created_at (timestamp)
+
+#### 6.2 product_categories
+- id (uuid, pk)
+- slug (text, unique)  // cctv, solar, networking, automation, access-control
+- name (text)
+- description (text, nullable)
+- image_url (text, nullable)
+- created_at (timestamp)
+
+Seed categories:
+- CCTV
+- Solar
+- Networking
+- Automation
+- Access Control
+
+#### 6.3 products
+- id (uuid, pk)
+- category_id (uuid, references product_categories.id)
+- name (text)
+- description (text)
+- price (int, nullable)
+- image_url (text)          // Supabase storage public URL
+- is_featured (bool) default false
+- is_active (bool) default true
+- created_at (timestamp)
+
+#### 6.4 orders (or requests)
+- id (uuid, pk)
+- user_id (uuid, references profiles.id)
+- status (text) default 'pending' // pending, confirmed, completed, cancelled
+- total_amount (int, nullable)
+- created_at (timestamp)
+
+#### 6.5 order_items
+- id (uuid, pk)
+- order_id (uuid, references orders.id)
+- product_id (uuid, references products.id)
+- qty (int)
+- unit_price (int, nullable)
+
+#### 6.6 referrals
+- id (uuid, pk)
+- referrer_user_id (uuid, references profiles.id)
+- referred_user_id (uuid, references profiles.id)
+- referral_code (text)
+- status (text) default 'signed_up' // signed_up, first_purchase_completed
+- created_at (timestamp)
+
+#### 6.7 points_transactions
+- id (uuid, pk)
+- user_id (uuid, references profiles.id)
+- type (text)  // earn_purchase, earn_referral, redeem
+- points (int) // positive for earn, negative for redeem
+- reference (text) // order_id or referral_id
+- created_at (timestamp)
+
+### Rewards Rules (initial)
+- On completed purchase: +X points based on amount OR fixed
+- On referral first purchase completed: referrer +Y points
+- Points redemption: subtract points and create record
+
+Rules should be configurable later (admin UI optional).
+
+## 7) Authentication & Authorization
+- Use Supabase Auth (email/password + optional phone)
+- Protect routes:
+  - `/dashboard/*` requires login
+  - `/admin/*` requires role=admin (profiles.role)
+
+## 8) Homepage Requirements (UI + CSS)
+We have an existing CSS style (provided). Integrate it in one of these ways:
+Option A (recommended): Copy major styles into `/styles/theme.css` and import into `globals.css`.
+Option B: Convert the styles into Tailwind-compatible classes.
+
+Homepage layout should reflect:
+- Topbar + Navbar
+- Hero header carousel styling (static or simple slider)
+- Services/Features section
+- Products section with category tabs or grid
+- Footer
+
+Also include:
+- Quick Icons/Buttons: Products, Get Quote, Solar Calculator, WhatsApp, Call
+- Back-to-top button
+
+Accent color: **#100** (use as brand primary where needed)
+
+## 9) Products Section Requirements
+Under Products icon:
+- CCTV
+- Solar
+- Networking
+- Automation
+- Access Control
+
+Each category page lists products with:
+- image
+- name
+- short description
+- request quote button (WhatsApp prefilled)
+- optional price display
+
+Admin can add products later.
+
+## 10) Solar Calculator + Quote Image Save/Share
+Solar calculator already exists.
+
+Key requirement:
+- Quote should not be only PDF.
+- It should show a **QuotePreview** UI that looks like a “quote card”.
+- Users can:
+  - Save quote as image (PNG)
+  - Share quote image (Web Share API)
+  - WhatsApp message still available
+
+### IMPORTANT FIX
+`QuotePreview.tsx` must never crash if arrays are missing.
+Example defensive behavior:
+- if systemSummaryLines is undefined => treat as []
+- if loads is undefined => treat as []
+
+This prevents runtime error: "Cannot read properties of undefined (reading 'map')"
+
+## 11) Uploading Images Later
+Yes, products and images can be added later.
+
+Two supported methods:
+1) Admin dashboard -> upload UI -> saves to Supabase Storage + products table
+2) Directly upload in Supabase dashboard + insert rows in products table
+
+Homepage images:
+- You can either place images in `/public/homepage/` OR upload to Supabase Storage bucket `homepage`.
+
+## 12) Pricing (Optional, Phase 2)
+There is a `lib/pricing.ts` already containing inverter/panel/battery catalogs and helpers.
+Later we will:
+- Show itemized pricing on quote preview
+- Subtotal + accessories/install + grand total
+- Warnings if any
+
+Do NOT block MVP on pricing.
+
+## 13) MVP Build Order (Recommended)
+Phase 1 (MVP):
+1. Homepage using CSS styling and sections
+2. Products pages (categories + product listing from Supabase)
+3. Auth (signup/signin)
+4. Dashboard basics (profile + points display placeholder)
+5. Solar calculator quote preview save/share image
+6. Admin add products
+
+Phase 2:
+1. Rewards points logic + transactions
+2. Referrals and referral code workflow
+3. Redemption workflow
+4. Pricing breakdown display on quote
+
+## 14) Acceptance Criteria
+- Homepage loads and looks close to provided CSS style
+- Products show by category, images render correctly
+- Auth works, dashboard is protected
+- Admin can add product with image upload
+- Solar calculator generates quote preview and allows saving/sharing as image
+- No runtime crash when data is missing
+
+END.
