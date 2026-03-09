@@ -54,7 +54,7 @@ export default function AdminProductsPage() {
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">Products</h1>
-                    <p className="text-gray-500">Manage your inventory catalog</p>
+                    <p className="text-gray-500">Manage all products</p>
                 </div>
                 <Link
                     href="/admin/products/new"
@@ -115,6 +115,13 @@ export default function AdminProductsPage() {
                                         ₦{product.price.toLocaleString("en-NG")}
                                     </td>
                                     <td className="px-6 py-4 flex gap-3">
+                                        <Link
+                                            href={`/admin/products/edit/${product.id}`}
+                                            className="text-blue-500 hover:text-blue-700"
+                                            title="Edit"
+                                        >
+                                            <Edit className="w-4 h-4" />
+                                        </Link>
                                         <button
                                             onClick={() => handleDelete(product.id)}
                                             className="text-red-500 hover:text-red-700"
@@ -122,7 +129,6 @@ export default function AdminProductsPage() {
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </button>
-                                        {/* Edit button could go here later */}
                                     </td>
                                 </tr>
                             ))}

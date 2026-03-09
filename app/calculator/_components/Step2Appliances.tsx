@@ -35,7 +35,9 @@ export default function Step2Appliances({
         <div className="space-y-6">
             <div className="bg-white p-6 rounded-lg shadow-md">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-semibold text-[#110000]">Appliances</h2>
+                    <h2 className="text-xl font-semibold text-[#110000]">
+                        Appliances <span className="text-sm font-normal text-gray-500 ml-2">(1hp = 750watts)</span>
+                    </h2>
                     <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-600">Default Night Hours:</span>
                         <input
@@ -44,11 +46,11 @@ export default function Step2Appliances({
                             max="24"
                             value={defaultHoursAtNight}
                             onChange={(e) => setDefaultHoursAtNight(Number(e.target.value))}
-                            className="w-16 p-1 border rounded text-center"
+                            className="w-16 p-1 border rounded text-center focus:ring-2 focus:ring-orange-500 outline-none"
                         />
                         <button
                             onClick={applyDefaultHoursToAll}
-                            className="text-xs text-blue-600 hover:underline"
+                            className="text-xs text-orange-600 hover:text-[#110000] hover:underline transition-colors"
                         >
                             Apply to all
                         </button>
@@ -60,7 +62,7 @@ export default function Step2Appliances({
                         <thead className="bg-gray-50 text-gray-700 uppercase">
                             <tr>
                                 <th className="px-3 py-2">Appliance Name</th>
-                                <th className="px-3 py-2 w-20">Watts</th>
+                                <th className="px-3 py-2 w-32">Watts</th>
                                 <th className="px-3 py-2 w-16">Qty</th>
                                 <th className="px-3 py-2 w-16 text-center">Motor?</th>
                                 <th className="px-3 py-2 w-20 text-center">Night Hrs</th>
@@ -78,7 +80,7 @@ export default function Step2Appliances({
                                             onChange={(e) => updateLoad(i, "name", e.target.value)}
                                             onBlur={(e) => applyIfKnownAppliance(i, e.target.value)}
                                             placeholder="e.g. TV"
-                                            className="w-full p-1 border rounded hover:border-blue-400 focus:border-green-500 outline-none"
+                                            className="w-full p-2 border border-gray-200 rounded hover:border-orange-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all"
                                         />
                                     </td>
                                     <td className="px-3 py-2">
@@ -104,7 +106,7 @@ export default function Step2Appliances({
                                             type="checkbox"
                                             checked={load.motor}
                                             onChange={(e) => updateLoad(i, "motor", e.target.checked)}
-                                            className="h-4 w-4 text-green-600 rounded border-gray-300 focus:ring-green-500"
+                                            className="h-4 w-4 text-orange-600 rounded border-gray-300 focus:ring-orange-500"
                                         />
                                         {load.motor && (
                                             <div className="text-[10px] text-red-500 mt-1">
@@ -144,7 +146,7 @@ export default function Step2Appliances({
 
                 <button
                     onClick={addLoad}
-                    className="mt-4 flex items-center gap-2 text-green-600 hover:text-green-700 font-medium"
+                    className="mt-4 flex items-center gap-2 text-orange-600 hover:text-[#110000] font-bold transition-colors"
                 >
                     <Plus className="w-4 h-4" /> Add Appliance
                 </button>
@@ -159,7 +161,7 @@ export default function Step2Appliances({
                 </button>
                 <button
                     onClick={onNext}
-                    className="px-6 py-2 rounded-md font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
+                    className="px-8 py-3 rounded-full font-bold text-lg text-white bg-orange-600 hover:bg-[#110000] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0"
                 >
                     Calculate System
                 </button>

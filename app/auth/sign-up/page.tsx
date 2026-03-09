@@ -4,7 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Mail, Lock, User, Loader2, Phone, MapPin } from "lucide-react";
+import { Mail, Lock, User, Loader2, Phone, MapPin, Eye, EyeOff } from "lucide-react";
 
 export default function SignUpPage() {
     const router = useRouter();
@@ -15,12 +15,16 @@ export default function SignUpPage() {
         address: "",
         password: "",
     });
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+
+    const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+    const refCode = searchParams?.get('ref');
 
     const handleSignUp = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,6 +34,22 @@ export default function SignUpPage() {
         console.log("Attempting sign up with:", formData.email);
 
         try {
+            let referredById = null;
+            if (refCode) {
+                // Look up the referrer's UUID by referral code
+                const { data: refData } = await supabase
+                    .from('profiles')
+                    .select('id')
+                    .eq('referral_code', refCode)
+                    .single();
+                if (refData) {
+                    referredById = refData.id;
+                }
+            }
+
+            // Generate a random 8 character referral code for the new user, e.g. PHARM-XXXXXX
+            const newReferralCode = 'PHARM-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email: formData.email,
                 password: formData.password,
@@ -38,7 +58,9 @@ export default function SignUpPage() {
                         full_name: formData.fullName,
                         phone: formData.phone,
                         address: formData.address,
-                        role: 'customer'
+                        role: 'customer',
+                        referral_code: newReferralCode,
+                        referred_by: referredById
                     }
                 }
             });
@@ -56,7 +78,7 @@ export default function SignUpPage() {
                 // Check if session is established (if email confirmation is off)
                 if (authData.session) {
                     alert("Account created successfully! Redirecting...");
-                    router.push("/dashboard"); // or / depending on role
+                    router.push("/"); // or / depending on role
                     router.refresh();
                 } else {
                     alert("Account created! Please check your email to confirm your account before logging in.");
@@ -170,14 +192,27 @@ export default function SignUpPage() {
                                 </div>
                                 <input
                                     name="password"
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     required
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className="block w-full pl-10 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    className="block w-full pl-10 pr-10 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                     placeholder="********"
                                     minLength={6}
                                 />
+                                <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff className="h-5 w-5" />
+                                        ) : (
+                                            <Eye className="h-5 w-5" />
+                                        )}
+                                    </button>
+                                </div>
                             </div>
                         </div>
 

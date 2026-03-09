@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.93.3",
+    "bootstrap": "^5.3.8",
     "clsx": "^2.1.1",
     "jspdf": "^4.1.0",
     "jspdf-autotable": "^5.0.7",

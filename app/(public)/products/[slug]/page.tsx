@@ -16,7 +16,7 @@ export default async function CategoryProductsPage({
     console.log("Fetching category for slug:", slug);
     const { data: category, error: catError } = await supabase
         .from("product_categories")
-        .select("id, name, description") // Added description if it exists
+        .select("id, name") // Remove description as it doesn't exist
         .eq("slug", slug)
         .maybeSingle(); // Safe for 0 rows
 
@@ -56,7 +56,7 @@ export default async function CategoryProductsPage({
                 {/* Products Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {products?.map((product) => (
-                        <div key={product.id} className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group flex flex-col h-full">
+                        <Link href={`/product/${product.id}`} key={product.id} className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group flex flex-col h-full">
 
                             {/* Product Image */}
                             <div className="relative h-64 bg-gray-100 overflow-hidden">
@@ -93,15 +93,15 @@ export default async function CategoryProductsPage({
                                     <div className="flex flex-col">
                                         <span className="text-xs text-gray-400 uppercase font-semibold">Price</span>
                                         <span className="text-xl font-bold text-blue-600">
-                                            {product.price ? `$${product.price.toLocaleString()}` : "Contact Us"}
+                                            {product.price ? `₦${product.price.toLocaleString()}` : "Contact Us"}
                                         </span>
                                     </div>
-                                    <button className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors">
+                                    <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
                                         <ShoppingCart className="w-5 h-5" />
-                                    </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </div>
 

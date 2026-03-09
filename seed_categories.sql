@@ -18,10 +18,10 @@ values
   ('Solar Panels', 'solar-panels'),
   ('Inverters', 'inverters'),
   ('Batteries', 'batteries'),
-  ('Accessories', 'accessories'),
-  ('CCTV', 'cctv'),
-  ('Solar', 'solar'),
+  ('CCTV Systems', 'cctv-systems'),
   ('Networking', 'networking'),
   ('Automation', 'automation'),
-  ('Access Control', 'access-control')
+  ('Access Control', 'access-control'),
+  ('Accessories', 'accessories'),
+  ('Solar Shop', 'solar-shop')
 on conflict (slug) do nothing;

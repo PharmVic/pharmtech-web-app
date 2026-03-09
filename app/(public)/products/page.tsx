@@ -22,7 +22,7 @@ export default async function ProductsPage() {
 
                 {/* Header */}
                 <div className="text-center mb-16">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Product Categories</h1>
+                    <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Products</h1>
                     <p className="text-xl text-gray-600 max-w-2xl mx-auto">
                         Explore our wide range of high-quality solar, security, and networking solutions.
                     </p>

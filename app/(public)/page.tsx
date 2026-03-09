@@ -1,69 +1,148 @@
 import HomepageHero from "@/components/HomepageHero";
 import HomepageActionIcons from "@/components/HomepageActionIcons";
+import ServicesSection from "@/components/ServicesSection";
 import Link from "next/link";
+import { supabase } from "@/lib/supabaseClient";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  // Fetch categories to display as services
+  const { data: categories } = await supabase
+    .from("product_categories")
+    .select("*")
+    .order("created_at", { ascending: true });
+
+  // Fetch reviews for testimonials
+  const { data: reviews } = await supabase
+    .from("reviews")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(6);
+
+  // Fetch all products for the search bar
+  const { data: products } = await supabase
+    .from("products")
+    .select("*");
+
+  const dynamicReviews = (reviews || []).map(r => ({
+    name: r.name,
+    role: r.role,
+    img: r.image_url,
+    text: r.text
+  }));
+
+  // Default images based on name or slug for aesthetics if no image exists
+  const getDefaultImage = (slug: string) => {
+    if (slug.includes('cctv')) return 'https://images.unsplash.com/photo-1557064619-2169b476c535';
+    if (slug.includes('networking')) return 'https://images.unsplash.com/photo-1544197150-b99a580bbcbf';
+    if (slug.includes('automation')) return 'https://images.unsplash.com/photo-1558002038-1091a086e98c';
+    if (slug.includes('access-control')) return 'https://images.unsplash.com/photo-1563249151-6923838020d6';
+    if (slug.includes('inverters')) return 'https://images.unsplash.com/photo-1592833159057-65a284572225';
+    return 'https://images.unsplash.com/photo-1509391366360-1e96f5b16e51'; // Default solar/generic image
+  };
+
+  const dynamicServices = (categories || []).map(c => ({
+    title: c.name,
+    img: c.image_url || getDefaultImage(c.slug),
+    link: c.slug,
+    desc: c.description || `Explore our high-quality ${c.name.toLowerCase()} solutions.`
+  })).sort((a, b) => {
+    // Force solar-shop to the top
+    if (a.link === 'solar-shop') return -1;
+    if (b.link === 'solar-shop') return 1;
+    return 0; // Keep original order for the rest
+  });
+
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-white">
       <HomepageHero />
+
+
+
+      {/* Services & Products Section */}
+      <ServicesSection
+        initialServices={[
+          ...dynamicServices.map(s => ({ ...s, isProduct: false })),
+          ...(dynamicServices.length === 0 ? [
+            { title: 'Solar Shop', img: 'https://images.unsplash.com/photo-1509391366360-1e96f5b16e51', link: 'solar', desc: 'Sustainable energy solutions for home and business.', isProduct: false },
+            { title: 'CCTV Systems', img: 'https://images.unsplash.com/photo-1557064619-2169b476c535', link: 'cctv-systems', desc: 'Advanced surveillance for 24/7 security monitoring.', isProduct: false },
+            { title: 'Networking', img: 'https://images.unsplash.com/photo-1544197150-b99a580bbcbf', link: 'networking', desc: 'High-speed, reliable enterprise networking infrastructure.', isProduct: false },
+            { title: 'Automation', img: 'https://images.unsplash.com/photo-1558002038-1091a086e98c', link: 'automation', desc: 'Smart automation for efficiency and control.', isProduct: false },
+            { title: 'Access Control', img: 'https://images.unsplash.com/photo-1563249151-6923838020d6', link: 'access-control', desc: 'Secure entry systems for restricted areas.', isProduct: false },
+            { title: 'Inverters', img: 'https://images.unsplash.com/photo-1592833159057-65a284572225', link: 'inverters', desc: 'Reliable power backup and conversion systems.', isProduct: false }
+          ] : []),
+          ...(products || []).map(p => ({
+            title: p.name,
+            img: (p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : (p.image_url || 'https://images.unsplash.com/photo-1509391366360-1e96f5b16e51'),
+            link: p.id,
+            desc: p.description || p.name,
+            isProduct: true
+          }))
+        ]}
+      />
+
+      <div className="container-fluid testimonial pb-5">
+        <div className="container pb-5">
+          <div className="text-center mx-auto pb-5" style={{ maxWidth: "800px" }}>
+            <h4 className="text-primary font-bold uppercase mb-2">Testimonial</h4>
+            <h1 className="display-5 mb-4 font-bold">Our Clients Reviews</h1>
+            <p className="mb-0 text-gray-600">See what our satisfied customers have to say about our solar and security solutions.
+            </p>
+          </div>
+          <div className="row g-4">
+            {[
+              ...dynamicReviews,
+              // Fallback if the database has nothing yet (prevents empty layout)
+              ...(dynamicReviews.length === 0 ? [
+                { name: 'John Doe', role: 'Business Owner', img: '/img/testimonial-1.jpg', text: 'Pharmtech transformed our energy systems. Highly recommended!' },
+                { name: 'Jane Smith', role: 'Homeowner', img: '/img/testimonial-2.jpg', text: 'Excellent service and professional installation of our CCTV system.' },
+                { name: 'Robert Brown', role: 'Project Manager', img: '/img/testimonial-3.jpg', text: 'Top-notch networking solutions that boosted our office productivity.' }
+              ] : [])
+            ].map((review, i) => (
+              <div key={i} className="col-md-4">
+                <div className="testimonial-item bg-light rounded p-4 position-relative">
+                  {/* Quote Icon Left */}
+                  <div className="testimonial-quote-left d-flex align-items-center justify-content-center text-primary bg-white rounded-circle position-absolute" style={{ width: "60px", height: "60px", top: "-30px", left: "30px" }}>
+                    <i className="fas fa-quote-left fa-2x"></i>
+                  </div>
+                  <div className="testimonial-img d-flex justify-content-center my-4">
+                    <div className="overflow-hidden rounded-circle shadow-sm" style={{ width: "100px", height: "100px", border: "5px solid white" }}>
+                      {review.img ? (
+                        <img src={review.img} className="img-fluid w-100 h-100 object-cover hover:scale-110 transition-transform duration-500" alt={review.name} />
+                      ) : (
+                        <div className="bg-white w-100 h-100 d-flex align-items-center justify-content-center">
+                          <i className="fas fa-user fa-3x text-gray-300"></i>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="testimonial-text text-center pb-4">
+                    <p className="mb-0 text-gray-600">{review.text}</p>
+                  </div>
+                  <div className="testimonial-title text-center">
+                    <h4 className="mb-0 font-bold">{review.name}</h4>
+                    <p className="mb-0 text-primary">{review.role}</p>
+                    <div className="d-flex justify-content-center text-primary mt-2">
+                      <i className="fas fa-star"></i>
+                      <i className="fas fa-star"></i>
+                      <i className="fas fa-star"></i>
+                      <i className="fas fa-star"></i>
+                      <i className="fas fa-star"></i>
+                    </div>
+                  </div>
+                  {/* Quote Icon Right */}
+                  <div className="testimonial-quote-right d-flex align-items-center justify-content-center text-primary bg-white rounded-circle position-absolute" style={{ width: "60px", height: "60px", bottom: "-30px", right: "30px" }}>
+                    <i className="fas fa-quote-right fa-2x"></i>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <HomepageActionIcons />
-
-      {/* Solution Services Section */}
-      <section className="service py-16 px-4">
-        <div className="container mx-auto">
-          <div className="text-center mx-auto mb-12 max-w-2xl">
-            <h4 className="text-primary font-bold uppercase mb-2">Our Solutions</h4>
-            <h2 className="text-4xl font-bold text-gray-900">Sustainable Energy & Security</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              { title: 'Solar Power', img: 'https://images.unsplash.com/photo-1509391366360-1e96f5b16e51', link: 'solar' },
-              { title: 'CCTV Systems', img: 'https://images.unsplash.com/photo-1557064619-2169b476c535', link: 'cctv' },
-              { title: 'Networking', img: 'https://images.unsplash.com/photo-1544197150-b99a580bbcbf', link: 'networking' },
-              { title: 'Automation', img: 'https://images.unsplash.com/photo-1558002038-1091a086e98c', link: 'automation' },
-              { title: 'Access Control', img: 'https://images.unsplash.com/photo-1563249151-6923838020d6', link: 'access-control' },
-              { title: 'Inverters', img: 'https://images.unsplash.com/photo-1592833159057-65a284572225', link: 'inverters' }
-            ].map((cat, idx) => (
-              <div key={idx} className="service-item bg-white rounded-xl shadow-lg overflow-hidden group">
-                <div className="service-img relative h-64 overflow-hidden">
-                  <img src={`${cat.img}?w=500&auto=format`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt={cat.title} />
-                </div>
-                <div className="p-6 text-center">
-                  <h3 className="text-xl font-bold mb-3">{cat.title}</h3>
-                  <p className="text-gray-500 mb-4">Professional installation and maintenance tailored to your specific needs.</p>
-                  <Link href={`/products/${cat.link}`} className="btn btn-primary rounded-pill py-2 px-4">
-                    View Products
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Products / Feature Section */}
-      <section className="feature py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Why Choose Us</h2>
-            <p className="text-gray-500">Quality products trusted by hundreds of businesses.</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {[
-              { title: 'Expert Team', icon: '👷' },
-              { title: 'High Quality', icon: '🏆' },
-              { title: '24/7 Support', icon: '🎧' },
-              { title: 'Affordable', icon: '💰' }
-            ].map((feat, i) => (
-              <div key={i} className="feature-item p-8 bg-white rounded-xl shadow-sm hover:shadow-md">
-                <div className="feature-icon text-4xl mb-4">{feat.icon}</div>
-                <h3 className="text-xl font-bold mb-2">{feat.title}</h3>
-                <p className="text-gray-500">We deliver excellence in every project we handle.</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </main>
   );
 }

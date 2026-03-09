@@ -32,7 +32,7 @@ function generateQuoteNumber() {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, "0");
     const day = String(d.getDate()).padStart(2, "0");
-    const rand = String(Math.floor(Math.random() * 9000) + 1000);
+    const rand = String(Math.floor(Math.random() * 900000) + 100000);
     return `PT-${y}${m}${day}-${rand}`;
 }
 
@@ -57,17 +57,26 @@ export default function SolarCalculator() {
     const [sunHours, setSunHours] = useState(5);
     const [manualPanelCount, setManualPanelCount] = useState<number | null>(null);
     const [manualBatteryCount, setManualBatteryCount] = useState<number | null>(null);
+    const [manualInverterId, setManualInverterId] = useState<string | null>(null);
     const [preferredPanelWattage, setPreferredPanelWattage] = useState<number | null>(null);
+    const [preferredBatteryAh, setPreferredBatteryAh] = useState<number | null>(null);
 
     useEffect(() => {
         setQuoteNumber(generateQuoteNumber());
     }, []);
 
+    // Reset manual inverter when type changes
+    useEffect(() => {
+        setManualInverterId(null);
+    }, [inverterType]);
+
+
+
     // Validation
     const isCustomerValid =
         customerName.trim().length >= 2 &&
-        customerPhone.trim().length >= 5 &&
-        customerAddress.trim().length >= 5;
+        customerPhone.replace(/\D/g, '').length >= 11 &&
+        customerAddress.trim().length >= 3;
 
     // Handlers
     const updateLoad = (index: number, key: keyof LoadInput, value: any) => {
@@ -121,31 +130,97 @@ export default function SolarCalculator() {
     // 2. Inverter
     const requiredKva = useMemo(() => {
         const rawKva = totalPeakWatts / 1000;
-        // Inverter sizing margin
         const margin = 1.2;
         return roundUpKvaFromWatts(totalPeakWatts * margin);
     }, [totalPeakWatts]);
 
+    // A. Computed Recommendation
     const recommendedInverter = useMemo(() => {
-        return pickInverterForRequiredKva(requiredKva, hasSurgeLoad, inverterType);
+        const rec = pickInverterForRequiredKva(requiredKva, hasSurgeLoad, inverterType);
+        // Reset manual if type mismatch? keeping simple for now.
+        return rec;
     }, [requiredKva, hasSurgeLoad, inverterType]);
 
-    // ... (Rest of derived logic cascades automatically from recommendedInverter) ...
+    // B. Available Options
+    const availableInverters = useMemo(() => {
+        return INVERTERS.filter(i => i.type === inverterType).sort((a, b) => a.kva - b.kva);
+    }, [inverterType]);
+
+    // C. Active Inverter (Calculation Basis)
+    const activeInverter = useMemo(() => {
+        if (manualInverterId) {
+            const [k, v] = manualInverterId.split("-").map(Number);
+            const found = availableInverters.find(i => i.kva === k && i.voltage === v);
+            if (found) {
+                // If manual inverter is smaller than required, multiply it
+                // Logic: If user specifically picked a small one, it likely means they want multiple of it to meet the load.
+                // Or they might just want to see the price of one. 
+                // But generally for a "system sizing" tool, we should meet the load.
+                // count = ceil(requiredKva / found.kva)
+                // However, we must be careful not to trigger this for slightly smaller units if it's just a margin issue.
+                // But requiredKva includes margin.
+
+                // Let's use requiredKva (which has 20% margin). 
+                // If selected 5kVA for 12kVA load -> 3x 5kVA = 15kVA. Correct.
+
+                // User Constraint: Only multiply if kva >= 6.
+                let count = 1;
+                if (found.kva >= 6) {
+                    count = Math.ceil(requiredKva / found.kva);
+                }
+
+                const units = Array(Math.max(1, count)).fill(found);
+
+                const warnings: string[] = [];
+                if (count > 1) {
+                    warnings.push(`Selected inverter (${found.kva}kVA) is too small for ${requiredKva}kVA load. Using ${count} units.`);
+                } else if (found.kva < requiredKva && found.kva < 6) {
+                    // If they picked a small one and we didn't multiply
+                    warnings.push(`Selected inverter (${found.kva}kVA) is too small for ${requiredKva}kVA load. Recommendation: Select 6kVA+ for multi-unit systems.`);
+                }
+
+                return { units, warnings };
+            }
+        }
+        return recommendedInverter;
+    }, [manualInverterId, availableInverters, recommendedInverter, requiredKva]);
 
     // 3. System Voltage
     const activeSystemVoltage = useMemo(() => {
-        if (!recommendedInverter.units.length) return 24; // fallback
-        return recommendedInverter.units[0].voltage;
-    }, [recommendedInverter]);
+        if (!activeInverter.units.length) return 24; // fallback
+        return activeInverter.units[0].voltage;
+    }, [activeInverter]);
+
+    // Reset preferred battery Ah when voltage/type changes
+    useEffect(() => {
+        setPreferredBatteryAh(null);
+    }, [activeSystemVoltage, batteryType]);
 
     // 4. Battery
     const requiredBatteryAh = useMemo(() => {
-        return calcBatteryAhRequired(totalEnergyWh, activeSystemVoltage, batteryType, requiredKva);
-    }, [totalEnergyWh, activeSystemVoltage, batteryType, requiredKva]);
+        const effectiveKva = activeInverter.units.length > 0 ? activeInverter.units[0].kva : requiredKva;
+        return calcBatteryAhRequired(totalEnergyWh, activeSystemVoltage, batteryType, effectiveKva);
+    }, [totalEnergyWh, activeSystemVoltage, batteryType, requiredKva, activeInverter]);
+
+    // Available Lithium Options for this voltage
+    const availableLithiumBatteries = useMemo(() => {
+        if (batteryType !== "lithium") return [];
+        return BATTERIES
+            .filter(b => b.type === "lithium" && b.nominalVoltage === activeSystemVoltage)
+            .sort((a, b) => a.ah - b.ah);
+    }, [activeSystemVoltage, batteryType]);
 
     const recommendedBattery = useMemo(() => {
+        if (batteryType === "lithium" && preferredBatteryAh) {
+            const found = availableLithiumBatteries.find(b => b.ah === preferredBatteryAh);
+            if (found) {
+                // Re-calc units
+                const count = Math.ceil(requiredBatteryAh / found.ah);
+                return { battery: found, units: Math.max(1, count) };
+            }
+        }
         return pickBattery(activeSystemVoltage as 12 | 24 | 48, batteryType, requiredBatteryAh);
-    }, [activeSystemVoltage, batteryType, requiredBatteryAh]);
+    }, [activeSystemVoltage, batteryType, requiredBatteryAh, preferredBatteryAh, availableLithiumBatteries]);
 
     // Derived Battery Count
     const activeBatteryUnits = manualBatteryCount ?? recommendedBattery.units;
@@ -173,20 +248,20 @@ export default function SolarCalculator() {
 
     // 6. Pricing
     const pricingTotal = useMemo(() => {
-        const invCost = recommendedInverter.units.reduce((s, u) => s + u.price, 0);
+        const invCost = activeInverter.units.reduce((s, u) => s + u.price, 0);
         const batCost = (recommendedBattery.battery?.price ?? 0) * activeBatteryUnits;
         const panelCost = activePanelCount * (PANELS.find(p => p.watt === minPanelW)?.price ?? 85000);
-        const installCost = accessoriesInstallFeeForUnits(recommendedInverter.units);
+        const installCost = accessoriesInstallFeeForUnits(activeInverter.units);
 
         return invCost + batCost + panelCost + installCost;
-    }, [recommendedInverter, recommendedBattery, activePanelCount, minPanelW, activeBatteryUnits]);
+    }, [activeInverter, recommendedBattery, activePanelCount, minPanelW, activeBatteryUnits]);
 
     // Save Logic
     const [isSaving, setIsSaving] = useState(false);
     async function saveQuoteToDb() {
         setIsSaving(true);
         try {
-            const { error } = await supabase.from("quotes").insert({
+            const { error } = await supabase.from("quotes").upsert({
                 quote_number: quoteNumber,
                 customer_name: customerName,
                 customer_phone: customerPhone,
@@ -203,8 +278,7 @@ export default function SolarCalculator() {
                 battery_ah: recommendedBattery.battery?.ah ?? 0,
                 panel_count: activePanelCount,
                 panel_wattage: minPanelW,
-                inverter_name: recommendedInverter.units.map(u => `${u.kva}kVA ${u.voltage}V`).join(", "),
-            });
+            }, { onConflict: 'quote_number' });
 
             if (error) {
                 console.error("Save error details:", JSON.stringify(error, null, 2));
@@ -221,9 +295,11 @@ export default function SolarCalculator() {
     }
 
     return (
-        <main className="min-h-screen bg-gray-50 px-4 py-16">
+        <main className="min-h-screen bg-[#FDFBF7] px-4 pt-40 pb-16">
             <div className="mx-auto max-w-6xl">
-                <h1 className="text-3xl font-bold text-center mb-8 text-[#110000]">Solar Calculator</h1>
+                <h1 className="text-4xl font-extrabold text-center mb-8 text-[#110000]">
+                    Solar <span className="text-orange-600">Calculator</span>
+                </h1>
 
                 <Stepper step={step} setStep={setStep} />
 
@@ -271,8 +347,15 @@ export default function SolarCalculator() {
                         totalSurgeWatts={totalPeakWatts}
                         energyNeededWh={totalEnergyWh}
 
-                        recommendedInverter={recommendedInverter}
+                        recommendedInverter={activeInverter}
                         inverterType={inverterType}
+
+                        // Manual Inverter Selection Props
+                        originalRecommendedKva={recommendedInverter.units[0]?.kva}
+                        availableInverters={availableInverters}
+                        manualInverterId={manualInverterId}
+                        setManualInverterId={setManualInverterId}
+
                         setInverterType={setInverterType}
                         recommendedPanelCount={activePanelCount}
                         setManualPanelCount={setManualPanelCount}
@@ -284,11 +367,19 @@ export default function SolarCalculator() {
                         recommendedBattery={recommendedBattery}
                         activeBatteryType={batteryType}
                         setBatteryType={setBatteryType}
+
+                        // New Battery Capacity Props
+                        availableLithiumBatteries={availableLithiumBatteries}
+                        preferredBatteryAh={preferredBatteryAh}
+                        setPreferredBatteryAh={setPreferredBatteryAh}
+
                         manualBatteryCount={activeBatteryUnits}
                         setManualBatteryCount={setManualBatteryCount}
 
                         batteryDisplay={recommendedBattery.battery
-                            ? `${activeBatteryUnits}x ${recommendedBattery.battery.type} ${recommendedBattery.battery.ah}Ah (${recommendedBattery.battery.voltage}V) - System: ${activeSystemVoltage}V`
+                            ? (recommendedBattery.battery.type === "lithium"
+                                ? `${activeBatteryUnits}x ${(recommendedBattery.battery.ah * recommendedBattery.battery.voltage / 1000).toFixed(2)}kWh ${recommendedBattery.battery.type} ${recommendedBattery.battery.ah}Ah (${recommendedBattery.battery.voltage}V) - System: ${activeSystemVoltage}V`
+                                : `${activeBatteryUnits}x ${recommendedBattery.battery.type} ${recommendedBattery.battery.ah}Ah (${recommendedBattery.battery.voltage}V) - System: ${activeSystemVoltage}V`)
                             : "None"}
 
                         pricingTotal={pricingTotal}

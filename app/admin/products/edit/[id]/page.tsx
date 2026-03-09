@@ -1,0 +1,285 @@
+"use client";
+
+import { useState, useEffect, use } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { useRouter } from "next/navigation";
+import { ChevronLeft, Upload, Loader2, Image as ImageIcon } from "lucide-react";
+import Link from "next/link";
+
+type Category = {
+    id: string;
+    name: string;
+};
+
+export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
+    const router = useRouter();
+    const resolvedParams = use(params);
+    const productId = resolvedParams.id;
+
+    const [loading, setLoading] = useState(false);
+    const [fetching, setFetching] = useState(true);
+    const [categories, setCategories] = useState<Category[]>([]);
+
+    // Form State
+    const [name, setName] = useState("");
+    const [description, setDescription] = useState("");
+    const [price, setPrice] = useState("");
+    const [categoryId, setCategoryId] = useState("");
+    const [imageFiles, setImageFiles] = useState<File[]>([]);
+    const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+    const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
+
+    useEffect(() => {
+        fetchData();
+    }, [productId]);
+
+    async function fetchData() {
+        setFetching(true);
+        try {
+            // Fetch categories
+            const { data: catData } = await supabase.from("product_categories").select("*").order("name");
+            setCategories(catData || []);
+
+            // Fetch product
+            const { data: productData, error: productError } = await supabase
+                .from("products")
+                .select("*")
+                .eq("id", productId)
+                .single();
+
+            if (productError) throw productError;
+
+            if (productData) {
+                setName(productData.name || "");
+                setDescription(productData.description || "");
+                setPrice(productData.price ? productData.price.toString() : "");
+                setCategoryId(productData.category_id || "");
+
+                const urls = productData.image_urls && productData.image_urls.length > 0
+                    ? productData.image_urls
+                    : (productData.image_url ? [productData.image_url] : []);
+                setExistingImageUrls(urls);
+            }
+        } catch (err) {
+            console.error("Error fetching product:", err);
+            alert("Failed to load product details.");
+            router.push("/admin/products");
+        } finally {
+            setFetching(false);
+        }
+    }
+
+    function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+        if (e.target.files && e.target.files.length > 0) {
+            const files = Array.from(e.target.files);
+            setImageFiles(prev => [...prev, ...files]);
+
+            const newPreviewUrls = files.map(file => URL.createObjectURL(file));
+            setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
+        }
+    }
+
+    function removePreviewImage(index: number) {
+        setImageFiles(prev => prev.filter((_, i) => i !== index));
+        setPreviewUrls(prev => prev.filter((_, i) => i !== index));
+    }
+
+    function removeExistingImage(index: number) {
+        setExistingImageUrls(prev => prev.filter((_, i) => i !== index));
+    }
+
+    async function handleSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        setLoading(true);
+
+        try {
+            let finalImageUrls = [...existingImageUrls];
+
+            // 1. Upload New Images
+            if (imageFiles.length > 0) {
+                for (const file of imageFiles) {
+                    const fileExt = file.name.split(".").pop();
+                    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+                    const filePath = `${fileName}`;
+
+                    const { error: uploadError } = await supabase.storage
+                        .from("products")
+                        .upload(filePath, file);
+
+                    if (uploadError) throw uploadError;
+
+                    // Get Public URL
+                    const { data: { publicUrl } } = supabase.storage
+                        .from("products")
+                        .getPublicUrl(filePath);
+
+                    finalImageUrls.push(publicUrl);
+                }
+            }
+
+            let finalImageUrl = finalImageUrls.length > 0 ? finalImageUrls[0] : "";
+
+            // 2. Update Product
+            const { error: updateError } = await supabase
+                .from("products")
+                .update({
+                    name,
+                    description,
+                    price: Number(price),
+                    category_id: categoryId || null,
+                    image_url: finalImageUrl,
+                    image_urls: finalImageUrls,
+                })
+                .eq("id", productId);
+
+            if (updateError) throw updateError;
+
+            alert("Product updated successfully!");
+            router.push("/admin/products");
+            router.refresh();
+
+        } catch (err: any) {
+            console.error("Error updating product:", err);
+            const errorMessage = err?.message || err?.error_description || JSON.stringify(err) || "Unknown error occurred";
+            alert(`Error: ${errorMessage}`);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    if (fetching) {
+        return (
+            <div className="min-h-[50vh] flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            </div>
+        );
+    }
+
+    return (
+        <div className="p-8 max-w-3xl mx-auto">
+            <Link href="/admin/products" className="flex items-center text-gray-500 hover:text-black mb-6">
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                Back to Products
+            </Link>
+
+            <div className="bg-white rounded-xl shadow-sm border p-8">
+                <h1 className="text-2xl font-bold mb-6 text-gray-900">Edit Product</h1>
+
+                <form onSubmit={handleSubmit} className="space-y-6">
+
+                    {/* Image Upload */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Product Images</label>
+                        <div className="flex flex-wrap gap-4 items-start">
+
+                            {/* Existing Images */}
+                            {existingImageUrls.map((url, index) => (
+                                <div key={`existing-${index}`} className="relative w-32 h-32 bg-gray-100 rounded-lg border-2 border-gray-300 overflow-hidden group">
+                                    <img src={url} alt={`Existing ${index}`} className="w-full h-full object-cover" />
+                                    <div className="absolute inset-0 bg-black bg-opacity-40 hidden group-hover:flex items-center justify-center">
+                                        <button type="button" onClick={() => removeExistingImage(index)} className="text-white bg-red-500 rounded-full p-2 hover:bg-red-600 transition shadow-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {/* New Preview Images */}
+                            {previewUrls.map((url, index) => (
+                                <div key={`preview-${index}`} className="relative w-32 h-32 bg-gray-100 rounded-lg border-2 border-green-400 overflow-hidden group">
+                                    <img src={url} alt={`Preview ${index}`} className="w-full h-full object-cover" />
+                                    <div className="absolute top-1 left-1 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm z-10">NEW</div>
+                                    <div className="absolute inset-0 bg-black bg-opacity-40 hidden group-hover:flex items-center justify-center z-20">
+                                        <button type="button" onClick={() => removePreviewImage(index)} className="text-white bg-red-500 rounded-full p-2 hover:bg-red-600 transition shadow-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+
+                            <label className="cursor-pointer w-32 h-32 bg-gray-50 border-2 border-dashed border-gray-300 hover:bg-gray-100 rounded-lg flex flex-col items-center justify-center gap-2 text-gray-500 transition">
+                                <Upload className="w-6 h-6" />
+                                <span className="text-xs font-medium text-center px-2">Add Images</span>
+                                <input type="file" className="hidden" accept="image/*" multiple onChange={handleImageChange} />
+                            </label>
+
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+                            <input
+                                type="text"
+                                required
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                placeholder="e.g. 5kVA Inverter"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Price (₦)</label>
+                            <input
+                                type="number"
+                                required
+                                value={price}
+                                onChange={(e) => setPrice(e.target.value)}
+                                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                placeholder="0.00"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                        <select
+                            value={categoryId}
+                            onChange={(e) => setCategoryId(e.target.value)}
+                            className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                        >
+                            <option value="">Select a Category...</option>
+                            {categories.map(c => (
+                                <option key={c.id} value={c.id}>{c.name}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea
+                            rows={4}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="Product details..."
+                        />
+                    </div>
+
+                    <div className="pt-4 flex justify-end gap-4">
+                        <Link
+                            href="/admin/products"
+                            className="px-8 py-2 rounded-lg font-medium text-gray-600 hover:bg-gray-100 transition"
+                        >
+                            Cancel
+                        </Link>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="bg-blue-600 text-white px-8 py-2 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 flex items-center gap-2"
+                        >
+                            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+                            {loading ? "Saving..." : "Save Changes"}
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    );
+}

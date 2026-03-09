@@ -21,8 +21,8 @@ export default function NewProductPage() {
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState("");
     const [categoryId, setCategoryId] = useState("");
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [imageFiles, setImageFiles] = useState<File[]>([]);
+    const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
     useEffect(() => {
         fetchCategories();
@@ -36,11 +36,18 @@ export default function NewProductPage() {
     }
 
     function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            setImageFile(file);
-            setPreviewUrl(URL.createObjectURL(file));
+        if (e.target.files && e.target.files.length > 0) {
+            const files = Array.from(e.target.files);
+            setImageFiles(prev => [...prev, ...files]);
+
+            const newPreviewUrls = files.map(file => URL.createObjectURL(file));
+            setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
         }
+    }
+
+    function removeImage(index: number) {
+        setImageFiles(prev => prev.filter((_, i) => i !== index));
+        setPreviewUrls(prev => prev.filter((_, i) => i !== index));
     }
 
     async function handleSubmit(e: React.FormEvent) {
@@ -49,25 +56,30 @@ export default function NewProductPage() {
 
         try {
             let imageUrl = "";
+            let imageUrls: string[] = [];
 
-            // 1. Upload Image (if selected)
-            if (imageFile) {
-                const fileExt = imageFile.name.split(".").pop();
-                const fileName = `${Date.now()}.${fileExt}`;
-                const filePath = `${fileName}`;
+            // 1. Upload Images (if selected)
+            if (imageFiles.length > 0) {
+                for (const file of imageFiles) {
+                    const fileExt = file.name.split(".").pop();
+                    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+                    const filePath = `${fileName}`;
 
-                const { error: uploadError } = await supabase.storage
-                    .from("products")
-                    .upload(filePath, imageFile);
+                    const { error: uploadError } = await supabase.storage
+                        .from("products")
+                        .upload(filePath, file);
 
-                if (uploadError) throw uploadError;
+                    if (uploadError) throw uploadError;
 
-                // Get Public URL
-                const { data: { publicUrl } } = supabase.storage
-                    .from("products")
-                    .getPublicUrl(filePath);
+                    // Get Public URL
+                    const { data: { publicUrl } } = supabase.storage
+                        .from("products")
+                        .getPublicUrl(filePath);
 
-                imageUrl = publicUrl;
+                    imageUrls.push(publicUrl);
+                }
+
+                imageUrl = imageUrls[0]; // First image as main image
             }
 
             // 2. Insert Product
@@ -77,6 +89,7 @@ export default function NewProductPage() {
                 price: Number(price),
                 category_id: categoryId || null, // Handle no category gracefully
                 image_url: imageUrl,
+                image_urls: imageUrls,
             });
 
             if (insertError) throw insertError;
@@ -87,7 +100,8 @@ export default function NewProductPage() {
 
         } catch (err: any) {
             console.error("Error adding product:", err);
-            alert(`Error: ${err.message}`);
+            const errorMessage = err?.message || err?.error_description || JSON.stringify(err) || "Unknown error occurred";
+            alert(`Error: ${errorMessage}`);
         } finally {
             setLoading(false);
         }
@@ -107,19 +121,24 @@ export default function NewProductPage() {
 
                     {/* Image Upload */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
-                        <div className="flex items-center gap-6">
-                            <div className="w-32 h-32 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
-                                {previewUrl ? (
-                                    <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
-                                ) : (
-                                    <ImageIcon className="w-8 h-8 text-gray-400" />
-                                )}
-                            </div>
-                            <label className="cursor-pointer bg-white border border-gray-300 hover:bg-gray-50 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">
-                                <Upload className="w-4 h-4" />
-                                Choose Image
-                                <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Product Images</label>
+                        <div className="flex flex-wrap gap-4 items-start">
+                            {previewUrls.map((url, index) => (
+                                <div key={index} className="relative w-32 h-32 bg-gray-100 rounded-lg border-2 border-gray-300 overflow-hidden group">
+                                    <img src={url} alt={`Preview ${index}`} className="w-full h-full object-cover" />
+                                    <div className="absolute inset-0 bg-black bg-opacity-40 hidden group-hover:flex items-center justify-center">
+                                        <button type="button" onClick={() => removeImage(index)} className="text-white bg-red-500 rounded-full p-2 hover:bg-red-600 transition shadow-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                            <label className="cursor-pointer w-32 h-32 bg-gray-50 border-2 border-dashed border-gray-300 hover:bg-gray-100 rounded-lg flex flex-col items-center justify-center gap-2 text-gray-500 transition">
+                                <Upload className="w-6 h-6" />
+                                <span className="text-xs font-medium text-center px-2">Add Images</span>
+                                <input type="file" className="hidden" accept="image/*" multiple onChange={handleImageChange} />
                             </label>
                         </div>
                     </div>

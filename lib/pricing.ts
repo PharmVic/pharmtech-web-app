@@ -37,78 +37,78 @@ export type BatteryCatalogItem = {
 // --------------------
 export const INVERTERS: InverterCatalogItem[] = [
     // Standard (Normal)
-    { kva: 1, voltage: 12, price: 130000, type: "normal" },
-    { kva: 1.5, voltage: 12, price: 180000, type: "normal" },
-    { kva: 1.5, voltage: 24, price: 200000, type: "normal" },
-    { kva: 2, voltage: 12, price: 230000, type: "normal" },
-    { kva: 2, voltage: 24, price: 250000, type: "normal" },
-    { kva: 2.5, voltage: 24, price: 280000, type: "normal" },
-    { kva: 3, voltage: 24, price: 330000, type: "normal" },
-    { kva: 3.5, voltage: 24, price: 350000, type: "normal" },
-    { kva: 4, voltage: 24, price: 370000, type: "normal" },
-    { kva: 5, voltage: 48, price: 500000, type: "normal" },
-    { kva: 6, voltage: 48, price: 550000, type: "normal" },
-    { kva: 7.5, voltage: 48, price: 800000, type: "normal" },
-    { kva: 10, voltage: 48, price: 1000000, type: "normal" },
+    { kva: 1, voltage: 12, price: 170000, type: "normal" },
+    { kva: 1.5, voltage: 12, price: 220000, type: "normal" },
+    { kva: 1.5, voltage: 24, price: 300000, type: "normal" },
+    { kva: 2, voltage: 12, price: 240000, type: "normal" },
+    { kva: 2, voltage: 24, price: 320000, type: "normal" },
+    { kva: 2.5, voltage: 24, price: 350000, type: "normal" },
+    { kva: 3, voltage: 24, price: 400000, type: "normal" },
+    { kva: 3.5, voltage: 24, price: 450000, type: "normal" },
+    { kva: 4, voltage: 24, price: 470000, type: "normal" },
+    { kva: 5, voltage: 48, price: 600000, type: "normal" },
+    { kva: 6, voltage: 48, price: 650000, type: "normal" },
+    { kva: 7.5, voltage: 48, price: 1000000, type: "normal" },
+    { kva: 10, voltage: 48, price: 1300000, type: "normal" },
 
     // Hybrid
     { kva: 1.5, voltage: 12, price: 200000, type: "hybrid" },
     { kva: 2, voltage: 12, price: 230000, type: "hybrid" },
     { kva: 2.5, voltage: 24, price: 250000, type: "hybrid" },
-    { kva: 3.5, voltage: 24, price: 330000, type: "hybrid" },
-    { kva: 4, voltage: 24, price: 350000, type: "hybrid" },
+    { kva: 3.5, voltage: 24, price: 310000, type: "hybrid" },
+    { kva: 4, voltage: 24, price: 320000, type: "hybrid" },
     { kva: 5, voltage: 48, price: 500000, type: "hybrid" },
     { kva: 6, voltage: 48, price: 550000, type: "hybrid" },
     { kva: 7.5, voltage: 48, price: 800000, type: "hybrid" },
-    { kva: 10, voltage: 48, price: 1000000, type: "hybrid" },
+    { kva: 10, voltage: 48, price: 1100000, type: "hybrid" },
 ];
 
 export const PANELS: PanelCatalogItem[] = [
     { watt: 200, price: 45000 },
     { watt: 250, price: 55000 },
-    { watt: 300, price: 60000 },
+    { watt: 300, price: 68000 },
     { watt: 350, price: 75000 },
-    { watt: 400, price: 85000 },
-    { watt: 450, price: 90000 },
-    { watt: 500, price: 100000 },
-    { watt: 550, price: 105000 },
-    { watt: 600, price: 110000 },
+    { watt: 400, price: 80000 },
+    { watt: 450, price: 85000 },
+    { watt: 500, price: 90000 },
+    { watt: 550, price: 95000 },
+    { watt: 600, price: 105000 },
 ];
 
 export const BATTERIES: BatteryCatalogItem[] = [
     // Dry cell
-    { sku: "dry-12v-200ah", type: "drycell", voltage: 12, nominalVoltage: 12, ah: 200, price: 400000 },
+    { sku: "dry-12v-200ah", type: "drycell", voltage: 12, nominalVoltage: 12, ah: 200, price: 260000 },
 
     // Tubular (wet cell)
     { sku: "tub-12v-220ah", type: "tubular", voltage: 12, nominalVoltage: 12, ah: 220, price: 250000 },
 
     // Lithium
     { sku: "li-12v-100ah", type: "lithium", voltage: 12.8, nominalVoltage: 12, ah: 100, price: 230000 },
-    { sku: "li-12v-200ah", type: "lithium", voltage: 12.8, nominalVoltage: 12, ah: 200, price: 350000 },
+    { sku: "li-12v-200ah", type: "lithium", voltage: 12.8, nominalVoltage: 12, ah: 200, price: 330000 },
 
-    { sku: "li-24v-100ah", type: "lithium", voltage: 25.6, nominalVoltage: 24, ah: 100, price: 500000 },
-    { sku: "li-24v-120ah", type: "lithium", voltage: 25.6, nominalVoltage: 24, ah: 120, price: 520000 },
-    { sku: "li-24v-200ah", type: "lithium", voltage: 25.6, nominalVoltage: 24, ah: 200, price: 800000 },
-    { sku: "li-24v-240ah", type: "lithium", voltage: 25.6, nominalVoltage: 24, ah: 240, price: 850000 },
+    { sku: "li-24v-100ah", type: "lithium", voltage: 25.6, nominalVoltage: 24, ah: 100, price: 480000 },
+    { sku: "li-24v-120ah", type: "lithium", voltage: 25.6, nominalVoltage: 24, ah: 120, price: 490000 },
+    { sku: "li-24v-200ah", type: "lithium", voltage: 25.6, nominalVoltage: 24, ah: 200, price: 790000 },
+    { sku: "li-24v-240ah", type: "lithium", voltage: 25.6, nominalVoltage: 24, ah: 240, price: 820000 },
 
-    { sku: "li-48v-100ah", type: "lithium", voltage: 51.2, nominalVoltage: 48, ah: 100, price: 930000 },
+    { sku: "li-48v-100ah", type: "lithium", voltage: 51.2, nominalVoltage: 48, ah: 100, price: 900000 },
     { sku: "li-48v-200ah", type: "lithium", voltage: 51.2, nominalVoltage: 48, ah: 200, price: 1600000 },
-    { sku: "li-48v-300ah", type: "lithium", voltage: 51.2, nominalVoltage: 48, ah: 300, price: 1900000 },
+    { sku: "li-48v-300ah", type: "lithium", voltage: 51.2, nominalVoltage: 48, ah: 300, price: 1890000 },
 ];
 
 // Accessories + Installation
 export const ACCESSORIES_INSTALL: Record<number, number> = {
-    1: 350000,
-    1.5: 350000,
-    2: 370000,
-    2.5: 400000,
-    3: 430000,
-    3.5: 400000,
-    4: 400000,
-    5: 500000,
-    6: 550000,
-    7.5: 600000,
-    10: 600000,
+    1: 295000,
+    1.5: 300000,
+    2: 300000,
+    2.5: 350000,
+    3: 350000,
+    3.5: 350000,
+    4: 350000,
+    5: 490000,
+    6: 500000,
+    7.5: 620000,
+    10: 650000,
 };
 
 // --------------------
@@ -182,7 +182,8 @@ export function minPanelWattForKva(kva: number) {
 
 export function pickInverterForRequiredKva(rawKva: number, hasSurgeLoad: boolean, inverterType: "normal" | "hybrid" = "normal") {
     const warnings: string[] = [];
-    let targetKva = normalizeKva(rawKva);
+    // Use normalizeKva for standard sizes, but keep raw if larger than max catalog size (10)
+    let targetKva = rawKva > 10 ? rawKva : normalizeKva(rawKva);
 
     // Rule: Minimum 2kVA for any surge load
     if (hasSurgeLoad && targetKva < 2) {
@@ -190,8 +191,10 @@ export function pickInverterForRequiredKva(rawKva: number, hasSurgeLoad: boolean
         warnings.push("Surge loads detected. Upgraded system to minimum 2kVA.");
     }
 
-    // Force normalized steps again just in case (2.0 is valid)
-    targetKva = normalizeKva(targetKva);
+    // Force normalized steps again just in case (2.0 is valid), but only if within range
+    if (targetKva <= 10) {
+        targetKva = normalizeKva(targetKva);
+    }
 
     // Voltage Rule Verification (Implied by catalog, but good to check)
     // 12V: 1, 1.5, 2
@@ -249,29 +252,51 @@ export function pickInverterForRequiredKva(rawKva: number, hasSurgeLoad: boolean
     // Find unit >= targetKva
     const valid = candidates.filter(i => i.kva >= targetKva).sort((a, b) => a.kva - b.kva || b.voltage - a.voltage);
 
-    // If no valid unit, warn
-    if (valid.length === 0) {
-        warnings.push(`No ${inverterType} inverter found for ${targetKva}kVA.`);
+    if (valid.length > 0) {
+        const selectedUnit = valid[0];
+        // Check strict voltage boundaries and warn if needed (though we just picked from catalog)
+        if (targetKva <= 2 && selectedUnit.voltage > 24) {
+            // Should not happen with current catalog
+        }
+        return { units: [selectedUnit], warnings };
+    }
+
+    // If no single unit is large enough, we need multiple units.
+    // User Constraint: Only kVA from 6kVA to 10kVA should be multiplied.
+
+    // Sort candidates descending by kVA to try largest first
+    // And filter for the range [6, 10]
+    const sortedCandidates = candidates
+        .filter(i => i.kva >= 6 && i.kva <= 10)
+        .sort((a, b) => b.kva - a.kva);
+
+    if (sortedCandidates.length === 0) {
+        warnings.push(`No ${inverterType} inverters available in 6-10kVA range for multiple configuration.`);
         return { units: [], warnings };
     }
 
-    // Pick smallest valid size (e.g. if need 3kVA, but Hybrid only has 3.5, pick 3.5)
-    // The sort above ensures [0] is the smallest kVA that is >= targetKva
-    // Secondary sort by voltage DESC prefers 24V over 12V if same kVA.
+    // Find a unit where count * kva >= targetKva
+    let bestOption: { unit: InverterCatalogItem, count: number, waste: number } | null = null;
 
-    // Re-filter for "best match" candidates (e.g. if we have 3.5 12V and 3.5 24V - though list doesn't have duplicates for hybrid usually)
-    // The previous logic filtered by Exact Match. Now we filter by >= because Hybrid list is sparse.
-    // e.g. Normal has 1, 1.5, 2, 2.5, 3...
-    // Hybrid has 1.5, 2, 2.5, 3.5 (no 3). If needed 3, we must pick 3.5.
+    for (const unit of sortedCandidates) {
+        const count = Math.ceil(targetKva / unit.kva);
+        const totalCapacity = count * unit.kva;
+        const waste = totalCapacity - targetKva;
 
-    const selectedUnit = valid[0];
-
-    // Check strict voltage boundaries and warn if needed (though we just picked from catalog)
-    if (targetKva <= 2 && selectedUnit.voltage > 24) {
-        // Should not happen with current catalog
+        if (!bestOption || waste < bestOption.waste || (waste === bestOption.waste && count < bestOption.count)) {
+            bestOption = { unit, count, waste };
+        }
     }
 
-    return { units: [selectedUnit], warnings };
+    if (bestOption) {
+        const { unit, count } = bestOption;
+        const units = Array(count).fill(unit);
+        warnings.push(`Load (${targetKva}kVA) exceeds single unit capacity. Using ${count}x ${unit.kva}kVA.`);
+        return { units, warnings };
+    }
+
+    warnings.push(`Could not find a suitable configuration for ${targetKva}kVA.`);
+    return { units: [], warnings };
 }
 
 // 2) Minimum battery pack required
@@ -304,9 +329,9 @@ export function getMinBatteryPackAh(inverterKva: number, systemVoltage: number, 
         if (inverterKva >= 1.5 && inverterKva <= 4 && systemVoltage === 24) return 120;
         // Big 48V (5kVA+)
         if (inverterKva >= 5) {
-            // 10kVA -> 200Ah
-            if (inverterKva >= 10) return 200;
-            // 5/6/7.5 -> 100Ah
+            // 7.5kVA+ -> 200Ah (approx 10kWh at 48V)
+            if (inverterKva >= 7.5) return 200;
+            // 5/6 -> 100Ah
             return 100;
         }
     }

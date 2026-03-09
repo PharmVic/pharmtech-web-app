@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
-import { Loader2 } from "lucide-react";
+import { Loader2, Home, LayoutDashboard } from "lucide-react";
+import Link from "next/link";
 
 export default function AdminLayout({
     children,
@@ -73,7 +74,15 @@ export default function AdminLayout({
         <div className="min-h-screen bg-gray-50 pb-20">
             {/* Optional: Admin Sidebar or Header could go here */}
             <div className="bg-white border-b border-gray-200 px-8 py-4 mb-4 flex justify-between items-center">
-                <span className="font-bold text-gray-700">Admin Console</span>
+                <div className="flex items-center gap-4">
+                    <Link href="/" className="text-gray-500 hover:text-blue-600 transition-colors flex items-center gap-1 text-sm font-medium" title="Go back to Home">
+                        <Home className="w-4 h-4" />
+                    </Link>
+                    <span className="font-bold text-gray-700">Admin Console</span>
+                    <Link href="/admin" className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-md">
+                        <LayoutDashboard className="w-4 h-4" /> Dashboard
+                    </Link>
+                </div>
                 <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-100">
                     Authenticated
                 </div>

@@ -43,7 +43,7 @@ export default function Step1Customer({
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     placeholder="Enter full name"
-                    className="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all shadow-sm hover:shadow-md"
                 />
             </div>
 
@@ -54,7 +54,7 @@ export default function Step1Customer({
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
                     placeholder="080..."
-                    className="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all shadow-sm hover:shadow-md"
                 />
             </div>
 
@@ -64,7 +64,7 @@ export default function Step1Customer({
                     value={customerAddress}
                     onChange={(e) => setCustomerAddress(e.target.value)}
                     placeholder="Delivery address"
-                    className="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-500 outline-none"
+                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all shadow-sm hover:shadow-md"
                     rows={3}
                 />
             </div>
@@ -73,9 +73,9 @@ export default function Step1Customer({
                 <button
                     onClick={onNext}
                     disabled={!isCustomerValid}
-                    className={`px-6 py-2 rounded-md font-medium transition-colors ${isCustomerValid
-                            ? "bg-green-600 text-white hover:bg-green-700"
-                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    className={`px-8 py-3 rounded-full font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 ${isCustomerValid
+                        ? "bg-orange-600 text-white hover:bg-[#110000]"
+                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
                         }`}
                 >
                     Next: Appliances

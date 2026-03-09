@@ -23,6 +23,12 @@ type Step3Props = {
     inverterType: "normal" | "hybrid";
     setInverterType: (t: "normal" | "hybrid") => void;
 
+    // Manual Inverter Props
+    originalRecommendedKva?: number;
+    availableInverters: InverterCatalogItem[];
+    manualInverterId: string | null;
+    setManualInverterId: (id: string | null) => void;
+
     recommendedPanelCount: number;
     setManualPanelCount: (n: number) => void;
 
@@ -33,6 +39,12 @@ type Step3Props = {
     recommendedBattery: { battery: BatteryCatalogItem | null; units: number };
     activeBatteryType: string;
     setBatteryType: (t: any) => void;
+
+    // New Battery Props
+    availableLithiumBatteries?: BatteryCatalogItem[];
+    preferredBatteryAh?: number | null;
+    setPreferredBatteryAh?: (n: number | null) => void;
+
     manualBatteryCount: number;
     setManualBatteryCount: (n: number) => void;
 
@@ -55,6 +67,10 @@ export default function Step3SizingAndQuote({
     recommendedInverter,
     inverterType,
     setInverterType,
+    originalRecommendedKva,
+    availableInverters,
+    manualInverterId,
+    setManualInverterId,
     recommendedPanelCount,
     setManualPanelCount,
     recommendedPanelWattage,
@@ -63,6 +79,11 @@ export default function Step3SizingAndQuote({
     recommendedBattery,
     activeBatteryType,
     setBatteryType,
+
+    availableLithiumBatteries = [],
+    preferredBatteryAh,
+    setPreferredBatteryAh,
+
     manualBatteryCount,
     setManualBatteryCount,
     batteryDisplay,
@@ -114,7 +135,9 @@ export default function Step3SizingAndQuote({
             : "Custom / Contact Support";
 
         const batDisplay = recommendedBattery.battery
-            ? `${recommendedBattery.units}x ${recommendedBattery.battery.type.toUpperCase()} ${recommendedBattery.battery.ah}Ah (${recommendedBattery.battery.voltage}V)`
+            ? (recommendedBattery.battery.type === "lithium"
+                ? `${recommendedBattery.units}x ${(recommendedBattery.battery.ah * recommendedBattery.battery.voltage / 1000).toFixed(2)}kWh ${recommendedBattery.battery.type.toUpperCase()} ${recommendedBattery.battery.ah}Ah (${recommendedBattery.battery.voltage}V)`
+                : `${recommendedBattery.units}x ${recommendedBattery.battery.type.toUpperCase()} ${recommendedBattery.battery.ah}Ah (${recommendedBattery.battery.voltage}V)`)
             : "None";
 
         const panelDisplay = `${recommendedPanelCount}x ${recommendedPanelWattage}W Panels`;
@@ -307,7 +330,7 @@ Please review and confirm availability.`;
                                             <select
                                                 value={preferredPanelWattage || recommendedPanelWattage}
                                                 onChange={(e) => setPreferredPanelWattage(Number(e.target.value))}
-                                                className="text-xs border rounded p-1 bg-gray-50 max-w-[80px]"
+                                                className="text-xs border border-gray-200 rounded p-1 bg-gray-50 max-w-[80px] focus:ring-2 focus:ring-orange-500 outline-none"
                                             >
                                                 <option value={200}>200W</option>
                                                 <option value={250}>250W</option>
@@ -324,7 +347,7 @@ Please review and confirm availability.`;
                                         <div className="flex items-center gap-3">
                                             <button
                                                 onClick={() => setManualPanelCount(Math.max(0, recommendedPanelCount - 1))}
-                                                className="w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded text-gray-600 transition"
+                                                className="w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-orange-100 text-gray-600 hover:text-orange-600 rounded transition"
                                                 title="Decrease Panels"
                                             >
                                                 <Minus className="w-3 h-3" />
@@ -334,7 +357,7 @@ Please review and confirm availability.`;
 
                                             <button
                                                 onClick={() => setManualPanelCount(recommendedPanelCount + 1)}
-                                                className="w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded text-gray-600 transition"
+                                                className="w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-orange-100 text-gray-600 hover:text-orange-600 rounded transition"
                                                 title="Increase Panels"
                                             >
                                                 <Plus className="w-3 h-3" />
@@ -359,8 +382,43 @@ Please review and confirm availability.`;
                                                 <option value="tubular">Tubular</option>
                                                 <option value="drycell">Dry Cell</option>
                                             </select>
+
+                                            {/* Capacity Selector (Lithium Only) */}
+                                            {activeBatteryType === "lithium" && availableLithiumBatteries.length > 0 && setPreferredBatteryAh && (
+                                                <select
+                                                    value={preferredBatteryAh ?? recommendedBattery.battery?.ah ?? ""}
+                                                    onChange={(e) => setPreferredBatteryAh(Number(e.target.value) || null)}
+                                                    className="ml-2 text-xs border rounded p-1 bg-gray-50 focus:ring-2 focus:ring-orange-500 outline-none"
+                                                    title="Select Battery Capacity"
+                                                >
+                                                    {availableLithiumBatteries.map((b) => (
+                                                        <option key={b.sku} value={b.ah}>
+                                                            {b.ah}Ah
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            )}
                                         </div>
-                                        <p className="text-sm text-gray-500 leading-tight">{batteryDisplay}</p>
+
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <button
+                                                onClick={() => setManualBatteryCount(Math.max(1, manualBatteryCount - 1))}
+                                                className="shrink-0 w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-orange-100 text-gray-600 hover:text-orange-600 rounded transition"
+                                                title="Decrease Batteries"
+                                            >
+                                                <Minus className="w-3 h-3" />
+                                            </button>
+
+                                            <p className="text-sm text-gray-500 leading-tight flex-1 text-center">{batteryDisplay}</p>
+
+                                            <button
+                                                onClick={() => setManualBatteryCount(manualBatteryCount + 1)}
+                                                className="shrink-0 w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-orange-100 text-gray-600 hover:text-orange-600 rounded transition"
+                                                title="Increase Batteries"
+                                            >
+                                                <Plus className="w-3 h-3" />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -371,14 +429,27 @@ Please review and confirm availability.`;
                                     <div className="flex-1">
                                         <div className="flex justify-between items-center mb-1">
                                             <p className="text-sm font-medium text-gray-900">Inverter</p>
-                                            <select
-                                                value={inverterType}
-                                                onChange={(e) => setInverterType(e.target.value as "normal" | "hybrid")}
-                                                className="text-xs border rounded p-1 bg-gray-50 capitalize"
-                                            >
-                                                <option value="normal">Non-hybrid</option>
-                                                <option value="hybrid">Hybrid</option>
-                                            </select>
+                                            <div className="flex gap-2">
+                                                <select
+                                                    value={manualInverterId ?? (recommendedInverter.units[0] ? `${recommendedInverter.units[0].kva}-${recommendedInverter.units[0].voltage}` : "")}
+                                                    onChange={(e) => setManualInverterId(e.target.value)}
+                                                    className="text-xs border border-gray-200 rounded p-1.5 bg-gray-50 max-w-[140px] focus:ring-2 focus:ring-orange-500 outline-none"
+                                                >
+                                                    {availableInverters.map((inv) => (
+                                                        <option key={`${inv.kva}-${inv.voltage}`} value={`${inv.kva}-${inv.voltage}`}>
+                                                            {inv.kva}kVA ({inv.voltage}V) {inv.kva === originalRecommendedKva ? " (Rec)" : ""}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <select
+                                                    value={inverterType}
+                                                    onChange={(e) => setInverterType(e.target.value as "normal" | "hybrid")}
+                                                    className="text-xs border border-gray-200 rounded p-1 bg-gray-50 capitalize focus:ring-2 focus:ring-orange-500 outline-none"
+                                                >
+                                                    <option value="normal">Non-hybrid</option>
+                                                    <option value="hybrid">Hybrid</option>
+                                                </select>
+                                            </div>
                                         </div>
                                         <p className="text-sm text-gray-500">{inverterText}</p>
                                     </div>
@@ -404,7 +475,7 @@ Please review and confirm availability.`;
                                 <button
                                     onClick={onSave}
                                     disabled={isSaving}
-                                    className="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                                    className="w-full bg-gray-800 hover:bg-[#110000] text-white font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2"
                                 >
                                     {isSaving ? (
                                         <span>Saving...</span>
@@ -418,7 +489,7 @@ Please review and confirm availability.`;
 
                                 <button
                                     onClick={sendToWhatsApp}
-                                    className="w-full bg-[#25D366] hover:bg-[#20b85c] text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                                    className="w-full bg-[#25D366] hover:bg-[#20b85c] text-white font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2"
                                 >
                                     <Share2 className="w-5 h-5" />
                                     Send to WhatsApp
@@ -426,7 +497,7 @@ Please review and confirm availability.`;
 
                                 <button
                                     onClick={downloadPdfQuote}
-                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                                    className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2"
                                 >
                                     <Download className="w-5 h-5" />
                                     Download PDF
