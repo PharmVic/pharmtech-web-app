@@ -89,19 +89,25 @@ export default function PaystackCheckout({
     if (onClose) onClose();
   };
 
+  const isFormValid = email && phone && location && deliveryDate && amount > 0;
+
   const startPayment = () => {
-    if (!email || !phone || !location || !deliveryDate || amount <= 0) {
+    if (!isFormValid) {
       alert('Please fill all required fields before proceeding to payment.');
       return;
     }
-    initializePayment({ onSuccess: handlePaymentSuccess, onClose: handlePaymentClose });
+    initializePayment({ onSuccess: handlePaymentSuccess, onClose: handlePaymentClose, config });
   };
 
   return (
     <button
       onClick={startPayment}
-      disabled={isProcessing}
-      className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full flex justify-center items-center disabled:opacity-50 transition-colors"
+      disabled={isProcessing || !isFormValid}
+      className={`font-bold py-2 px-4 rounded w-full flex justify-center items-center transition-colors ${
+        isProcessing || !isFormValid
+          ? 'bg-gray-400 cursor-not-allowed text-gray-200'
+          : 'bg-green-600 hover:bg-green-700 text-white'
+      }`}
     >
       {isProcessing ? 'Verifying Payment...' : `Pay NGN ${amount.toLocaleString()}`}
     </button>

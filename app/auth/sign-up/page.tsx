@@ -125,7 +125,7 @@ export default function SignUpPage() {
                                     required
                                     value={formData.fullName}
                                     onChange={handleChange}
-                                    className="block w-full pl-10 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    className="block w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                     placeholder="John Doe"
                                 />
                             </div>
@@ -143,7 +143,7 @@ export default function SignUpPage() {
                                     required
                                     value={formData.email}
                                     onChange={handleChange}
-                                    className="block w-full pl-10 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    className="block w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                     placeholder="you@example.com"
                                 />
                             </div>
@@ -161,7 +161,7 @@ export default function SignUpPage() {
                                     required
                                     value={formData.phone}
                                     onChange={handleChange}
-                                    className="block w-full pl-10 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    className="block w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                     placeholder="+234..."
                                 />
                             </div>
@@ -178,7 +178,7 @@ export default function SignUpPage() {
                                     type="text"
                                     value={formData.address}
                                     onChange={handleChange}
-                                    className="block w-full pl-10 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    className="block w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                     placeholder="Your City"
                                 />
                             </div>
@@ -196,7 +196,7 @@ export default function SignUpPage() {
                                     required
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className="block w-full pl-10 pr-10 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                    className="block w-full py-2 pl-10 pr-10 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                     placeholder="********"
                                     minLength={6}
                                 />
