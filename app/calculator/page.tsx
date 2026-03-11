@@ -41,9 +41,9 @@ export default function SolarCalculator() {
 
     // State
     const [loads, setLoads] = useState<LoadInput[]>([
-        { name: "LED Bulb", watts: 10, qty: 6, motor: false, hoursNight: 6 },
-        { name: "TV", watts: 150, qty: 1, motor: false, hoursNight: 6 },
-        { name: "Fan", watts: 75, qty: 2, motor: false, hoursNight: 6 },
+        { name: "LED Bulb", watts: 10, qty: 6, motor: false, hoursNight: 0 },
+        { name: "TV", watts: 150, qty: 1, motor: false, hoursNight: 0 },
+        { name: "Fan", watts: 75, qty: 2, motor: false, hoursNight: 0 },
     ]);
 
     const [customerName, setCustomerName] = useState("");
@@ -51,7 +51,7 @@ export default function SolarCalculator() {
     const [customerAddress, setCustomerAddress] = useState("");
     const [quoteNumber, setQuoteNumber] = useState("");
 
-    const [defaultHoursAtNight, setDefaultHoursAtNight] = useState(6);
+    const [defaultHoursAtNight, setDefaultHoursAtNight] = useState(0);
     const [batteryType, setBatteryType] = useState<BatteryType>("lithium");
     const [inverterType, setInverterType] = useState<"normal" | "hybrid">("normal");
     const [sunHours, setSunHours] = useState(5);
