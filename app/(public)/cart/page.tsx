@@ -3,9 +3,17 @@
 import { useCartStore } from "@/lib/store/cartStore";
 import Link from "next/link";
 import { Trash2, Plus, Minus, ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export default function CartPage() {
     const { items, removeItem, updateQuantity, getTotalAmount, clearCart } = useCartStore();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) return null; // Avoid hydration mismatch
 
     if (items.length === 0) {
         return (

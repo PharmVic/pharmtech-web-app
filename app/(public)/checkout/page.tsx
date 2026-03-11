@@ -3,7 +3,11 @@
 import { useCartStore } from "@/lib/store/cartStore";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import PaystackCheckout from "@/components/PaystackCheckout";
+import dynamic from "next/dynamic";
+
+const PaystackCheckout = dynamic(() => import("@/components/PaystackCheckout"), {
+    ssr: false,
+});
 
 export default function CheckoutPage() {
     const { items, getTotalAmount } = useCartStore();
@@ -17,13 +21,19 @@ export default function CheckoutPage() {
     defaultDate.setDate(defaultDate.getDate() + 3);
     const [deliveryDate, setDeliveryDate] = useState(defaultDate.toISOString().split("T")[0]);
 
+    const [mounted, setMounted] = useState(false);
+
     useEffect(() => {
-        if (items.length === 0) {
+        setMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (mounted && items.length === 0) {
             router.push("/cart");
         }
-    }, [items, router]);
+    }, [mounted, items, router]);
 
-    if (items.length === 0) return null; // Let the effect handle it
+    if (!mounted || items.length === 0) return null; // Let the effect handle it
 
     const handlePaymentSuccess = (reference: string) => {
         // The backend handles saving to DB, now we just clear cart and redirect.
