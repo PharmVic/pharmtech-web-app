@@ -96,6 +96,13 @@ export default function PaystackCheckout({
       alert('Please fill all required fields before proceeding to payment.');
       return;
     }
+    
+    if (!config.publicKey) {
+      alert('Payment system configuration is missing (Public Key not found). Please contact support.');
+      console.error('Missing NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY in environment variables.');
+      return;
+    }
+
     initializePayment({ onSuccess: handlePaymentSuccess, onClose: handlePaymentClose, config });
   };
 
