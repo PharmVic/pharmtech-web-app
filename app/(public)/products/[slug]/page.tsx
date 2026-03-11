@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
+import AddToCartButton from "@/components/AddToCartButton";
 
 export const dynamic = "force-dynamic";
 
@@ -96,8 +97,16 @@ export default async function CategoryProductsPage({
                                             {product.price ? `₦${product.price.toLocaleString()}` : "Contact Us"}
                                         </span>
                                     </div>
-                                    <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                        <ShoppingCart className="w-5 h-5" />
+                                    <div className="relative z-10">
+                                        <AddToCartButton 
+                                            product={{
+                                                id: product.id,
+                                                name: product.name,
+                                                price: product.price,
+                                                image_url: product.image_url,
+                                            }}
+                                            large={false}
+                                        />
                                     </div>
                                 </div>
                             </div>

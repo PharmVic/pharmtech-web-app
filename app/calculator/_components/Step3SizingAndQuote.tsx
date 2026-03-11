@@ -1,7 +1,9 @@
 "use client";
 
-import { Download, CheckCircle2, Sun, Battery as BatteryIcon, Zap, Share2, Plus, Minus } from "lucide-react";
+import { Download, CheckCircle2, Sun, Battery as BatteryIcon, Zap, Share2, Plus, Minus, ShoppingCart } from "lucide-react";
 import type { InverterCatalogItem, BatteryCatalogItem } from "@/lib/pricing";
+import { useCartStore } from "@/lib/store/cartStore";
+import { useRouter } from "next/navigation";
 
 // Helper to format money
 function formatMoney(n: number) {
@@ -92,6 +94,24 @@ export default function Step3SizingAndQuote({
     onSave,
     isSaving,
 }: Step3Props) {
+    const addItem = useCartStore((state) => state.addItem);
+    const router = useRouter();
+
+    // Proceed to Checkout
+    const handleProceedToCheckout = () => {
+        addItem({
+            id: `solar-quote-${Date.now()}`,
+            name: `Solar System Installation (${recommendedInverter.units[0]?.kva || 'Custom'}kVA)`,
+            price: pricingTotal,
+            quantity: 1,
+            isSolar: true
+        });
+        
+        // Auto-save the quote just in case
+        onSave();
+        
+        router.push("/checkout");
+    };
 
     // PDF Download
     async function downloadPdfQuote() {
@@ -485,6 +505,14 @@ Please review and confirm availability.`;
                                             Save Quote to System
                                         </>
                                     )}
+                                </button>
+
+                                <button
+                                    onClick={handleProceedToCheckout}
+                                    className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2"
+                                >
+                                    <ShoppingCart className="w-5 h-5" />
+                                    Proceed to Checkout
                                 </button>
 
                                 <button

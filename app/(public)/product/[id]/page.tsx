@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ShoppingCart, CheckCircle, ShieldCheck } from "lucide-react";
 import ProductGallery from "@/components/ProductGallery";
+import AddToCartButton from "@/components/AddToCartButton";
 
 export const dynamic = "force-dynamic";
 
@@ -96,10 +97,15 @@ export default async function ProductDetailsPage({
                             </div>
 
                             <div className="mt-auto pt-8 border-t border-gray-100 flex gap-4">
-                                <button className="flex-1 bg-blue-600 text-white font-semibold py-4 rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
-                                    <ShoppingCart className="w-5 h-5" />
-                                    Add to Cart
-                                </button>
+                                <AddToCartButton 
+                                    product={{
+                                        id: product.id,
+                                        name: product.name,
+                                        price: product.price,
+                                        image_url: imageUrls[0],
+                                    }}
+                                    large={true}
+                                />
                                 <Link
                                     href="/contact"
                                     className="px-8 py-4 bg-gray-100 text-gray-900 font-semibold rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center"

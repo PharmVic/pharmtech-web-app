@@ -1,14 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { Home, MapPin, Phone, Mail, User, LogIn, LayoutDashboard, Calculator } from "lucide-react";
+import { Home, MapPin, Phone, Mail, User, LogIn, LayoutDashboard, Calculator, ShoppingCart } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
+import { useCartStore } from "@/lib/store/cartStore";
+
 export default function Topbar() {
     const [user, setUser] = useState<any>(null);
+    const [mounted, setMounted] = useState(false);
+    const cartItemsCount = useCartStore((state) => state.getTotalItems());
 
     useEffect(() => {
+        setMounted(true);
         // Initial session check
         supabase.auth.getSession().then(({ data: { session } }) => {
             setUser(session?.user || null);
@@ -48,8 +53,16 @@ export default function Topbar() {
                                 </Link>
                             </>
                         )}
-                        <Link href="/calculator" className="text-dark flex items-center gap-2">
+                        <Link href="/calculator" className="me-3 text-dark flex items-center gap-2">
                             <Calculator className="w-4 h-4 text-primary" /> <small>Solar Calculator</small>
+                        </Link>
+                        <Link href="/cart" className="text-dark flex items-center gap-2 relative">
+                            <ShoppingCart className="w-4 h-4 text-primary" /> <small>Cart</small>
+                            {mounted && cartItemsCount > 0 && (
+                                <span className="absolute -top-2 -right-3 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                                    {cartItemsCount}
+                                </span>
+                            )}
                         </Link>
                     </div>
                 </div>
