@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
-import { User, FileText, LogOut, Award, Link as LinkIcon, Copy } from "lucide-react";
+import { User, FileText, LogOut, Award, Link as LinkIcon, Copy, ShoppingCart } from "lucide-react";
 
 type Quote = {
     id: string;
@@ -11,6 +11,15 @@ type Quote = {
     estimated_price: number;
     created_at: string;
     recommended_kva: number;
+};
+
+type Payment = {
+    id: string;
+    reference: string;
+    amount: number;
+    status: string;
+    created_at: string;
+    items: any[];
 };
 
 type Profile = {
@@ -24,6 +33,7 @@ export default function UserDashboard() {
     const [user, setUser] = useState<any>(null);
     const [profile, setProfile] = useState<Profile | null>(null);
     const [quotes, setQuotes] = useState<Quote[]>([]);
+    const [payments, setPayments] = useState<Payment[]>([]);
     const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
 
@@ -38,10 +48,10 @@ export default function UserDashboard() {
             return;
         }
         setUser(session.user);
-        fetchProfileAndQuotes(session.user.id);
+        fetchDashboardData(session.user.id);
     }
 
-    async function fetchProfileAndQuotes(userId: string) {
+    async function fetchDashboardData(userId: string) {
         // Fetch User Profile for points and referral code
         const { data: profileData } = await supabase
             .from("profiles")
@@ -71,10 +81,19 @@ export default function UserDashboard() {
         }
 
         // Setup quotes fetch
-        const { data } = await supabase
+        const { data: quotesData } = await supabase
             .from("quotes")
             .select("*")
             .eq("customer_phone", ""); // Needs real linking in future
+        if (quotesData) setQuotes(quotesData);
+
+        // Fetch user's actual confirmed orders
+        const { data: paymentsData } = await supabase
+            .from("payments")
+            .select("*")
+            .eq("user_id", userId)
+            .order("created_at", { ascending: false });
+        if (paymentsData) setPayments(paymentsData);
 
         setLoading(false);
     }
@@ -171,11 +190,49 @@ export default function UserDashboard() {
                     </div>
                 </div>
 
-                {/* Placeholder for Orders/Points */}
+                {/* Recent Orders Card */}
+                <div className="bg-white p-6 rounded-xl border shadow-sm">
+                    <div className="flex items-center gap-3 mb-4 text-green-600">
+                        <ShoppingCart className="w-6 h-6" />
+                        <h2 className="font-semibold text-lg">Recent Orders</h2>
+                    </div>
+                    {payments.length === 0 ? (
+                        <div className="text-center py-4 bg-gray-50 rounded-lg border border-dashed text-gray-500 text-sm">
+                            You have no recent orders.
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {payments.map((payment) => (
+                                <div key={payment.id} className="border p-4 rounded-lg shadow-sm">
+                                    <div className="flex justify-between items-center border-b pb-2 mb-2">
+                                        <span className="text-xs text-gray-400">Order ID: {payment.reference}</span>
+                                        <span className={`text-xs font-bold px-2 py-1 rounded-full ${payment.status === 'success' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+                                            {payment.status.toUpperCase()}
+                                        </span>
+                                    </div>
+                                    <div className="space-y-2 mb-3">
+                                        {payment.items && payment.items.map((item, i) => (
+                                            <div key={i} className="flex justify-between text-sm">
+                                                <span className="text-gray-700 truncate pr-2 flex-1">{item.quantity}x {item.name}</span>
+                                                <span className="font-medium text-gray-900 shrink-0">₦{(item.price * item.quantity).toLocaleString()}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="flex justify-between items-center text-sm pt-2 border-t text-gray-500">
+                                        <span>{new Date(payment.created_at).toLocaleDateString()}</span>
+                                        <span className="font-bold text-gray-900 text-base">Total: ₦{Number(payment.amount).toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Placeholder for Quotes */}
                 <div className="bg-white p-6 rounded-xl border shadow-sm opacity-60">
                     <div className="flex items-center gap-3 mb-4 text-purple-600">
                         <FileText className="w-6 h-6" />
-                        <h2 className="font-semibold text-lg">Recent Quotes</h2>
+                        <h2 className="font-semibold text-lg">Solar Quotes</h2>
                     </div>
                     <p className="text-gray-500 text-sm mb-4">
                         Link quotes to your account to view them here.

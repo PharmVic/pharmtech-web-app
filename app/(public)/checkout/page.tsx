@@ -4,6 +4,7 @@ import { useCartStore } from "@/lib/store/cartStore";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import { supabase } from "@/lib/supabaseClient";
 
 const PaystackCheckout = dynamic(() => import("@/components/PaystackCheckout"), {
     ssr: false,
@@ -13,6 +14,7 @@ export default function CheckoutPage() {
     const { items, getTotalAmount } = useCartStore();
     const router = useRouter();
 
+    const [userId, setUserId] = useState<string | null>(null);
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
     const [location, setLocation] = useState("");
@@ -25,7 +27,19 @@ export default function CheckoutPage() {
 
     useEffect(() => {
         setMounted(true);
-    }, []);
+        // Get user session for order linking
+        supabase.auth.getSession().then(({ data }) => {
+            if (data?.session?.user) {
+                setUserId(data.session.user.id);
+                if (!email) setEmail(data.session.user.email || "");
+                if (!phone) setPhone(data.session.user.user_metadata?.phone || "");
+            } else {
+                // If they somehow got here without being logged in
+                alert("You must be logged in to checkout.");
+                router.push("/auth/sign-in");
+            }
+        });
+    }, [router]);
 
     useEffect(() => {
         if (mounted && items.length === 0) {
@@ -33,16 +47,12 @@ export default function CheckoutPage() {
         }
     }, [mounted, items, router]);
 
-    if (!mounted || items.length === 0) return null; // Let the effect handle it
+    if (!mounted || items.length === 0 || !userId) return null; // Let the effect handle it
 
     const handlePaymentSuccess = (reference: string) => {
-        // The backend handles saving to DB, now we just clear cart and redirect.
-        // Wait, the backend currently doesn't know about items. We should use a different verify endpoint or update the current one.
-        // For now, PaystackCheckout component calls `/api/paystack/verify`.
-        // Let's rely on the PaystackCheckout component's success callback.
         useCartStore.getState().clearCart();
         alert(`Payment successful! Reference: ${reference}`);
-        router.push("/");
+        router.push("/dashboard"); // Redirect to dashboard to see their order!
     };
 
     return (
@@ -135,7 +145,8 @@ export default function CheckoutPage() {
                                 location={location}
                                 deliveryDate={deliveryDate}
                                 onSuccess={handlePaymentSuccess}
-                                items={items} // We need to pass items so it can be sent to backend! Let's update PaystackCheckout next.
+                                items={items}
+                                userId={userId}
                             />
                         </div>
                     </div>

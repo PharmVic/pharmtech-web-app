@@ -8,13 +8,13 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { reference, email, phone, amount, location, deliveryDate, items } = body;
+    const { reference, email, phone, amount, location, deliveryDate, items, userId } = body;
 
     if (!reference) {
       return NextResponse.json({ success: false, message: 'Reference is required' }, { status: 400 });
     }
 
-    // Verify transaction with Paystack
+    // ... paystack verification ...
     const paystackResponse = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
       method: 'GET',
       headers: {
@@ -38,6 +38,7 @@ export async function POST(req: Request) {
             delivery_date: deliveryDate,
             items: items,
             status: 'success',
+            user_id: userId || null, // newly added
           },
         ]);
 
