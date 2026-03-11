@@ -96,7 +96,7 @@ export default function PaystackCheckout({
       alert('Please fill all required fields before proceeding to payment.');
       return;
     }
-    initializePayment({ onSuccess: handlePaymentSuccess, onClose: handlePaymentClose, config });
+    initializePayment({ onSuccess: handlePaymentSuccess, onClose: handlePaymentClose });
   };
 
   return (
