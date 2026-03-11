@@ -3,6 +3,9 @@
 import { ShoppingCart } from "lucide-react";
 import { useCartStore } from "@/lib/store/cartStore";
 
+import { supabase } from "@/lib/supabaseClient";
+import { useRouter } from "next/navigation";
+
 interface AddToCartButtonProps {
     product: {
         id: string;
@@ -15,11 +18,19 @@ interface AddToCartButtonProps {
 
 export default function AddToCartButton({ product, large = false }: AddToCartButtonProps) {
     const addItem = useCartStore((state) => state.addItem);
+    const router = useRouter();
 
-    const handleAddToCart = (e: React.MouseEvent) => {
+    const handleAddToCart = async (e: React.MouseEvent) => {
         e.preventDefault(); // Prevent navigating if inside a Link
         e.stopPropagation();
         
+        const { data } = await supabase.auth.getSession();
+        if (!data.session) {
+            alert("You must sign in to add items to the cart.");
+            router.push("/auth/sign-in");
+            return;
+        }
+
         // If price is 0 or null, it might be "Contact Us" so we don't allow adding to cart
         if (!product.price) {
             alert("This product is currently only available via inquiry.");

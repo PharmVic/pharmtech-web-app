@@ -56,14 +56,16 @@ export default function Topbar() {
                         <Link href="/calculator" className="me-3 text-dark flex items-center gap-2">
                             <Calculator className="w-4 h-4 text-primary" /> <small>Solar Calculator</small>
                         </Link>
-                        <Link href="/cart" className="text-dark flex items-center gap-2 relative">
-                            <ShoppingCart className="w-4 h-4 text-primary" /> <small>Cart</small>
-                            {mounted && cartItemsCount > 0 && (
-                                <span className="absolute -top-2 -right-3 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                                    {cartItemsCount}
-                                </span>
-                            )}
-                        </Link>
+                        {user && (
+                            <Link href="/cart" className="text-dark flex items-center gap-2 relative">
+                                <ShoppingCart className="w-4 h-4 text-primary" /> <small>Cart</small>
+                                {mounted && cartItemsCount > 0 && (
+                                    <span className="absolute -top-2 -right-3 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                                        {cartItemsCount}
+                                    </span>
+                                )}
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>
