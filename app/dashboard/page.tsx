@@ -80,11 +80,12 @@ export default function UserDashboard() {
             setProfile(profileData);
         }
 
-        // Setup quotes fetch
+        // Fetch user's actual quotes
         const { data: quotesData } = await supabase
             .from("quotes")
             .select("*")
-            .eq("customer_phone", ""); // Needs real linking in future
+            .eq("user_id", userId)
+            .order("created_at", { ascending: false });
         if (quotesData) setQuotes(quotesData);
 
         // Fetch user's actual confirmed orders
@@ -228,18 +229,34 @@ export default function UserDashboard() {
                     )}
                 </div>
 
-                {/* Placeholder for Quotes */}
-                <div className="bg-white p-6 rounded-xl border shadow-sm opacity-60">
+                {/* Solar Quotes Card */}
+                <div className="bg-white p-6 rounded-xl border shadow-sm">
                     <div className="flex items-center gap-3 mb-4 text-purple-600">
                         <FileText className="w-6 h-6" />
                         <h2 className="font-semibold text-lg">Solar Quotes</h2>
                     </div>
-                    <p className="text-gray-500 text-sm mb-4">
-                        Link quotes to your account to view them here.
-                    </p>
-                    <div className="text-center py-4 bg-gray-50 rounded-lg border border-dashed">
-                        No saved quotes linked to this account.
-                    </div>
+                    {quotes.length === 0 ? (
+                        <div className="text-center py-4 bg-gray-50 rounded-lg border border-dashed text-gray-500 text-sm">
+                            You haven't generated any solar quotes yet.
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {quotes.map((quote) => (
+                                <div key={quote.id} className="border p-4 rounded-lg shadow-sm hover:border-purple-200 transition-colors">
+                                    <div className="flex justify-between items-center border-b pb-2 mb-2">
+                                        <span className="text-sm font-semibold text-gray-900">{quote.quote_number}</span>
+                                        <span className="text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded font-medium border border-purple-100">
+                                            {quote.recommended_kva}kVA System
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-sm pt-2 text-gray-500">
+                                        <span>{new Date(quote.created_at).toLocaleDateString()}</span>
+                                        <span className="font-bold text-gray-900">Est. ₦{Number(quote.estimated_price).toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

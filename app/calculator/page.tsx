@@ -61,8 +61,20 @@ export default function SolarCalculator() {
     const [preferredPanelWattage, setPreferredPanelWattage] = useState<number | null>(null);
     const [preferredBatteryAh, setPreferredBatteryAh] = useState<number | null>(null);
 
+    const [userId, setUserId] = useState<string | null>(null);
+
     useEffect(() => {
         setQuoteNumber(generateQuoteNumber());
+        
+        // Try to get the logged-in user to link the quote
+        supabase.auth.getSession().then(({ data }) => {
+            if (data?.session?.user) {
+                setUserId(data.session.user.id);
+                setCustomerName(data.session.user.user_metadata?.full_name || "");
+                setCustomerPhone(data.session.user.user_metadata?.phone || "");
+                setCustomerAddress(data.session.user.user_metadata?.address || "");
+            }
+        });
     }, []);
 
     // Reset manual inverter when type changes
@@ -278,6 +290,7 @@ export default function SolarCalculator() {
                 battery_ah: recommendedBattery.battery?.ah ?? 0,
                 panel_count: activePanelCount,
                 panel_wattage: minPanelW,
+                user_id: userId || null,
             }, { onConflict: 'quote_number' });
 
             if (error) {
