@@ -21,7 +21,7 @@ export default function ServicesSection({ initialServices }: { initialServices: 
     ).slice(0, searchQuery ? undefined : 10);
 
     return (
-        <div className="container-fluid service pb-5">
+        <div id="services-search" className="container-fluid service pb-5">
             <div className="container pb-5">
                 <div className="text-center mx-auto pb-5" style={{ maxWidth: "800px" }}>
                     <h1 className="display-5 text-primary font-bold uppercase mb-2 text-3xl md:text-5xl">Our Services & Products</h1>

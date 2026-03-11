@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronRight, PlayCircle, Facebook, Instagram, Youtube } from "lucide-react";
+import { ChevronRight, PlayCircle, Facebook, Instagram, Youtube, Search } from "lucide-react";
 
 const slides = [
     {
@@ -61,8 +61,8 @@ export default function HomepageHero() {
                                     <p className="mb-5 text-sm md:text-lg px-2 lg:px-0 mx-auto max-w-2xl text-white">{slides[currentSlide].description}</p>
 
                                     <div className={`d-flex justify-content-${slides[currentSlide].align === 'right' ? 'end' : slides[currentSlide].align === 'left' ? 'start' : 'center'} mb-4`}>
-                                        <Link className="btn btn-light rounded-pill d-flex align-items-center text-nowrap font-bold py-3 px-4 transition-all hover:scale-105" href="#">
-                                            <PlayCircle className="me-2 w-6 h-6" /> Watch Video
+                                        <Link className="btn btn-light rounded-pill d-flex align-items-center text-nowrap font-bold py-3 px-4 transition-all hover:scale-105" href="#services-search">
+                                            <Search className="me-2 w-6 h-6" /> Search Product
                                         </Link>
                                         <Link className="btn btn-primary rounded-pill d-flex align-items-center text-nowrap ms-2 font-bold py-3 px-4 transition-all hover:scale-105" href="/calculator">
                                             Solar Calculator <ChevronRight className="ms-2 w-6 h-6" />
