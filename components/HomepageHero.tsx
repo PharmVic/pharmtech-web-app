@@ -60,12 +60,12 @@ export default function HomepageHero() {
                                     <h1 className="display-4 text-uppercase text-white mb-4 fw-bold text-3xl md:text-5xl lg:text-6xl">{slides[currentSlide].title}</h1>
                                     <p className="mb-5 text-sm md:text-lg px-2 lg:px-0 mx-auto max-w-2xl text-white">{slides[currentSlide].description}</p>
 
-                                    <div className={`d-flex justify-content-${slides[currentSlide].align === 'right' ? 'end' : slides[currentSlide].align === 'left' ? 'start' : 'center'} mb-4`}>
-                                        <Link className="btn btn-light rounded-pill d-flex align-items-center text-nowrap font-bold py-3 px-4 transition-all hover:scale-105" href="#services-search">
-                                            <Search className="me-2 w-6 h-6" /> Search Product
+                                    <div className={`d-flex flex-wrap justify-content-${slides[currentSlide].align === 'right' ? 'end' : slides[currentSlide].align === 'left' ? 'start' : 'center'} mb-4 gap-3`}>
+                                        <Link className="btn btn-light rounded-pill d-flex align-items-center justify-content-center flex-grow-1 flex-sm-grow-0 text-nowrap font-bold py-3 px-4 transition-all hover:scale-105" href="#services-search">
+                                            <Search className="me-2 w-6 h-6 flex-shrink-0" /> Search Product
                                         </Link>
-                                        <Link className="btn btn-primary rounded-pill d-flex align-items-center text-nowrap ms-2 font-bold py-3 px-4 transition-all hover:scale-105" href="/calculator">
-                                            Solar Calculator <ChevronRight className="ms-2 w-6 h-6" />
+                                        <Link className="btn btn-primary rounded-pill d-flex align-items-center justify-content-center flex-grow-1 flex-sm-grow-0 text-nowrap font-bold py-3 px-4 transition-all hover:scale-105" href="/calculator">
+                                            Solar Calculator <ChevronRight className="ms-2 w-6 h-6 flex-shrink-0" />
                                         </Link>
                                     </div>
 
