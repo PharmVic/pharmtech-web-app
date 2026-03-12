@@ -117,8 +117,8 @@ export default function UserDashboard() {
     if (loading) return <div className="p-8 text-center text-gray-500">Loading dashboard...</div>;
 
     return (
-        <div className="max-w-5xl mx-auto p-6 py-12">
-            <div className="flex justify-between items-center mb-8 border-b pb-4">
+        <div className="max-w-5xl mx-auto p-4 md:p-6 py-8 md:py-12 overflow-x-hidden w-full">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b pb-4 gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">My Account</h1>
                     <p className="text-gray-500">Welcome back, {user?.user_metadata?.full_name || user?.email}</p>
@@ -136,8 +136,8 @@ export default function UserDashboard() {
 
                 {/* Rewards & Referrals Card */}
                 <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-xl border shadow-md text-white md:col-span-2 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="flex items-center gap-4">
-                        <div className="p-4 bg-white/20 rounded-full">
+                    <div className="flex items-center gap-4 w-full md:w-auto overflow-hidden">
+                        <div className="p-4 bg-white/20 rounded-full shrink-0">
                             <Award className="w-8 h-8 text-yellow-300" />
                         </div>
                         <div>
@@ -154,8 +154,8 @@ export default function UserDashboard() {
                             <LinkIcon className="w-4 h-4" /> Your Referral Link
                         </h3>
                         <p className="text-xs text-blue-200 mb-3">Earn 1% of the purchase value when someone signs up with your link and buys our products!</p>
-                        <div className="flex items-center gap-2 bg-black/20 p-2 rounded">
-                            <code className="text-sm flex-1 truncate select-all text-yellow-100">
+                        <div className="flex items-center gap-2 bg-black/20 p-2 rounded w-full overflow-hidden">
+                            <code className="text-sm flex-1 truncate select-all text-yellow-100 min-w-0">
                                 {profile?.referral_code ? `${window.location.origin}/auth/sign-up?ref=${profile.referral_code}` : 'Generating...'}
                             </code>
                             <button
@@ -213,8 +213,8 @@ export default function UserDashboard() {
                                     </div>
                                     <div className="space-y-2 mb-3">
                                         {payment.items && payment.items.map((item, i) => (
-                                            <div key={i} className="flex justify-between text-sm">
-                                                <span className="text-gray-700 truncate pr-2 flex-1">{item.quantity}x {item.name}</span>
+                                            <div key={i} className="flex justify-between text-sm flex-nowrap w-full overflow-hidden">
+                                                <span className="text-gray-700 truncate pr-2 flex-1 min-w-0">{item.quantity}x {item.name}</span>
                                                 <span className="font-medium text-gray-900 shrink-0">₦{(item.price * item.quantity).toLocaleString()}</span>
                                             </div>
                                         ))}

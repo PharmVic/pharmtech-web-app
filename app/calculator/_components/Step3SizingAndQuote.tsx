@@ -244,8 +244,8 @@ Please review and confirm availability.`;
         : "Pending";
 
     return (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 w-full overflow-x-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start w-full">
 
                 {/* LEFT COLUMN: Data Summary (Input view) */}
                 <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -344,13 +344,13 @@ Please review and confirm availability.`;
                                     <div className="p-2 bg-yellow-100 text-yellow-600 rounded-lg">
                                         <Sun className="w-5 h-5" />
                                     </div>
-                                    <div className="flex-1">
-                                        <div className="flex justify-between items-center mb-1">
-                                            <p className="text-sm font-medium text-gray-900">Solar Panels</p>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-2">
+                                            <p className="text-sm font-medium text-gray-900 whitespace-nowrap">Solar Panels</p>
                                             <select
                                                 value={preferredPanelWattage || recommendedPanelWattage}
                                                 onChange={(e) => setPreferredPanelWattage(Number(e.target.value))}
-                                                className="text-xs border border-gray-200 rounded p-1 bg-gray-50 max-w-[80px] focus:ring-2 focus:ring-orange-500 outline-none"
+                                                className="text-xs border border-gray-200 rounded p-1.5 bg-gray-50 max-w-full focus:ring-2 focus:ring-orange-500 outline-none"
                                             >
                                                 <option value={200}>200W</option>
                                                 <option value={250}>250W</option>
@@ -390,11 +390,12 @@ Please review and confirm availability.`;
                                     <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
                                         <BatteryIcon className="w-5 h-5" />
                                     </div>
-                                    <div className="flex-1">
-                                        <div className="flex justify-between items-center mb-1">
-                                            <p className="text-sm font-medium text-gray-900">Battery Bank</p>
-                                            <select
-                                                value={activeBatteryType}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-2">
+                                            <p className="text-sm font-medium text-gray-900 whitespace-nowrap">Battery Bank</p>
+                                            <div className="flex items-center flex-wrap gap-2">
+                                                <select
+                                                    value={activeBatteryType}
                                                 onChange={(e) => setBatteryType(e.target.value)}
                                                 className="text-xs border rounded p-1 bg-gray-50 capitalize"
                                             >
@@ -418,9 +419,10 @@ Please review and confirm availability.`;
                                                     ))}
                                                 </select>
                                             )}
+                                            </div>
                                         </div>
 
-                                        <div className="flex items-center gap-2 mt-1">
+                                        <div className="flex items-center gap-2 mt-2 w-full">
                                             <button
                                                 onClick={() => setManualBatteryCount(Math.max(1, manualBatteryCount - 1))}
                                                 className="shrink-0 w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-orange-100 text-gray-600 hover:text-orange-600 rounded transition"
@@ -446,14 +448,14 @@ Please review and confirm availability.`;
                                     <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
                                         <Zap className="w-5 h-5" />
                                     </div>
-                                    <div className="flex-1">
-                                        <div className="flex justify-between items-center mb-1">
-                                            <p className="text-sm font-medium text-gray-900">Inverter</p>
-                                            <div className="flex gap-2">
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-2">
+                                            <p className="text-sm font-medium text-gray-900 whitespace-nowrap">Inverter</p>
+                                            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                                                 <select
                                                     value={manualInverterId ?? (recommendedInverter.units[0] ? `${recommendedInverter.units[0].kva}-${recommendedInverter.units[0].voltage}` : "")}
                                                     onChange={(e) => setManualInverterId(e.target.value)}
-                                                    className="text-xs border border-gray-200 rounded p-1.5 bg-gray-50 max-w-[140px] focus:ring-2 focus:ring-orange-500 outline-none"
+                                                    className="flex-1 sm:flex-none text-xs border border-gray-200 rounded p-1.5 bg-gray-50 max-w-full focus:ring-2 focus:ring-orange-500 outline-none"
                                                 >
                                                     {availableInverters.map((inv) => (
                                                         <option key={`${inv.kva}-${inv.voltage}`} value={`${inv.kva}-${inv.voltage}`}>
