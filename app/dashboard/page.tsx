@@ -176,17 +176,17 @@ export default function UserDashboard() {
                         <h2 className="font-semibold text-lg">Profile Details</h2>
                     </div>
                     <div className="space-y-3 text-sm">
-                        <div className="flex justify-between border-b pb-2">
-                            <span className="text-gray-500">Email</span>
-                            <span className="font-medium text-gray-900">{user?.email}</span>
+                        <div className="flex justify-between border-b pb-2 gap-4">
+                            <span className="text-gray-500 shrink-0">Email</span>
+                            <span className="font-medium text-gray-900 truncate text-right min-w-0">{user?.email}</span>
                         </div>
-                        <div className="flex justify-between border-b pb-2">
-                            <span className="text-gray-500">Phone</span>
-                            <span className="font-medium text-gray-900">{user?.user_metadata?.phone || "N/A"}</span>
+                        <div className="flex justify-between border-b pb-2 gap-4">
+                            <span className="text-gray-500 shrink-0">Phone</span>
+                            <span className="font-medium text-gray-900 truncate text-right min-w-0">{user?.user_metadata?.phone || "N/A"}</span>
                         </div>
-                        <div className="flex justify-between border-b pb-2">
-                            <span className="text-gray-500">Address</span>
-                            <span className="font-medium text-gray-900 text-right">{user?.user_metadata?.address || "N/A"}</span>
+                        <div className="flex justify-between border-b pb-2 gap-4">
+                            <span className="text-gray-500 shrink-0">Address</span>
+                            <span className="font-medium text-gray-900 text-right truncate min-w-0">{user?.user_metadata?.address || "N/A"}</span>
                         </div>
                     </div>
                 </div>
@@ -205,9 +205,9 @@ export default function UserDashboard() {
                         <div className="space-y-4">
                             {payments.map((payment) => (
                                 <div key={payment.id} className="border p-4 rounded-lg shadow-sm">
-                                    <div className="flex justify-between items-center border-b pb-2 mb-2">
-                                        <span className="text-xs text-gray-400">Order ID: {payment.reference}</span>
-                                        <span className={`text-xs font-bold px-2 py-1 rounded-full ${payment.status === 'success' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+                                    <div className="flex justify-between items-center border-b pb-2 mb-2 gap-2">
+                                        <span className="text-xs text-gray-400 truncate flex-1 min-w-0" title={payment.reference}>Order ID: {payment.reference}</span>
+                                        <span className={`text-xs font-bold px-2 py-1 rounded-full shrink-0 ${payment.status === 'success' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
                                             {payment.status.toUpperCase()}
                                         </span>
                                     </div>
@@ -243,9 +243,9 @@ export default function UserDashboard() {
                         <div className="space-y-4">
                             {quotes.map((quote) => (
                                 <div key={quote.id} className="border p-4 rounded-lg shadow-sm hover:border-purple-200 transition-colors">
-                                    <div className="flex justify-between items-center border-b pb-2 mb-2">
-                                        <span className="text-sm font-semibold text-gray-900">{quote.quote_number}</span>
-                                        <span className="text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded font-medium border border-purple-100">
+                                    <div className="flex justify-between items-center border-b pb-2 mb-2 gap-2">
+                                        <span className="text-sm font-semibold text-gray-900 truncate flex-1 min-w-0" title={quote.quote_number}>{quote.quote_number}</span>
+                                        <span className="text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded font-medium border border-purple-100 shrink-0 whitespace-nowrap">
                                             {quote.recommended_kva}kVA System
                                         </span>
                                     </div>
