@@ -157,7 +157,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
     return (
         <div className="p-8 max-w-3xl mx-auto">
-            <Link href="/admin/products" className="flex items-center text-gray-500 hover:text-black mb-6">
+            <Link href="/admin/products" className="flex items-center text-gray-600 hover:text-black mb-6">
                 <ChevronLeft className="w-4 h-4 mr-1" />
                 Back to Products
             </Link>
@@ -201,7 +201,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                                 </div>
                             ))}
 
-                            <label className="cursor-pointer w-32 h-32 bg-gray-50 border-2 border-dashed border-gray-300 hover:bg-gray-100 rounded-lg flex flex-col items-center justify-center gap-2 text-gray-500 transition">
+                            <label className="cursor-pointer w-32 h-32 bg-gray-50 border-2 border-dashed border-gray-300 hover:bg-gray-100 rounded-lg flex flex-col items-center justify-center gap-2 text-gray-600 transition">
                                 <Upload className="w-6 h-6" />
                                 <span className="text-xs font-medium text-center px-2">Add Images</span>
                                 <input type="file" className="hidden" accept="image/*" multiple onChange={handleImageChange} />

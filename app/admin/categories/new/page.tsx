@@ -83,7 +83,7 @@ export default function NewCategoryPage() {
 
     return (
         <div className="p-8 max-w-3xl mx-auto">
-            <Link href="/admin/categories" className="flex items-center text-gray-500 hover:text-black mb-6">
+            <Link href="/admin/categories" className="flex items-center text-gray-600 hover:text-black mb-6">
                 <ChevronLeft className="w-4 h-4 mr-1" />
                 Back to Categories
             </Link>
@@ -101,7 +101,7 @@ export default function NewCategoryPage() {
                                 {previewUrl ? (
                                     <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
                                 ) : (
-                                    <ImageIcon className="w-8 h-8 text-gray-400" />
+                                    <ImageIcon className="w-8 h-8 text-gray-500" />
                                 )}
                             </div>
                             <label className="cursor-pointer bg-white border border-gray-300 hover:bg-gray-50 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2">

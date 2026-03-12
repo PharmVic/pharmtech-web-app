@@ -19,7 +19,7 @@ export default function AdminDashboardPage() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-900">Categories</h3>
                         </div>
-                        <p className="text-gray-500 mb-4">Manage product categories and organize your store.</p>
+                        <p className="text-gray-600 mb-4">Manage product categories and organize your store.</p>
                         <span className="text-orange-600 font-medium text-sm group-hover:underline">Manage Categories &rarr;</span>
                     </div>
                 </Link>
@@ -33,7 +33,7 @@ export default function AdminDashboardPage() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-900">Quotes</h3>
                         </div>
-                        <p className="text-gray-500 mb-4">View and manage customer solar quotes generated from the calculator.</p>
+                        <p className="text-gray-600 mb-4">View and manage customer solar quotes generated from the calculator.</p>
                         <span className="text-blue-600 font-medium text-sm group-hover:underline">View Quotes &rarr;</span>
                     </div>
                 </Link>
@@ -47,7 +47,7 @@ export default function AdminDashboardPage() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-900">Products</h3>
                         </div>
-                        <p className="text-gray-500 mb-4">Add, edit, or remove products</p>
+                        <p className="text-gray-600 mb-4">Add, edit, or remove products</p>
                         <span className="text-purple-600 font-medium text-sm group-hover:underline">Manage Products &rarr;</span>
                     </div>
                 </Link>
@@ -61,7 +61,7 @@ export default function AdminDashboardPage() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-900">Reviews</h3>
                         </div>
-                        <p className="text-gray-500 mb-4">Manage client testimonials shown on the homepage.</p>
+                        <p className="text-gray-600 mb-4">Manage client testimonials shown on the homepage.</p>
                         <span className="text-yellow-600 font-medium text-sm group-hover:underline">Manage Reviews &rarr;</span>
                     </div>
                 </Link>
@@ -75,7 +75,7 @@ export default function AdminDashboardPage() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-900">About Content</h3>
                         </div>
-                        <p className="text-gray-500 mb-4">Manage the photos displayed on the About Us page.</p>
+                        <p className="text-gray-600 mb-4">Manage the photos displayed on the About Us page.</p>
                         <span className="text-emerald-600 font-medium text-sm group-hover:underline">Manage Photos &rarr;</span>
                     </div>
                 </Link>
@@ -89,8 +89,8 @@ export default function AdminDashboardPage() {
                             </div>
                             <h3 className="text-xl font-bold text-gray-900">Customers</h3>
                         </div>
-                        <p className="text-gray-500 mb-4">View register users and their points/rewards.</p>
-                        <span className="text-gray-400 font-medium text-sm">Coming Soon</span>
+                        <p className="text-gray-600 mb-4">View register users and their points/rewards.</p>
+                        <span className="text-gray-500 font-medium text-sm">Coming Soon</span>
                     </div>
                 </div>
 

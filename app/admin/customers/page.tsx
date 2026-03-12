@@ -67,7 +67,7 @@ export default function AdminCustomersPage() {
     );
 
     if (loading) {
-        return <div className="p-8 text-center text-gray-500 animate-pulse">Loading customer database...</div>;
+        return <div className="p-8 text-center text-gray-600 animate-pulse">Loading customer database...</div>;
     }
 
     if (error) {
@@ -82,7 +82,7 @@ export default function AdminCustomersPage() {
                         <Users className="w-6 h-6 text-blue-600" />
                         Customers Directory
                     </h1>
-                    <p className="text-gray-500 text-sm mt-1">View all registered users and their activity</p>
+                    <p className="text-gray-600 text-sm mt-1">View all registered users and their activity</p>
                 </div>
                 
                 {/* Search Bar */}
@@ -94,7 +94,7 @@ export default function AdminCustomersPage() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
-                    <Search className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" />
+                    <Search className="w-5 h-5 text-gray-500 absolute left-3 top-2.5" />
                 </div>
             </div>
 
@@ -105,7 +105,7 @@ export default function AdminCustomersPage() {
                         <Users className="w-6 h-6" />
                     </div>
                     <div>
-                        <p className="text-sm text-gray-500 font-medium">Total Users</p>
+                        <p className="text-sm text-gray-600 font-medium">Total Users</p>
                         <p className="text-2xl font-bold text-gray-900">{users.length}</p>
                     </div>
                 </div>
@@ -114,7 +114,7 @@ export default function AdminCustomersPage() {
                         <ShoppingBag className="w-6 h-6" />
                     </div>
                     <div>
-                        <p className="text-sm text-gray-500 font-medium">Active Buyers</p>
+                        <p className="text-sm text-gray-600 font-medium">Active Buyers</p>
                         <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.orderCount > 0).length}</p>
                     </div>
                 </div>
@@ -123,7 +123,7 @@ export default function AdminCustomersPage() {
                         <Award className="w-6 h-6" />
                     </div>
                     <div>
-                        <p className="text-sm text-gray-500 font-medium">Admins</p>
+                        <p className="text-sm text-gray-600 font-medium">Admins</p>
                         <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.role === 'admin').length}</p>
                     </div>
                 </div>
@@ -145,7 +145,7 @@ export default function AdminCustomersPage() {
                         <tbody className="divide-y divide-gray-100">
                             {filteredUsers.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                                    <td colSpan={5} className="px-6 py-8 text-center text-gray-600">
                                         No customers found matching "{searchQuery}"
                                     </td>
                                 </tr>
@@ -164,7 +164,7 @@ export default function AdminCustomersPage() {
                                                             <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded uppercase tracking-wider font-bold">Admin</span>
                                                         )}
                                                     </div>
-                                                    <div className="text-xs text-gray-500">Joined: {new Date(user.createdAt).toLocaleDateString()}</div>
+                                                    <div className="text-xs text-gray-600">Joined: {new Date(user.createdAt).toLocaleDateString()}</div>
                                                 </div>
                                             </div>
                                         </td>
@@ -172,13 +172,13 @@ export default function AdminCustomersPage() {
                                             <div className="space-y-1">
                                                 <div className="flex items-center gap-2 text-gray-600"><Mail className="w-3 h-3"/> {user.email}</div>
                                                 <div className="flex items-center gap-2 text-gray-600"><Phone className="w-3 h-3"/> {user.phone}</div>
-                                                <div className="flex items-center gap-2 text-gray-500 text-xs truncate max-w-[200px]" title={user.address}>
+                                                <div className="flex items-center gap-2 text-gray-600 text-xs truncate max-w-[200px]" title={user.address}>
                                                     <MapPin className="w-3 h-3 shrink-0"/> {user.address}
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-center">
-                                            <span className={`inline-flex items-center justify-center min-w-[2rem] h-8 px-2 rounded-full font-bold ${user.orderCount > 0 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                                            <span className={`inline-flex items-center justify-center min-w-[2rem] h-8 px-2 rounded-full font-bold ${user.orderCount > 0 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                                                 {user.orderCount}
                                             </span>
                                         </td>

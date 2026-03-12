@@ -117,7 +117,7 @@ export default function SignUpPage() {
                             <label className="block text-sm font-medium text-gray-700">Full Name</label>
                             <div className="mt-1 relative rounded-md shadow-sm">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <User className="h-5 w-5 text-gray-400" />
+                                    <User className="h-5 w-5 text-gray-500" />
                                 </div>
                                 <input
                                     name="fullName"
@@ -135,7 +135,7 @@ export default function SignUpPage() {
                             <label className="block text-sm font-medium text-gray-700">Email</label>
                             <div className="mt-1 relative rounded-md shadow-sm">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-gray-400" />
+                                    <Mail className="h-5 w-5 text-gray-500" />
                                 </div>
                                 <input
                                     name="email"
@@ -153,7 +153,7 @@ export default function SignUpPage() {
                             <label className="block text-sm font-medium text-gray-700">Phone</label>
                             <div className="mt-1 relative rounded-md shadow-sm">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Phone className="h-5 w-5 text-gray-400" />
+                                    <Phone className="h-5 w-5 text-gray-500" />
                                 </div>
                                 <input
                                     name="phone"
@@ -171,7 +171,7 @@ export default function SignUpPage() {
                             <label className="block text-sm font-medium text-gray-700">Address</label>
                             <div className="mt-1 relative rounded-md shadow-sm">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <MapPin className="h-5 w-5 text-gray-400" />
+                                    <MapPin className="h-5 w-5 text-gray-500" />
                                 </div>
                                 <input
                                     name="address"
@@ -188,7 +188,7 @@ export default function SignUpPage() {
                             <label className="block text-sm font-medium text-gray-700">Password</label>
                             <div className="mt-1 relative rounded-md shadow-sm">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Lock className="h-5 w-5 text-gray-400" />
+                                    <Lock className="h-5 w-5 text-gray-500" />
                                 </div>
                                 <input
                                     name="password"
@@ -204,7 +204,7 @@ export default function SignUpPage() {
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                                        className="text-gray-500 hover:text-gray-600 focus:outline-none"
                                     >
                                         {showPassword ? (
                                             <EyeOff className="h-5 w-5" />

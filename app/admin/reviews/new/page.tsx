@@ -63,7 +63,7 @@ export default function NewReviewPage() {
     return (
         <div className="max-w-3xl mx-auto px-4 py-8">
             <div className="mb-6 flex items-center gap-4">
-                <Link href="/admin/reviews" className="text-gray-500 hover:text-gray-700">
+                <Link href="/admin/reviews" className="text-gray-600 hover:text-gray-700">
                     <ArrowLeft className="w-5 h-5" />
                 </Link>
                 <h1 className="text-2xl font-bold text-gray-800">Add New Review</h1>

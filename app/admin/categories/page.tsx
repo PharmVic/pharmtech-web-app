@@ -52,7 +52,7 @@ export default function AdminCategoriesPage() {
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">Categories</h1>
-                    <p className="text-gray-500">Manage product categories</p>
+                    <p className="text-gray-600">Manage product categories</p>
                 </div>
                 <Link
                     href="/admin/categories/new"
@@ -65,13 +65,13 @@ export default function AdminCategoriesPage() {
 
             {loading ? (
                 <div className="flex justify-center py-12">
-                    <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+                    <Loader2 className="w-8 h-8 animate-spin text-gray-500" />
                 </div>
             ) : categories.length === 0 ? (
                 <div className="text-center py-20 bg-white rounded-xl border border-dashed border-gray-300">
                     <Folder className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900">No categories found</h3>
-                    <p className="text-gray-500 mb-6">Create a category to organize your products.</p>
+                    <p className="text-gray-600 mb-6">Create a category to organize your products.</p>
                     <Link
                         href="/admin/categories/new"
                         className="text-blue-600 font-medium hover:underline"
@@ -101,7 +101,7 @@ export default function AdminCategoriesPage() {
                                                 className="w-12 h-12 rounded object-cover border"
                                             />
                                         ) : (
-                                            <div className="w-12 h-12 rounded bg-gray-100 flex items-center justify-center text-gray-400">
+                                            <div className="w-12 h-12 rounded bg-gray-100 flex items-center justify-center text-gray-500">
                                                 <ImageIcon className="w-6 h-6" />
                                             </div>
                                         )}
@@ -109,7 +109,7 @@ export default function AdminCategoriesPage() {
                                     <td className="px-6 py-4 font-medium text-gray-900">
                                         {category.name}
                                     </td>
-                                    <td className="px-6 py-4 text-gray-500">
+                                    <td className="px-6 py-4 text-gray-600">
                                         {category.slug}
                                     </td>
                                     <td className="px-6 py-4 flex gap-3">

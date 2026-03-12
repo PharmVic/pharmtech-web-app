@@ -36,7 +36,7 @@ export default function Step2Appliances({
             <div className="bg-white p-6 rounded-lg shadow-md">
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
                     <h2 className="text-xl font-semibold text-[#110000]">
-                        Appliances <span className="text-sm font-normal text-gray-500 md:ml-2 block md:inline mt-1 md:mt-0">(1hp = 750watts)</span>
+                        Appliances <span className="text-sm font-normal text-gray-600 md:ml-2 block md:inline mt-1 md:mt-0">(1hp = 750watts)</span>
                     </h2>
                     <div className="flex items-center gap-2 self-start md:self-auto flex-wrap">
                         <span className="text-sm text-gray-600">Default Night Hours:</span>

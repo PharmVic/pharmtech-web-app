@@ -32,7 +32,7 @@ export default function Step1Customer({
                     type="text"
                     value={quoteNumber}
                     readOnly
-                    className="w-full p-2 border rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
+                    className="w-full p-2 border rounded-md bg-gray-100 text-gray-600 cursor-not-allowed"
                 />
             </div>
 
@@ -75,7 +75,7 @@ export default function Step1Customer({
                     disabled={!isCustomerValid}
                     className={`px-8 py-3 rounded-full font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:translate-y-0 ${isCustomerValid
                         ? "bg-orange-600 text-white hover:bg-[#110000]"
-                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "bg-gray-300 text-gray-600 cursor-not-allowed"
                         }`}
                 >
                     Next: Appliances

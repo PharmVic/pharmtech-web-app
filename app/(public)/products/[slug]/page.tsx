@@ -42,7 +42,7 @@ export default async function CategoryProductsPage({
 
                 {/* Breadcrumb / Back */}
                 <div className="mb-8">
-                    <Link href="/products" className="inline-flex items-center text-gray-500 hover:text-blue-600 transition-colors">
+                    <Link href="/products" className="inline-flex items-center text-gray-600 hover:text-blue-600 transition-colors">
                         <ArrowLeft className="w-4 h-4 mr-2" />
                         Back to Categories
                     </Link>
@@ -51,7 +51,7 @@ export default async function CategoryProductsPage({
                 {/* Header */}
                 <div className="mb-12">
                     <h1 className="text-4xl font-bold text-gray-900 mb-2">{category.name}</h1>
-                    <p className="text-gray-500">Browse our selection of {category.name.toLowerCase()}.</p>
+                    <p className="text-gray-600">Browse our selection of {category.name.toLowerCase()}.</p>
                 </div>
 
                 {/* Products Grid */}
@@ -68,7 +68,7 @@ export default async function CategoryProductsPage({
                                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                     />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                                    <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500">
                                         <span className="text-sm">No Image</span>
                                     </div>
                                 )}
@@ -86,13 +86,13 @@ export default async function CategoryProductsPage({
                                 <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1" title={product.name}>
                                     {product.name}
                                 </h3>
-                                <p className="text-sm text-gray-500 mb-4 line-clamp-2 flex-grow">
+                                <p className="text-sm text-gray-600 mb-4 line-clamp-2 flex-grow">
                                     {product.description || "No description available."}
                                 </p>
 
                                 <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
                                     <div className="flex flex-col">
-                                        <span className="text-xs text-gray-400 uppercase font-semibold">Price</span>
+                                        <span className="text-xs text-gray-500 uppercase font-semibold">Price</span>
                                         <span className="text-xl font-bold text-blue-600">
                                             {product.price ? `₦${product.price.toLocaleString()}` : "Contact Us"}
                                         </span>
@@ -117,11 +117,11 @@ export default async function CategoryProductsPage({
                 {/* Empty State */}
                 {(!products || products.length === 0) && (
                     <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-dashed border-gray-200">
-                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-500">
                             <ShoppingCart className="w-8 h-8" />
                         </div>
                         <h2 className="text-2xl font-bold text-gray-900 mb-2">No Products Found</h2>
-                        <p className="text-gray-500 mb-6">We haven't added any products to this category yet.</p>
+                        <p className="text-gray-600 mb-6">We haven't added any products to this category yet.</p>
                         <Link href="/products" className="btn btn-primary rounded-pill px-6 py-2">
                             Browse Other Categories
                         </Link>

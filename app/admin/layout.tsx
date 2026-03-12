@@ -60,7 +60,7 @@ export default function AdminLayout({
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="flex flex-col items-center gap-2">
                     <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-                    <p className="text-sm text-gray-500">Verifying Admin Access...</p>
+                    <p className="text-sm text-gray-600">Verifying Admin Access...</p>
                 </div>
             </div>
         );
@@ -75,7 +75,7 @@ export default function AdminLayout({
             {/* Optional: Admin Sidebar or Header could go here */}
             <div className="bg-white border-b border-gray-200 px-8 py-4 mb-4 flex justify-between items-center">
                 <div className="flex items-center gap-4">
-                    <Link href="/" className="text-gray-500 hover:text-blue-600 transition-colors flex items-center gap-1 text-sm font-medium" title="Go back to Home">
+                    <Link href="/" className="text-gray-600 hover:text-blue-600 transition-colors flex items-center gap-1 text-sm font-medium" title="Go back to Home">
                         <Home className="w-4 h-4" />
                     </Link>
                     <span className="font-bold text-gray-700">Admin Console</span>

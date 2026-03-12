@@ -52,14 +52,14 @@ export default function AddToCartButton({ product, large = false }: AddToCartBut
         // Render a disabled or inquiry state button
         if (large) {
              return (
-                 <button disabled className="flex-1 bg-gray-300 text-gray-500 font-semibold py-4 rounded-xl cursor-not-allowed flex items-center justify-center gap-2">
+                 <button disabled className="flex-1 bg-gray-300 text-gray-600 font-semibold py-4 rounded-xl cursor-not-allowed flex items-center justify-center gap-2">
                     <ShoppingCart className="w-5 h-5" />
                     Add to Cart Unavailable
                 </button>
              )
         }
         return (
-            <div className="w-10 h-10 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center cursor-not-allowed" title="Price not available">
+            <div className="w-10 h-10 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center cursor-not-allowed" title="Price not available">
                 <ShoppingCart className="w-5 h-5" />
             </div>
         );

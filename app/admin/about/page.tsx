@@ -108,7 +108,7 @@ export default function AdminAboutImagesPage() {
 
     return (
         <div className="p-8 max-w-5xl mx-auto">
-            <Link href="/admin" className="flex items-center text-gray-500 hover:text-black mb-6">
+            <Link href="/admin" className="flex items-center text-gray-600 hover:text-black mb-6">
                 <ChevronLeft className="w-4 h-4 mr-1" />
                 Back to Dashboard
             </Link>
@@ -116,7 +116,7 @@ export default function AdminAboutImagesPage() {
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">About Us Images</h1>
-                    <p className="text-gray-500 mt-1">Manage the 4 images displayed in the mosaic grid on the About Us page.</p>
+                    <p className="text-gray-600 mt-1">Manage the 4 images displayed in the mosaic grid on the About Us page.</p>
                 </div>
             </div>
 
@@ -158,7 +158,7 @@ export default function AdminAboutImagesPage() {
                                         </div>
                                     </>
                                 ) : (
-                                    <label className="cursor-pointer flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-blue-500 hover:bg-blue-50 transition-colors">
+                                    <label className="cursor-pointer flex flex-col items-center justify-center w-full h-full text-gray-500 hover:text-blue-500 hover:bg-blue-50 transition-colors">
                                         <ImageIcon className="w-10 h-10 mb-2" />
                                         <span className="font-medium">Upload Image</span>
                                         <input

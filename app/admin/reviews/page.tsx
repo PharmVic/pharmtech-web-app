@@ -63,7 +63,7 @@ export default function AdminReviewsPage() {
                     <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
                 </div>
             ) : reviews.length === 0 ? (
-                <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+                <div className="bg-white rounded-lg shadow p-8 text-center text-gray-600">
                     No reviews found. Click "Add Review" to create one.
                 </div>
             ) : (
@@ -71,16 +71,16 @@ export default function AdminReviewsPage() {
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                                     Client
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                                     Role
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider hidden md:table-cell">
                                     Review Snippet
                                 </th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">
                                     Actions
                                 </th>
                             </tr>
@@ -98,7 +98,7 @@ export default function AdminReviewsPage() {
                                                         className="h-10 w-10 rounded-full object-cover"
                                                     />
                                                 ) : (
-                                                    <span className="text-gray-400 text-sm font-bold">
+                                                    <span className="text-gray-500 text-sm font-bold">
                                                         {review.name.charAt(0)}
                                                     </span>
                                                 )}
@@ -117,10 +117,10 @@ export default function AdminReviewsPage() {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                         {review.role}
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-500 hidden md:table-cell max-w-xs truncate">
+                                    <td className="px-6 py-4 text-sm text-gray-600 hidden md:table-cell max-w-xs truncate">
                                         {review.text}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

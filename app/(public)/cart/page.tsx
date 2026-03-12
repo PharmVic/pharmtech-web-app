@@ -25,7 +25,7 @@ export default function CartPage() {
                         </svg>
                     </div>
                     <h2 className="text-2xl font-bold text-gray-900 mb-2">Your Cart is Empty</h2>
-                    <p className="text-gray-500 mb-8">Looks like you haven't added anything to your cart yet.</p>
+                    <p className="text-gray-600 mb-8">Looks like you haven't added anything to your cart yet.</p>
                     <Link href="/products" className="bg-blue-600 text-white font-semibold py-3 px-8 rounded-xl hover:bg-blue-700 transition-colors w-full inline-block">
                         Start Shopping
                     </Link>
@@ -39,7 +39,7 @@ export default function CartPage() {
             <div className="container mx-auto px-4 max-w-6xl">
                 
                 <div className="mb-8">
-                    <Link href="/products" className="inline-flex items-center text-gray-500 hover:text-blue-600 transition-colors">
+                    <Link href="/products" className="inline-flex items-center text-gray-600 hover:text-blue-600 transition-colors">
                         <ArrowLeft className="w-4 h-4 mr-2" />
                         Continue Shopping
                     </Link>
@@ -70,7 +70,7 @@ export default function CartPage() {
                                             {item.image_url ? (
                                                 <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
                                             ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">No Image</div>
+                                                <div className="w-full h-full flex items-center justify-center text-gray-500 text-xs">No Image</div>
                                             )}
                                         </div>
 

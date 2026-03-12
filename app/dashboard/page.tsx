@@ -114,14 +114,14 @@ export default function UserDashboard() {
         }
     };
 
-    if (loading) return <div className="p-8 text-center text-gray-500">Loading dashboard...</div>;
+    if (loading) return <div className="p-8 text-center text-gray-600">Loading dashboard...</div>;
 
     return (
         <div className="max-w-5xl mx-auto p-4 md:p-6 py-8 md:py-12 overflow-x-hidden w-full">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b pb-4 gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">My Account</h1>
-                    <p className="text-gray-500">Welcome back, {user?.user_metadata?.full_name || user?.email}</p>
+                    <p className="text-gray-600">Welcome back, {user?.user_metadata?.full_name || user?.email}</p>
                 </div>
                 <button
                     onClick={handleSignOut}
@@ -177,15 +177,15 @@ export default function UserDashboard() {
                     </div>
                     <div className="space-y-3 text-sm">
                         <div className="flex justify-between border-b pb-2 gap-4">
-                            <span className="text-gray-500 shrink-0">Email</span>
+                            <span className="text-gray-600 shrink-0">Email</span>
                             <span className="font-medium text-gray-900 truncate text-right min-w-0">{user?.email}</span>
                         </div>
                         <div className="flex justify-between border-b pb-2 gap-4">
-                            <span className="text-gray-500 shrink-0">Phone</span>
+                            <span className="text-gray-600 shrink-0">Phone</span>
                             <span className="font-medium text-gray-900 truncate text-right min-w-0">{user?.user_metadata?.phone || "N/A"}</span>
                         </div>
                         <div className="flex justify-between border-b pb-2 gap-4">
-                            <span className="text-gray-500 shrink-0">Address</span>
+                            <span className="text-gray-600 shrink-0">Address</span>
                             <span className="font-medium text-gray-900 text-right truncate min-w-0">{user?.user_metadata?.address || "N/A"}</span>
                         </div>
                     </div>
@@ -198,7 +198,7 @@ export default function UserDashboard() {
                         <h2 className="font-semibold text-lg">Recent Orders</h2>
                     </div>
                     {payments.length === 0 ? (
-                        <div className="text-center py-4 bg-gray-50 rounded-lg border border-dashed text-gray-500 text-sm">
+                        <div className="text-center py-4 bg-gray-50 rounded-lg border border-dashed text-gray-600 text-sm">
                             You have no recent orders.
                         </div>
                     ) : (
@@ -206,7 +206,7 @@ export default function UserDashboard() {
                             {payments.map((payment) => (
                                 <div key={payment.id} className="border p-4 rounded-lg shadow-sm">
                                     <div className="flex justify-between items-center border-b pb-2 mb-2 gap-2">
-                                        <span className="text-xs text-gray-400 truncate flex-1 min-w-0" title={payment.reference}>Order ID: {payment.reference}</span>
+                                        <span className="text-xs text-gray-500 truncate flex-1 min-w-0" title={payment.reference}>Order ID: {payment.reference}</span>
                                         <span className={`text-xs font-bold px-2 py-1 rounded-full shrink-0 ${payment.status === 'success' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
                                             {payment.status.toUpperCase()}
                                         </span>
@@ -219,7 +219,7 @@ export default function UserDashboard() {
                                             </div>
                                         ))}
                                     </div>
-                                    <div className="flex justify-between items-center text-sm pt-2 border-t text-gray-500">
+                                    <div className="flex justify-between items-center text-sm pt-2 border-t text-gray-600">
                                         <span>{new Date(payment.created_at).toLocaleDateString()}</span>
                                         <span className="font-bold text-gray-900 text-base">Total: ₦{Number(payment.amount).toLocaleString()}</span>
                                     </div>
@@ -236,7 +236,7 @@ export default function UserDashboard() {
                         <h2 className="font-semibold text-lg">Solar Quotes</h2>
                     </div>
                     {quotes.length === 0 ? (
-                        <div className="text-center py-4 bg-gray-50 rounded-lg border border-dashed text-gray-500 text-sm">
+                        <div className="text-center py-4 bg-gray-50 rounded-lg border border-dashed text-gray-600 text-sm">
                             You haven't generated any solar quotes yet.
                         </div>
                     ) : (
@@ -249,7 +249,7 @@ export default function UserDashboard() {
                                             {quote.recommended_kva}kVA System
                                         </span>
                                     </div>
-                                    <div className="flex justify-between items-center text-sm pt-2 text-gray-500">
+                                    <div className="flex justify-between items-center text-sm pt-2 text-gray-600">
                                         <span>{new Date(quote.created_at).toLocaleDateString()}</span>
                                         <span className="font-bold text-gray-900">Est. ₦{Number(quote.estimated_price).toLocaleString()}</span>
                                     </div>

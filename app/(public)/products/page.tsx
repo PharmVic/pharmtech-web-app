@@ -69,7 +69,7 @@ export default async function ProductsPage() {
                                         <ArrowRight className="w-5 h-5" />
                                     </div>
                                 </div>
-                                <p className="text-gray-500 line-clamp-2">
+                                <p className="text-gray-600 line-clamp-2">
                                     Browse our selection of {category.name.toLowerCase()} suitable for homes and businesses.
                                 </p>
                             </div>
@@ -80,8 +80,8 @@ export default async function ProductsPage() {
                 {/* Empty State */}
                 {(!categories || categories.length === 0) && (
                     <div className="text-center py-20">
-                        <h3 className="text-xl text-gray-500">No categories found.</h3>
-                        <p className="text-gray-400 mt-2">Please check back later.</p>
+                        <h3 className="text-xl text-gray-600">No categories found.</h3>
+                        <p className="text-gray-500 mt-2">Please check back later.</p>
                     </div>
                 )}
 

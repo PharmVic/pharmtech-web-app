@@ -92,7 +92,7 @@ export default function AdminQuotesPage() {
                 {/* Toolbar */}
                 <div className="p-4 border-b border-gray-100 flex flex-col md:flex-row gap-4 justify-between items-center bg-white">
                     <div className="relative w-full md:w-96">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                         <input
                             type="text"
                             placeholder="Search by name, phone, or #..."
@@ -101,7 +101,7 @@ export default function AdminQuotesPage() {
                             className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                         />
                     </div>
-                    <div className="text-sm text-gray-500 font-medium">
+                    <div className="text-sm text-gray-600 font-medium">
                         {filteredQuotes.length} record{filteredQuotes.length !== 1 ? 's' : ''}
                     </div>
                 </div>
@@ -122,7 +122,7 @@ export default function AdminQuotesPage() {
                         <tbody className="divide-y divide-gray-100 bg-white">
                             {loading ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                                    <td colSpan={6} className="px-6 py-12 text-center text-gray-600">
                                         <div className="flex flex-col items-center gap-2">
                                             <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                                             Loading quotes...
@@ -131,14 +131,14 @@ export default function AdminQuotesPage() {
                                 </tr>
                             ) : filteredQuotes.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                                    <td colSpan={6} className="px-6 py-12 text-center text-gray-600">
                                         No quotes found matching your search.
                                     </td>
                                 </tr>
                             ) : (
                                 filteredQuotes.map((quote) => (
                                     <tr key={quote.id} className="hover:bg-blue-50/50 transition-colors group">
-                                        <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                                        <td className="px-6 py-4 whitespace-nowrap text-gray-600">
                                             {new Date(quote.created_at).toLocaleDateString()}
                                         </td>
                                         <td className="px-6 py-4 font-mono text-gray-600 font-medium group-hover:text-blue-600 transition-colors">
@@ -146,7 +146,7 @@ export default function AdminQuotesPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="font-medium text-gray-900">{quote.customer_name}</div>
-                                            <div className="text-xs text-gray-400 flex items-center gap-2 mt-1">
+                                            <div className="text-xs text-gray-500 flex items-center gap-2 mt-1">
                                                 <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {quote.customer_phone}</span>
                                             </div>
                                         </td>
@@ -154,7 +154,7 @@ export default function AdminQuotesPage() {
                                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                 {quote.recommended_kva} kVA
                                             </span>
-                                            <div className="text-xs text-gray-400 mt-1">{quote.system_voltage}V</div>
+                                            <div className="text-xs text-gray-500 mt-1">{quote.system_voltage}V</div>
                                         </td>
                                         <td className="px-6 py-4 font-bold text-gray-900">
                                             ₦{formatMoney(quote.estimated_price)}
@@ -182,11 +182,11 @@ export default function AdminQuotesPage() {
                         <div className="p-6 border-b border-gray-100 flex justify-between items-start sticky top-0 bg-white z-10">
                             <div>
                                 <h2 className="text-2xl font-bold text-gray-900">Quote Details</h2>
-                                <p className="text-sm text-gray-500 font-mono mt-1">{selectedQuote.quote_number}</p>
+                                <p className="text-sm text-gray-600 font-mono mt-1">{selectedQuote.quote_number}</p>
                             </div>
                             <button
                                 onClick={() => setSelectedQuote(null)}
-                                className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-700"
+                                className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600 hover:text-gray-700"
                             >
                                 <X className="w-5 h-5" />
                             </button>
@@ -200,9 +200,9 @@ export default function AdminQuotesPage() {
                                         <User className="w-4 h-4 text-blue-600" /> Customer Info
                                     </h3>
                                     <div className="space-y-2 text-sm">
-                                        <p><span className="text-gray-500">Name:</span> <span className="font-medium text-gray-900">{selectedQuote.customer_name}</span></p>
-                                        <p><span className="text-gray-500">Phone:</span> <span className="font-medium text-gray-900">{selectedQuote.customer_phone}</span></p>
-                                        <p><span className="text-gray-500">Address:</span> <span className="font-medium text-gray-900">{selectedQuote.customer_address}</span></p>
+                                        <p><span className="text-gray-600">Name:</span> <span className="font-medium text-gray-900">{selectedQuote.customer_name}</span></p>
+                                        <p><span className="text-gray-600">Phone:</span> <span className="font-medium text-gray-900">{selectedQuote.customer_phone}</span></p>
+                                        <p><span className="text-gray-600">Address:</span> <span className="font-medium text-gray-900">{selectedQuote.customer_address}</span></p>
                                     </div>
                                 </div>
 
@@ -246,7 +246,7 @@ export default function AdminQuotesPage() {
                                         </div>
                                         <div className="text-sm">
                                             <p className="font-medium text-gray-900">{selectedQuote.panel_count || 0}x Panels</p>
-                                            <p className="text-gray-500 text-xs mt-0.5">Rating: {selectedQuote.panel_wattage || 0}W</p>
+                                            <p className="text-gray-600 text-xs mt-0.5">Rating: {selectedQuote.panel_wattage || 0}W</p>
                                         </div>
                                     </div>
 
@@ -258,7 +258,7 @@ export default function AdminQuotesPage() {
                                         </div>
                                         <div className="text-sm">
                                             <p className="font-medium text-gray-900">{selectedQuote.battery_count || 0}x Batteries</p>
-                                            <p className="text-gray-500 text-xs mt-0.5 capitalize">
+                                            <p className="text-gray-600 text-xs mt-0.5 capitalize">
                                                 {selectedQuote.battery_type || "Standard"} • {selectedQuote.battery_ah || 0}Ah
                                             </p>
                                         </div>
@@ -270,13 +270,13 @@ export default function AdminQuotesPage() {
                             <div>
                                 <h3 className="text-base font-semibold text-gray-900 mb-4 px-1 flex justify-between items-center">
                                     <span>Appliances Load</span>
-                                    <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                                    <span className="text-xs font-normal text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
                                         Total Run: {selectedQuote.total_load_watts}W
                                     </span>
                                 </h3>
                                 <div className="border border-gray-200 rounded-lg overflow-hidden">
                                     <table className="w-full text-sm text-left">
-                                        <thead className="bg-gray-50 text-gray-500 font-medium border-b border-gray-200">
+                                        <thead className="bg-gray-50 text-gray-600 font-medium border-b border-gray-200">
                                             <tr>
                                                 <th className="px-4 py-3">Item</th>
                                                 <th className="px-4 py-3 text-center">Qty</th>
@@ -296,7 +296,7 @@ export default function AdminQuotesPage() {
                                                 ))
                                             ) : (
                                                 <tr>
-                                                    <td colSpan={4} className="px-4 py-4 text-center text-gray-500 italic">No appliance data recorded</td>
+                                                    <td colSpan={4} className="px-4 py-4 text-center text-gray-600 italic">No appliance data recorded</td>
                                                 </tr>
                                             )}
                                         </tbody>

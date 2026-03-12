@@ -45,7 +45,7 @@ export default async function ProductDetailsPage({
             <div className="container mx-auto px-4">
 
                 {/* Breadcrumb */}
-                <div className="mb-8 flex items-center text-sm text-gray-500">
+                <div className="mb-8 flex items-center text-sm text-gray-600">
                     <Link href="/products" className="hover:text-blue-600 transition-colors">
                         Products
                     </Link>

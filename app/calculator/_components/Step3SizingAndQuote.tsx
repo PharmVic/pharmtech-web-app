@@ -253,21 +253,21 @@ Please review and confirm availability.`;
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div className="p-3 bg-gray-50 rounded-lg">
-                            <span className="block text-xs uppercase text-gray-400 font-bold mb-1">Name</span>
+                            <span className="block text-xs uppercase text-gray-500 font-bold mb-1">Name</span>
                             <span className="font-medium text-gray-900">{customerName}</span>
                         </div>
                         <div className="p-3 bg-gray-50 rounded-lg">
-                            <span className="block text-xs uppercase text-gray-400 font-bold mb-1">Phone</span>
+                            <span className="block text-xs uppercase text-gray-500 font-bold mb-1">Phone</span>
                             <span className="font-medium text-gray-900">{customerPhone}</span>
                         </div>
                         <div className="p-3 bg-gray-50 rounded-lg md:col-span-2">
-                            <span className="block text-xs uppercase text-gray-400 font-bold mb-1">Address</span>
+                            <span className="block text-xs uppercase text-gray-500 font-bold mb-1">Address</span>
                             <span className="font-medium text-gray-900">{customerAddress}</span>
                         </div>
                     </div>
 
                     <div className="mb-6">
-                        <h3 className="text-sm font-bold text-gray-500 uppercase mb-3">Appliances</h3>
+                        <h3 className="text-sm font-bold text-gray-600 uppercase mb-3">Appliances</h3>
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                                 <thead className="bg-gray-100 text-gray-600">
@@ -298,15 +298,15 @@ Please review and confirm availability.`;
 
                     <div className="grid grid-cols-3 gap-4 border-t pt-4">
                         <div>
-                            <p className="text-xs text-gray-500">Run Watts</p>
+                            <p className="text-xs text-gray-600">Run Watts</p>
                             <p className="text-lg font-bold">{totalRunningWatts}</p>
                         </div>
                         <div>
-                            <p className="text-xs text-gray-500">Surge Watts</p>
+                            <p className="text-xs text-gray-600">Surge Watts</p>
                             <p className="text-lg font-bold md:text-xl text-orange-600">{Math.ceil(totalSurgeWatts)}</p>
                         </div>
                         <div>
-                            <p className="text-xs text-gray-500">Night Energy</p>
+                            <p className="text-xs text-gray-600">Night Energy</p>
                             <p className="text-lg font-bold md:text-xl text-blue-600">{Math.ceil(energyNeededWh)} Wh</p>
                         </div>
                     </div>
@@ -334,7 +334,7 @@ Please review and confirm availability.`;
                         <div className="p-6">
                             <div className="mb-6">
                                 <h3 className="text-2xl font-bold text-gray-900">{customerName || "Customer"}</h3>
-                                <p className="text-sm text-gray-500">{customerPhone}</p>
+                                <p className="text-sm text-gray-600">{customerPhone}</p>
                             </div>
 
                             <div className="space-y-6 mb-8">
@@ -373,7 +373,7 @@ Please review and confirm availability.`;
                                                 <Minus className="w-3 h-3" />
                                             </button>
 
-                                            <p className="text-sm font-bold text-gray-900">{recommendedPanelCount}x <span className="text-gray-500 font-normal">{recommendedPanelWattage}W</span></p>
+                                            <p className="text-sm font-bold text-gray-900">{recommendedPanelCount}x <span className="text-gray-600 font-normal">{recommendedPanelWattage}W</span></p>
 
                                             <button
                                                 onClick={() => setManualPanelCount(recommendedPanelCount + 1)}
@@ -431,7 +431,7 @@ Please review and confirm availability.`;
                                                 <Minus className="w-3 h-3" />
                                             </button>
 
-                                            <p className="text-sm text-gray-500 leading-tight flex-1 text-center">{batteryDisplay}</p>
+                                            <p className="text-sm text-gray-600 leading-tight flex-1 text-center">{batteryDisplay}</p>
 
                                             <button
                                                 onClick={() => setManualBatteryCount(manualBatteryCount + 1)}
@@ -473,7 +473,7 @@ Please review and confirm availability.`;
                                                 </select>
                                             </div>
                                         </div>
-                                        <p className="text-sm text-gray-500">{inverterText}</p>
+                                        <p className="text-sm text-gray-600">{inverterText}</p>
                                     </div>
                                 </div>
 
@@ -487,7 +487,7 @@ Please review and confirm availability.`;
                             </div>
 
                             <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                                <p className="text-sm text-gray-500 mb-1">Estimated Cost</p>
+                                <p className="text-sm text-gray-600 mb-1">Estimated Cost</p>
                                 <p className="text-2xl font-bold text-gray-900">
                                     ₦{formatMoney(pricingTotal)}
                                 </p>

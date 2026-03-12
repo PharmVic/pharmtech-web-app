@@ -120,7 +120,7 @@ export default function CheckoutPage() {
                             {items.map((item) => (
                                 <div key={item.id} className="flex justify-between items-center text-sm">
                                     <div className="flex items-center gap-3 font-medium text-gray-700">
-                                        <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-500">
+                                        <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs text-gray-600">
                                             {item.quantity}
                                         </span>
                                         <span className="line-clamp-1 flex-1">{item.name}</span>

@@ -77,7 +77,7 @@ export default function ServicesSection({ initialServices }: { initialServices: 
                         })
                     ) : (
                         <div className="col-12 text-center py-5">
-                            <h5 className="text-gray-500">No services match your search result.</h5>
+                            <h5 className="text-gray-600">No services match your search result.</h5>
                         </div>
                     )}
                 </div>
