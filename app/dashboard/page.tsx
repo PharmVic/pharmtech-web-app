@@ -135,13 +135,13 @@ export default function UserDashboard() {
             <div className="grid md:grid-cols-2 gap-6">
 
                 {/* Rewards & Referrals Card */}
-                <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-xl border shadow-md text-white md:col-span-2 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="flex items-center gap-4 w-full md:w-auto overflow-hidden">
+                <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-4 md:p-6 rounded-xl border shadow-md text-white md:col-span-2 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden min-w-0">
+                    <div className="flex items-center gap-4 w-full md:w-auto overflow-hidden min-w-0">
                         <div className="p-4 bg-white/20 rounded-full shrink-0">
                             <Award className="w-8 h-8 text-yellow-300" />
                         </div>
-                        <div>
-                            <h2 className="font-bold text-xl text-blue-50">Points Balance</h2>
+                        <div className="min-w-0 flex-1">
+                            <h2 className="font-bold text-xl text-blue-50 truncate">Points Balance</h2>
                             <div className="text-4xl font-extrabold mt-1">
                                 {profile?.points_balance || 0} <span className="text-lg font-medium text-blue-200">pts</span>
                             </div>
@@ -149,8 +149,8 @@ export default function UserDashboard() {
                         </div>
                     </div>
 
-                    <div className="bg-white/10 p-4 rounded-lg border border-white/20 w-full md:w-auto">
-                        <h3 className="font-semibold text-sm text-blue-100 mb-2 flex items-center gap-2">
+                    <div className="bg-white/10 p-4 rounded-lg border border-white/20 w-full md:w-auto overflow-hidden min-w-0 flex-1 md:flex-none">
+                        <h3 className="font-semibold text-sm text-blue-100 mb-2 flex items-center gap-2 truncate">
                             <LinkIcon className="w-4 h-4" /> Your Referral Link
                         </h3>
                         <p className="text-xs text-blue-200 mb-3">Earn 1% of the purchase value when someone signs up with your link and buys our products!</p>
@@ -170,7 +170,7 @@ export default function UserDashboard() {
                 </div>
 
                 {/* Profile Card */}
-                <div className="bg-white p-6 rounded-xl border shadow-sm">
+                <div className="bg-white p-4 md:p-6 rounded-xl border shadow-sm overflow-hidden min-w-0">
                     <div className="flex items-center gap-3 mb-4 text-blue-600">
                         <User className="w-6 h-6" />
                         <h2 className="font-semibold text-lg">Profile Details</h2>
@@ -192,7 +192,7 @@ export default function UserDashboard() {
                 </div>
 
                 {/* Recent Orders Card */}
-                <div className="bg-white p-6 rounded-xl border shadow-sm">
+                <div className="bg-white p-4 md:p-6 rounded-xl border shadow-sm overflow-hidden min-w-0">
                     <div className="flex items-center gap-3 mb-4 text-green-600">
                         <ShoppingCart className="w-6 h-6" />
                         <h2 className="font-semibold text-lg">Recent Orders</h2>
@@ -230,7 +230,7 @@ export default function UserDashboard() {
                 </div>
 
                 {/* Solar Quotes Card */}
-                <div className="bg-white p-6 rounded-xl border shadow-sm">
+                <div className="bg-white p-4 md:p-6 rounded-xl border shadow-sm overflow-hidden min-w-0">
                     <div className="flex items-center gap-3 mb-4 text-purple-600">
                         <FileText className="w-6 h-6" />
                         <h2 className="font-semibold text-lg">Solar Quotes</h2>
