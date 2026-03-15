@@ -41,9 +41,9 @@ export default function SolarCalculator() {
 
     // State
     const [loads, setLoads] = useState<LoadInput[]>([
-        { name: "LED Bulb", watts: 10, qty: 6, motor: false, hoursNight: 0 },
-        { name: "TV", watts: 150, qty: 1, motor: false, hoursNight: 0 },
-        { name: "Fan", watts: 75, qty: 2, motor: false, hoursNight: 0 },
+        { name: "LED Bulb", watts: 10, qty: 0, motor: false, hoursNight: 0 },
+        { name: "TV", watts: 150, qty: 0, motor: false, hoursNight: 0 },
+        { name: "Fan", watts: 75, qty: 0, motor: false, hoursNight: 0 },
     ]);
 
     const [customerName, setCustomerName] = useState("");
@@ -95,10 +95,10 @@ export default function SolarCalculator() {
         setLoads((prev) => {
             const updated = [...prev];
             const next = { ...updated[index], [key]: value };
-            // Ensure numbers
-            if (key === "qty") next.qty = Math.max(1, Number(value) || 1);
-            if (key === "watts") next.watts = Math.max(0, Number(value) || 0);
-            if (key === "hoursNight") next.hoursNight = Math.max(0, Number(value) || 0);
+            // Ensure numbers or allow empty string
+            if (key === "qty") next.qty = value === "" ? "" : Math.max(0, Number(value) || 0);
+            if (key === "watts") next.watts = value === "" ? "" : Math.max(0, Number(value) || 0);
+            if (key === "hoursNight") next.hoursNight = value === "" ? "" : Math.max(0, Number(value) || 0);
 
             updated[index] = next;
             return updated;
@@ -122,7 +122,7 @@ export default function SolarCalculator() {
     };
 
     const addLoad = () => {
-        setLoads((prev) => [...prev, { name: "", watts: 0, qty: 1, motor: false, hoursNight: defaultHoursAtNight }]);
+        setLoads((prev) => [...prev, { name: "", watts: 0, qty: 0, motor: false, hoursNight: defaultHoursAtNight }]);
     };
 
     const removeLoad = (index: number) => setLoads((prev) => prev.filter((_, i) => i !== index));

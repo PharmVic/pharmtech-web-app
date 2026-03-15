@@ -95,7 +95,7 @@ export default function Step2Appliances({
                                     <td className="px-3 py-2">
                                         <input
                                             type="number"
-                                            min="1"
+                                            min="0"
                                             value={load.qty}
                                             onChange={(e) => updateLoad(i, "qty", e.target.value)}
                                             className="w-full p-1 border rounded text-center"

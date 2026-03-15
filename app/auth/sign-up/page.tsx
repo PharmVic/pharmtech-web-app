@@ -200,11 +200,11 @@ export default function SignUpPage() {
                                     placeholder="********"
                                     minLength={6}
                                 />
-                                <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                <div className="absolute inset-y-0 right-0 pr-3 flex items-center z-20">
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="text-gray-500 hover:text-gray-600 focus:outline-none"
+                                        className="text-gray-500 hover:text-gray-600 focus:outline-none flex items-center justify-center p-2"
                                     >
                                         {showPassword ? (
                                             <EyeOff className="h-5 w-5" />

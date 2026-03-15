@@ -3,10 +3,10 @@
 
 export type LoadInput = {
     name: string;
-    watts: number;
-    qty: number;
+    watts: number | string;
+    qty: number | string;
     motor: boolean; // true = surge load
-    hoursNight: number; // "hours at night" per load
+    hoursNight: number | string; // "hours at night" per load
 };
 
 export type BatteryType = "lithium" | "tubular" | "drycell";
