@@ -73,15 +73,36 @@ export default function Step2Appliances({
                             {loads.map((load, i) => (
                                 <tr key={i} className="hover:bg-gray-50">
                                     <td className="px-3 py-2">
-                                        <input
-                                            type="text"
-                                            list="appliance-list"
-                                            value={load.name}
-                                            onChange={(e) => updateLoad(i, "name", e.target.value)}
-                                            onBlur={(e) => applyIfKnownAppliance(i, e.target.value)}
-                                            placeholder="e.g. TV"
-                                            className="w-full p-2 border border-gray-200 rounded hover:border-orange-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all"
-                                        />
+                                        <div className="flex flex-col gap-1">
+                                            <select
+                                                value={APPLIANCES.some(a => a.name === load.name) ? load.name : (load.name === "" ? "" : "Other")}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    if (val === "Other") {
+                                                        updateLoad(i, "name", "Custom Appliance");
+                                                    } else {
+                                                        updateLoad(i, "name", val);
+                                                        applyIfKnownAppliance(i, val);
+                                                    }
+                                                }}
+                                                className="w-full p-2 border border-gray-200 rounded hover:border-orange-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all bg-white"
+                                            >
+                                                <option value="" disabled>Select Appliance</option>
+                                                {APPLIANCES.map((a) => (
+                                                    <option key={a.name} value={a.name}>{a.name}</option>
+                                                ))}
+                                                <option value="Other">Custom / Other</option>
+                                            </select>
+                                            {(!APPLIANCES.some(a => a.name === load.name) && load.name !== "") && (
+                                                <input
+                                                    type="text"
+                                                    value={load.name === "Custom Appliance" ? "" : load.name}
+                                                    onChange={(e) => updateLoad(i, "name", e.target.value)}
+                                                    placeholder="Type name..."
+                                                    className="w-full p-1 border border-gray-200 rounded text-xs outline-none focus:border-orange-500"
+                                                />
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="px-3 py-2">
                                         <input
@@ -137,12 +158,6 @@ export default function Step2Appliances({
                         </tbody>
                     </table>
                 </div>
-
-                <datalist id="appliance-list">
-                    {APPLIANCES.map((a) => (
-                        <option key={a.name} value={a.name} />
-                    ))}
-                </datalist>
 
                 <button
                     onClick={addLoad}
