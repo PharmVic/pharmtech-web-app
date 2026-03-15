@@ -25,17 +25,17 @@ export default function Footer() {
                     </div>
                     <div className="footer-item">
                         <h4 className="text-lg font-bold mb-4 text-white">Products</h4>
-                        <Link href="/products/cctv-systems" className="text-gray-300 hover:text-blue-400 mb-2 block">CCTV Systems</Link>
-                        <Link href="/products/solar-shop" className="text-gray-300 hover:text-blue-400 mb-2 block">Solar Energy</Link>
-                        <Link href="/products/networking" className="text-gray-300 hover:text-blue-400 mb-2 block">Networking</Link>
-                        <Link href="/products/automation" className="text-gray-300 hover:text-blue-400 mb-2 block">Automation</Link>
+                        <Link href="/products/cctv-systems" className="text-white hover:text-blue-400 mb-2 block">CCTV Systems</Link>
+                        <Link href="/products/solar-shop" className="text-white hover:text-blue-400 mb-2 block">Solar Energy</Link>
+                        <Link href="/products/networking" className="text-white hover:text-blue-400 mb-2 block">Networking</Link>
+                        <Link href="/products/automation" className="text-white hover:text-blue-400 mb-2 block">Automation</Link>
                     </div>
                     <div className="footer-item">
                         <h4 className="text-lg font-bold mb-4 text-white">Company</h4>
-                        <Link href="/about" className="text-gray-300 hover:text-blue-400 mb-2 block">About Us</Link>
-                        <Link href="/contact" className="text-gray-300 hover:text-blue-400 mb-2 block">Contact Support</Link>
-                        <Link href="/privacy" className="text-gray-300 hover:text-blue-400 mb-2 block">Privacy Policy</Link>
-                        <Link href="/terms" className="text-gray-300 hover:text-blue-400 mb-2 block">Terms & Conditions</Link>
+                        <Link href="/about" className="text-white hover:text-blue-400 mb-2 block">About Us</Link>
+                        <Link href="/contact" className="text-white hover:text-blue-400 mb-2 block">Contact Support</Link>
+                        <Link href="/privacy" className="text-white hover:text-blue-400 mb-2 block">Privacy Policy</Link>
+                        <Link href="/terms" className="text-white hover:text-blue-400 mb-2 block">Terms & Conditions</Link>
                     </div>
                     <div className="footer-item">
                         <h4 className="text-lg font-bold mb-4 text-white">Contact Info</h4>
