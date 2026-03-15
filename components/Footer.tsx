@@ -8,7 +8,7 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="footer-item">
                         <h3 className="text-2xl font-bold mb-4 text-white">PHARMTECH</h3>
-                        <p className="text-gray-500 mb-4 leading-relaxed">
+                        <p className="text-white mb-4 leading-relaxed">
                             Your trusted partner in advanced CCTV, Solar Energy, Networking, and Automation solutions.
                         </p>
                         <div className="flex gap-2">
@@ -25,27 +25,27 @@ export default function Footer() {
                     </div>
                     <div className="footer-item">
                         <h4 className="text-lg font-bold mb-4 text-white">Products</h4>
-                        <Link href="/products/cctv-systems" className="text-gray-500 hover:text-blue-500 mb-2 block">CCTV Systems</Link>
-                        <Link href="/products/solar-shop" className="text-gray-500 hover:text-blue-500 mb-2 block">Solar Energy</Link>
-                        <Link href="/products/networking" className="text-gray-500 hover:text-blue-500 mb-2 block">Networking</Link>
-                        <Link href="/products/automation" className="text-gray-500 hover:text-blue-500 mb-2 block">Automation</Link>
+                        <Link href="/products/cctv-systems" className="text-gray-300 hover:text-blue-400 mb-2 block">CCTV Systems</Link>
+                        <Link href="/products/solar-shop" className="text-gray-300 hover:text-blue-400 mb-2 block">Solar Energy</Link>
+                        <Link href="/products/networking" className="text-gray-300 hover:text-blue-400 mb-2 block">Networking</Link>
+                        <Link href="/products/automation" className="text-gray-300 hover:text-blue-400 mb-2 block">Automation</Link>
                     </div>
                     <div className="footer-item">
                         <h4 className="text-lg font-bold mb-4 text-white">Company</h4>
-                        <Link href="/about" className="text-gray-500 hover:text-blue-500 mb-2 block">About Us</Link>
-                        <Link href="/contact" className="text-gray-500 hover:text-blue-500 mb-2 block">Contact Support</Link>
-                        <Link href="/privacy" className="text-gray-500 hover:text-blue-500 mb-2 block">Privacy Policy</Link>
-                        <Link href="/terms" className="text-gray-500 hover:text-blue-500 mb-2 block">Terms & Conditions</Link>
+                        <Link href="/about" className="text-gray-300 hover:text-blue-400 mb-2 block">About Us</Link>
+                        <Link href="/contact" className="text-gray-300 hover:text-blue-400 mb-2 block">Contact Support</Link>
+                        <Link href="/privacy" className="text-gray-300 hover:text-blue-400 mb-2 block">Privacy Policy</Link>
+                        <Link href="/terms" className="text-gray-300 hover:text-blue-400 mb-2 block">Terms & Conditions</Link>
                     </div>
                     <div className="footer-item">
                         <h4 className="text-lg font-bold mb-4 text-white">Contact Info</h4>
-                        <p className="text-gray-500 mb-2">7 Cedar Complex, Ibadan, Nigeria</p>
-                        <p className="text-gray-500 mb-2">+234 814 211 1657</p>
-                        <p className="text-gray-500 mb-2">info@pharmtech.com</p>
+                        <p className="text-gray-300 mb-2">7 Cedar Complex, Ibadan, Nigeria</p>
+                        <p className="text-gray-300 mb-2">+234 814 211 1657</p>
+                        <p className="text-gray-300 mb-2">info@pharmtech.com</p>
                     </div>
                 </div>
             </div>
-            <div className="copyright bg-black py-6 text-center text-sm text-gray-600 border-t border-gray-800">
+            <div className="copyright bg-black py-6 text-center text-sm text-gray-400 border-t border-gray-800">
                 &copy; {new Date().getFullYear()} Pharmtech. All rights reserved.
             </div>
         </footer>
