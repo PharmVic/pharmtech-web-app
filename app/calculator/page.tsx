@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { APPLIANCES } from "@/lib/appliances";
+import { DEFAULT_APPLIANCES } from "@/lib/appliances";
 import {
-    INVERTERS, PANELS, BATTERIES, ACCESSORIES_INSTALL,
+    DEFAULT_INVERTERS, DEFAULT_PANELS, DEFAULT_BATTERIES, DEFAULT_ACCESSORIES_INSTALL,
     type LoadInput,
     type BatteryType,
+    type InverterCatalogItem,
+    type PanelCatalogItem,
+    type BatteryCatalogItem,
     calcRunningWatts,
     calcPeakWatts,
     calcEnergyWh,
@@ -63,6 +66,14 @@ export default function SolarCalculator() {
 
     const [userId, setUserId] = useState<string | null>(null);
 
+    // Dynamic Catalogs State
+    const [invertersCatalog, setInvertersCatalog] = useState<InverterCatalogItem[]>(DEFAULT_INVERTERS);
+    const [panelsCatalog, setPanelsCatalog] = useState<PanelCatalogItem[]>(DEFAULT_PANELS);
+    const [batteriesCatalog, setBatteriesCatalog] = useState<BatteryCatalogItem[]>(DEFAULT_BATTERIES);
+    const [appliancesCatalog, setAppliancesCatalog] = useState(DEFAULT_APPLIANCES);
+    const [accessoriesCatalog, setAccessoriesCatalog] = useState<Record<number, number>>(DEFAULT_ACCESSORIES_INSTALL);
+    const [isLoadingCatalogs, setIsLoadingCatalogs] = useState(true);
+
     useEffect(() => {
         setQuoteNumber(generateQuoteNumber());
         
@@ -75,6 +86,56 @@ export default function SolarCalculator() {
                 setCustomerAddress(data.session.user.user_metadata?.address || "");
             }
         });
+
+        // Fetch Catalogs
+        async function fetchCatalogs() {
+            try {
+                const [invRes, panRes, batRes, appRes, accRes] = await Promise.all([
+                    supabase.from('calc_inverters').select('*'),
+                    supabase.from('calc_panels').select('*'),
+                    supabase.from('calc_batteries').select('*'),
+                    supabase.from('calc_appliances').select('*'),
+                    supabase.from('calc_accessories').select('*')
+                ]);
+
+                if (invRes.data && invRes.data.length > 0) {
+                    setInvertersCatalog(invRes.data.map(i => ({
+                        kva: Number(i.kva), voltage: i.voltage, price: i.price, type: i.type as any
+                    })));
+                }
+                
+                if (panRes.data && panRes.data.length > 0) {
+                    setPanelsCatalog(panRes.data.map(p => ({
+                        watt: Number(p.watt), price: p.price
+                    })));
+                }
+
+                if (batRes.data && batRes.data.length > 0) {
+                    setBatteriesCatalog(batRes.data.map(b => ({
+                        sku: b.sku, type: b.type as any, voltage: Number(b.voltage), nominalVoltage: b.nominal_voltage as any, ah: Number(b.ah), price: b.price
+                    })));
+                }
+
+                if (appRes.data && appRes.data.length > 0) {
+                    setAppliancesCatalog(appRes.data.map(a => ({
+                        name: a.name, runningWatts: Number(a.running_watts), surgeFactor: Number(a.surge_factor)
+                    })));
+                }
+
+                if (accRes.data && accRes.data.length > 0) {
+                    const accMap: Record<number, number> = {};
+                    accRes.data.forEach(a => {
+                        accMap[Number(a.kva)] = a.fee;
+                    });
+                    setAccessoriesCatalog(accMap);
+                }
+            } catch (err) {
+                console.error("Error fetching catalogs:", err);
+            } finally {
+                setIsLoadingCatalogs(false);
+            }
+        }
+        fetchCatalogs();
     }, []);
 
     // Reset manual inverter when type changes
@@ -106,7 +167,7 @@ export default function SolarCalculator() {
     };
 
     const applyIfKnownAppliance = (index: number, typedName: string) => {
-        const match = APPLIANCES.find((a) => a.name.toLowerCase() === typedName.trim().toLowerCase());
+        const match = appliancesCatalog.find((a: { name: string; runningWatts: number; surgeFactor: number }) => a.name.toLowerCase() === typedName.trim().toLowerCase());
         if (!match) return;
         setLoads((prev) => {
             const updated = [...prev];
@@ -148,15 +209,15 @@ export default function SolarCalculator() {
 
     // A. Computed Recommendation
     const recommendedInverter = useMemo(() => {
-        const rec = pickInverterForRequiredKva(requiredKva, hasSurgeLoad, inverterType);
+        const rec = pickInverterForRequiredKva(requiredKva, hasSurgeLoad, inverterType, invertersCatalog);
         // Reset manual if type mismatch? keeping simple for now.
         return rec;
     }, [requiredKva, hasSurgeLoad, inverterType]);
 
     // B. Available Options
     const availableInverters = useMemo(() => {
-        return INVERTERS.filter(i => i.type === inverterType).sort((a, b) => a.kva - b.kva);
-    }, [inverterType]);
+        return invertersCatalog.filter(i => i.type === inverterType).sort((a, b) => a.kva - b.kva);
+    }, [inverterType, invertersCatalog]);
 
     // C. Active Inverter (Calculation Basis)
     const activeInverter = useMemo(() => {
@@ -217,10 +278,10 @@ export default function SolarCalculator() {
     // Available Lithium Options for this voltage
     const availableLithiumBatteries = useMemo(() => {
         if (batteryType !== "lithium") return [];
-        return BATTERIES
+        return batteriesCatalog
             .filter(b => b.type === "lithium" && b.nominalVoltage === activeSystemVoltage)
             .sort((a, b) => a.ah - b.ah);
-    }, [activeSystemVoltage, batteryType]);
+    }, [activeSystemVoltage, batteryType, batteriesCatalog]);
 
     const recommendedBattery = useMemo(() => {
         if (batteryType === "lithium" && preferredBatteryAh) {
@@ -231,8 +292,8 @@ export default function SolarCalculator() {
                 return { battery: found, units: Math.max(1, count) };
             }
         }
-        return pickBattery(activeSystemVoltage as 12 | 24 | 48, batteryType, requiredBatteryAh);
-    }, [activeSystemVoltage, batteryType, requiredBatteryAh, preferredBatteryAh, availableLithiumBatteries]);
+        return pickBattery(activeSystemVoltage as 12 | 24 | 48, batteryType, requiredBatteryAh, batteriesCatalog);
+    }, [activeSystemVoltage, batteryType, requiredBatteryAh, preferredBatteryAh, availableLithiumBatteries, batteriesCatalog]);
 
     // Derived Battery Count
     const activeBatteryUnits = manualBatteryCount ?? recommendedBattery.units;
@@ -262,11 +323,11 @@ export default function SolarCalculator() {
     const pricingTotal = useMemo(() => {
         const invCost = activeInverter.units.reduce((s, u) => s + u.price, 0);
         const batCost = (recommendedBattery.battery?.price ?? 0) * activeBatteryUnits;
-        const panelCost = activePanelCount * (PANELS.find(p => p.watt === minPanelW)?.price ?? 85000);
-        const installCost = accessoriesInstallFeeForUnits(activeInverter.units);
+        const panelCost = activePanelCount * (panelsCatalog.find(p => p.watt === minPanelW)?.price ?? 85000);
+        const installCost = accessoriesInstallFeeForUnits(activeInverter.units, accessoriesCatalog);
 
         return invCost + batCost + panelCost + installCost;
-    }, [activeInverter, recommendedBattery, activePanelCount, minPanelW, activeBatteryUnits]);
+    }, [activeInverter, recommendedBattery, activePanelCount, minPanelW, activeBatteryUnits, panelsCatalog, accessoriesCatalog]);
 
     // Save Logic
     const [isSaving, setIsSaving] = useState(false);
@@ -314,7 +375,14 @@ export default function SolarCalculator() {
                     Solar <span className="text-orange-600">Calculator</span>
                 </h1>
 
-                <Stepper step={step} setStep={setStep} />
+                {isLoadingCatalogs ? (
+                    <div className="flex flex-col items-center justify-center py-20">
+                        <div className="w-12 h-12 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin mb-4"></div>
+                        <p className="text-gray-500 font-medium">Loading calculator catalog...</p>
+                    </div>
+                ) : (
+                    <>
+                        <Stepper step={step} setStep={setStep} />
 
                 {step === 1 && (
                     <Step1Customer
@@ -344,6 +412,7 @@ export default function SolarCalculator() {
                         // Step 2 seems to expect 'surgeFactorFor' which we imported.
                         // But Step 2 uses 'motor' boolean, our new type uses 'motor' boolean.
                         // Let's check imports.
+                        appliancesCatalog={appliancesCatalog}
                         surgeFactorFor={(l: any) => surgeFactorFor(l)}
                         onBack={() => setStep(1)}
                         onNext={() => setStep(3)}
@@ -400,6 +469,8 @@ export default function SolarCalculator() {
                         onSave={saveQuoteToDb}
                         isSaving={isSaving}
                     />
+                )}
+                    </>
                 )}
             </div>
         </main>

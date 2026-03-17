@@ -35,7 +35,7 @@ export type BatteryCatalogItem = {
 // --------------------
 // Catalogs (your data)
 // --------------------
-export const INVERTERS: InverterCatalogItem[] = [
+export const DEFAULT_INVERTERS: InverterCatalogItem[] = [
     // Standard (Normal)
     { kva: 1, voltage: 12, price: 170000, type: "normal" },
     { kva: 1.5, voltage: 12, price: 220000, type: "normal" },
@@ -63,7 +63,7 @@ export const INVERTERS: InverterCatalogItem[] = [
     { kva: 10, voltage: 48, price: 1100000, type: "hybrid" },
 ];
 
-export const PANELS: PanelCatalogItem[] = [
+export const DEFAULT_PANELS: PanelCatalogItem[] = [
     { watt: 200, price: 45000 },
     { watt: 250, price: 55000 },
     { watt: 300, price: 68000 },
@@ -75,7 +75,7 @@ export const PANELS: PanelCatalogItem[] = [
     { watt: 600, price: 105000 },
 ];
 
-export const BATTERIES: BatteryCatalogItem[] = [
+export const DEFAULT_BATTERIES: BatteryCatalogItem[] = [
     // Dry cell
     { sku: "dry-12v-200ah", type: "drycell", voltage: 12, nominalVoltage: 12, ah: 200, price: 260000 },
 
@@ -97,7 +97,7 @@ export const BATTERIES: BatteryCatalogItem[] = [
 ];
 
 // Accessories + Installation
-export const ACCESSORIES_INSTALL: Record<number, number> = {
+export const DEFAULT_ACCESSORIES_INSTALL: Record<number, number> = {
     1: 295000,
     1.5: 300000,
     2: 300000,
@@ -180,7 +180,7 @@ export function minPanelWattForKva(kva: number) {
     return 550;
 }
 
-export function pickInverterForRequiredKva(rawKva: number, hasSurgeLoad: boolean, inverterType: "normal" | "hybrid" = "normal") {
+export function pickInverterForRequiredKva(rawKva: number, hasSurgeLoad: boolean, inverterType: "normal" | "hybrid" = "normal", catalog: InverterCatalogItem[] = DEFAULT_INVERTERS) {
     const warnings: string[] = [];
     // Use normalizeKva for standard sizes, but keep raw if larger than max catalog size (10)
     let targetKva = rawKva > 10 ? rawKva : normalizeKva(rawKva);
@@ -247,7 +247,7 @@ export function pickInverterForRequiredKva(rawKva: number, hasSurgeLoad: boolean
 
     // Simplified logic: Find exact kVA match first, or next larger if missing (e.g. for hybrid gaps)
     // Filter by type
-    const candidates = INVERTERS.filter(i => i.type === inverterType);
+    const candidates = catalog.filter(i => i.type === inverterType);
 
     // Find unit >= targetKva
     const valid = candidates.filter(i => i.kva >= targetKva).sort((a, b) => a.kva - b.kva || b.voltage - a.voltage);
@@ -367,20 +367,21 @@ export function calcBatteryAhRequired(energyWh: number, systemVoltage: number, b
 export function pickBattery(
     systemVoltage: 12 | 24 | 48,
     batteryType: BatteryType,
-    requiredAh: number
+    requiredAh: number,
+    catalog: BatteryCatalogItem[] = DEFAULT_BATTERIES
 ) {
     // Filter batteries matching the type and NOMINAL system voltage
     let options: BatteryCatalogItem[] = [];
 
     if (batteryType === "lithium") {
-        options = BATTERIES.filter((b) => b.type === "lithium" && b.nominalVoltage === systemVoltage);
+        options = catalog.filter((b) => b.type === "lithium" && b.nominalVoltage === systemVoltage);
     } else {
-        options = BATTERIES.filter((b) => b.type === batteryType);
+        options = catalog.filter((b) => b.type === batteryType);
     }
 
     if (!options.length) {
         // fallback
-        const fallback = BATTERIES.filter((b) => b.nominalVoltage === systemVoltage && b.type === "lithium");
+        const fallback = catalog.filter((b) => b.nominalVoltage === systemVoltage && b.type === "lithium");
         return { battery: fallback[0] ?? null, units: 1 };
     }
 
@@ -462,16 +463,16 @@ export function calcMinPvWattsForBattery(batteryVolts: number, batteryAh: number
     return Math.ceil(minPvWatts);
 }
 
-export function accessoriesInstallFeeForUnits(units: InverterCatalogItem[]) {
+export function accessoriesInstallFeeForUnits(units: InverterCatalogItem[], catalog: Record<number, number> = DEFAULT_ACCESSORIES_INSTALL) {
     if (!units.length) return 0;
 
     if (units.length === 1) {
-        return ACCESSORIES_INSTALL[units[0].kva] ?? 0;
+        return catalog[units[0].kva] ?? 0;
     }
 
     // Your rule: for multi-unit, DO NOT multiply by units.
     // Instead: base fee (one unit) + 30% of base
-    const base = ACCESSORIES_INSTALL[units[0].kva] ?? 0;
+    const base = catalog[units[0].kva] ?? 0;
     return Math.round(base * 1.3);
 }
 

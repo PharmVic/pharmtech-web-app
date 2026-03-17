@@ -1,4 +1,4 @@
-export const APPLIANCES = [
+export const DEFAULT_APPLIANCES = [
     { name: "LED Bulb", runningWatts: 10, surgeFactor: 0 },
     { name: "Fan", runningWatts: 75, surgeFactor: 0 },
     { name: "TV (LED)", runningWatts: 150, surgeFactor: 0 },

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
-import { Loader2, Home, LayoutDashboard, Users } from "lucide-react";
+import { Loader2, Home, LayoutDashboard, Users, Calculator } from "lucide-react";
 import Link from "next/link";
 
 export default function AdminLayout({
@@ -84,6 +84,9 @@ export default function AdminLayout({
                     </Link>
                     <Link href="/admin/customers" className="text-sm font-medium text-gray-600 hover:text-blue-800 transition-colors flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 rounded-md">
                         <Users className="w-4 h-4" /> Customers
+                    </Link>
+                    <Link href="/admin/calculator-items" className="text-sm font-medium text-gray-600 hover:text-blue-800 transition-colors flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 rounded-md">
+                        <Calculator className="w-4 h-4" /> Calculator Items
                     </Link>
                 </div>
                 <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-100">

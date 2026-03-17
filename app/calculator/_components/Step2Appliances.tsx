@@ -1,7 +1,6 @@
 "use client";
 
 import { Trash, Plus } from "lucide-react";
-import { APPLIANCES } from "@/lib/appliances";
 import type { LoadInput } from "@/lib/pricing";
 
 type Step2Props = {
@@ -13,6 +12,7 @@ type Step2Props = {
     defaultHoursAtNight: number;
     setDefaultHoursAtNight: (val: number) => void;
     applyDefaultHoursToAll: () => void;
+    appliancesCatalog: { name: string; runningWatts: number; surgeFactor: number }[];
     surgeFactorFor: (load: LoadInput) => number;
     onBack: () => void;
     onNext: () => void;
@@ -27,6 +27,7 @@ export default function Step2Appliances({
     defaultHoursAtNight,
     setDefaultHoursAtNight,
     applyDefaultHoursToAll,
+    appliancesCatalog,
     surgeFactorFor,
     onBack,
     onNext,
@@ -75,7 +76,7 @@ export default function Step2Appliances({
                                     <td className="px-3 py-2">
                                         <div className="flex flex-col gap-1">
                                             <select
-                                                value={APPLIANCES.some(a => a.name === load.name) ? load.name : (load.name === "" ? "" : "Other")}
+                                                value={appliancesCatalog.some(a => a.name === load.name) ? load.name : (load.name === "" ? "" : "Other")}
                                                 onChange={(e) => {
                                                     const val = e.target.value;
                                                     if (val === "Other") {
@@ -88,12 +89,12 @@ export default function Step2Appliances({
                                                 className="w-full p-2 border border-gray-200 rounded hover:border-orange-300 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all bg-white"
                                             >
                                                 <option value="" disabled>Select Appliance</option>
-                                                {APPLIANCES.map((a) => (
+                                                {appliancesCatalog.map((a) => (
                                                     <option key={a.name} value={a.name}>{a.name}</option>
                                                 ))}
                                                 <option value="Other">Custom / Other</option>
                                             </select>
-                                            {(!APPLIANCES.some(a => a.name === load.name) && load.name !== "") && (
+                                            {(!appliancesCatalog.some(a => a.name === load.name) && load.name !== "") && (
                                                 <input
                                                     type="text"
                                                     value={load.name === "Custom Appliance" ? "" : load.name}
