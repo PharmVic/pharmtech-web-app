@@ -73,23 +73,25 @@ export default function AdminLayout({
     return (
         <div className="min-h-screen bg-gray-50 pb-20">
             {/* Optional: Admin Sidebar or Header could go here */}
-            <div className="bg-white border-b border-gray-200 px-8 py-4 mb-4 flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                    <Link href="/" className="text-gray-600 hover:text-blue-600 transition-colors flex items-center gap-1 text-sm font-medium" title="Go back to Home">
+            <div className="bg-white border-b border-gray-200 px-4 md:px-8 py-4 mb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div className="flex flex-wrap items-center gap-2 md:gap-4">
+                    <Link href="/" className="text-gray-600 hover:text-blue-600 transition-colors flex items-center gap-1 text-sm font-medium pt-1" title="Go back to Home">
                         <Home className="w-4 h-4" />
                     </Link>
-                    <span className="font-bold text-gray-700">Admin Console</span>
-                    <Link href="/admin" className="text-sm font-medium text-gray-600 hover:text-blue-800 transition-colors flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 rounded-md">
-                        <LayoutDashboard className="w-4 h-4" /> Dashboard
-                    </Link>
-                    <Link href="/admin/customers" className="text-sm font-medium text-gray-600 hover:text-blue-800 transition-colors flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 rounded-md">
-                        <Users className="w-4 h-4" /> Customers
-                    </Link>
-                    <Link href="/admin/calculator-items" className="text-sm font-medium text-gray-600 hover:text-blue-800 transition-colors flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 rounded-md">
-                        <Calculator className="w-4 h-4" /> Calculator Items
-                    </Link>
+                    <span className="font-bold text-gray-700 pt-1">Admin Console</span>
+                    <div className="flex flex-wrap items-center gap-2 w-full mt-2 md:w-auto md:mt-0">
+                        <Link href="/admin" className="text-sm font-medium text-gray-600 hover:text-blue-800 transition-colors flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 rounded-md bg-gray-50 md:bg-transparent border md:border-transparent">
+                            <LayoutDashboard className="w-4 h-4" /> Dashboard
+                        </Link>
+                        <Link href="/admin/customers" className="text-sm font-medium text-gray-600 hover:text-blue-800 transition-colors flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 rounded-md bg-gray-50 md:bg-transparent border md:border-transparent">
+                            <Users className="w-4 h-4" /> Customers
+                        </Link>
+                        <Link href="/admin/calculator-items" className="text-sm font-medium text-gray-600 hover:text-blue-800 transition-colors flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 rounded-md bg-gray-50 md:bg-transparent border md:border-transparent">
+                            <Calculator className="w-4 h-4" /> Calculator Items
+                        </Link>
+                    </div>
                 </div>
-                <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-100">
+                <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-100 self-end md:self-auto -mt-10 md:mt-0">
                     Authenticated
                 </div>
             </div>

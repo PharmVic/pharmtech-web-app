@@ -93,16 +93,32 @@ export default async function CategoryProductsPage({
                                 <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
                                     <div className="flex flex-col">
                                         <span className="text-xs text-gray-500 uppercase font-semibold">Price</span>
-                                        <span className="text-xl font-bold text-blue-600">
-                                            {product.price ? `₦${product.price.toLocaleString()}` : "Contact Us"}
-                                        </span>
+                                        {product.is_promo_active && product.promo_price ? (
+                                            <div className="flex flex-col">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-sm line-through text-gray-400">
+                                                        ₦{product.price?.toLocaleString()}
+                                                    </span>
+                                                    <span className="text-xs font-bold bg-green-100 text-green-700 px-1.5 py-0.5 rounded">
+                                                        -{Math.round(((product.price - product.promo_price) / product.price) * 100)}%
+                                                    </span>
+                                                </div>
+                                                <span className="text-xl font-bold text-green-600">
+                                                    ₦{product.promo_price.toLocaleString()}
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <span className="text-xl font-bold text-blue-600">
+                                                {product.price ? `₦${product.price.toLocaleString()}` : "Contact Us"}
+                                            </span>
+                                        )}
                                     </div>
                                     <div className="relative z-10">
                                         <AddToCartButton 
                                             product={{
                                                 id: product.id,
                                                 name: product.name,
-                                                price: product.price,
+                                                price: (product.is_promo_active && product.promo_price) ? product.promo_price : product.price,
                                                 image_url: product.image_url,
                                             }}
                                             large={false}

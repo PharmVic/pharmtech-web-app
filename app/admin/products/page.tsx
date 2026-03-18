@@ -12,6 +12,8 @@ type Product = {
     price: number;
     image_url: string;
     description: string;
+    is_promo_active?: boolean;
+    promo_price?: number;
     // We'll join category name later or just fetch raw
 };
 
@@ -110,9 +112,21 @@ export default function AdminProductsPage() {
                                     </td>
                                     <td className="px-6 py-4 font-medium text-gray-900">
                                         {product.name}
+                                        {product.is_promo_active && (
+                                            <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                                Promo: ₦{product.promo_price?.toLocaleString("en-NG")}
+                                            </span>
+                                        )}
                                     </td>
                                     <td className="px-6 py-4">
-                                        ₦{product.price.toLocaleString("en-NG")}
+                                        {product.is_promo_active ? (
+                                            <div>
+                                                <span className="line-through text-gray-400 mr-2">₦{product.price.toLocaleString("en-NG")}</span>
+                                                <span className="text-green-600 font-bold">₦{product.promo_price?.toLocaleString("en-NG")}</span>
+                                            </div>
+                                        ) : (
+                                            <span>₦{product.price.toLocaleString("en-NG")}</span>
+                                        )}
                                     </td>
                                     <td className="px-6 py-4 flex gap-3">
                                         <Link

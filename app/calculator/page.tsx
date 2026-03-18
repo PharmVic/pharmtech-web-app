@@ -326,7 +326,9 @@ export default function SolarCalculator() {
         const panelCost = activePanelCount * (panelsCatalog.find(p => p.watt === minPanelW)?.price ?? 85000);
         const installCost = accessoriesInstallFeeForUnits(activeInverter.units, accessoriesCatalog);
 
-        return invCost + batCost + panelCost + installCost;
+        const subTotal = invCost + batCost + panelCost + installCost;
+        const vat = subTotal * 0.075;
+        return subTotal + vat;
     }, [activeInverter, recommendedBattery, activePanelCount, minPanelW, activeBatteryUnits, panelsCatalog, accessoriesCatalog]);
 
     // Save Logic

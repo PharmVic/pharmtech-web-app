@@ -77,8 +77,26 @@ export default async function ProductDetailsPage({
                                 {product.name}
                             </h1>
 
-                            <div className="text-3xl font-bold text-blue-600 mb-6">
-                                {product.price ? `₦${product.price.toLocaleString()}` : "Contact Us for Price"}
+                            <div className="mb-6">
+                                {product.is_promo_active && product.promo_price ? (
+                                    <div className="flex flex-col">
+                                        <div className="flex items-center gap-3 mb-1">
+                                            <span className="text-xl line-through text-gray-400">
+                                                ₦{product.price?.toLocaleString()}
+                                            </span>
+                                            <span className="text-sm font-bold bg-green-100 text-green-700 px-2 py-1 rounded">
+                                                Save {Math.round(((product.price - product.promo_price) / product.price) * 100)}%
+                                            </span>
+                                        </div>
+                                        <span className="text-4xl font-bold text-green-600">
+                                            ₦{product.promo_price.toLocaleString()}
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <div className="text-3xl font-bold text-blue-600">
+                                        {product.price ? `₦${product.price.toLocaleString()}` : "Contact Us for Price"}
+                                    </div>
+                                )}
                             </div>
 
                             <p className="text-gray-600 mb-8 whitespace-pre-wrap leading-relaxed text-lg">
@@ -101,7 +119,7 @@ export default async function ProductDetailsPage({
                                     product={{
                                         id: product.id,
                                         name: product.name,
-                                        price: product.price,
+                                        price: (product.is_promo_active && product.promo_price) ? product.promo_price : product.price,
                                         image_url: imageUrls[0],
                                     }}
                                     large={true}

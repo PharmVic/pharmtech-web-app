@@ -123,31 +123,63 @@ export default function Step3SizingAndQuote({
 
         const doc = new jsPDF();
 
-        // Header
-        doc.setFontSize(22);
-        doc.setTextColor(17, 0, 0); // #110000
-        doc.text("PHARMTECH SOLAR QUOTE", 14, 20);
+        // --- Watermark ---
+        doc.setFontSize(60);
+        doc.setTextColor(230, 230, 230); // Very light gray
+        // Rotate text for watermark
+        doc.text("PHARMTECH", 105, 150, { angle: 45, align: "center" });
+        doc.text("PHARMTECH", 105, 50, { angle: 45, align: "center" });
+        doc.text("PHARMTECH", 105, 250, { angle: 45, align: "center" });
+
+        // --- Logo / Header ---
+        try {
+            const logoImg = new Image();
+            logoImg.src = '/logo.jpeg'; // Make sure you put your logo image in the public folder and name it logo.jpg
+            await new Promise((resolve, reject) => {
+                logoImg.onload = resolve;
+                logoImg.onerror = reject;
+            });
+            const imgWidth = 50; 
+            const imgHeight = (logoImg.height * imgWidth) / logoImg.width;
+            doc.addImage(logoImg, 'JPEG', 14, 15, imgWidth, imgHeight);
+            
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(16);
+            doc.setTextColor(17, 0, 0); // #110000
+            doc.text("SOLAR QUOTE", 14, 15 + imgHeight + 8);
+        } catch (e) {
+            // Fallback to text if logo.png not found
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(28);
+            doc.setTextColor(242, 114, 28); // Orange brand color
+            doc.text("PHARMTECH", 14, 22);
+            
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(16);
+            doc.setTextColor(17, 0, 0); // #110000
+            doc.text("SOLAR QUOTE", 14, 32);
+        }
 
         doc.setFontSize(10);
         doc.setTextColor(100);
-        doc.text(`Generated on ${new Date().toLocaleDateString()}`, 14, 26);
+        doc.text(`Generated on ${new Date().toLocaleDateString()}`, 14, 40);
 
         // Customer Info
         doc.setFontSize(12);
         doc.setTextColor(0);
-        doc.text("Customer Details:", 14, 36);
+        doc.text("Customer Details:", 14, 52);
         doc.setFontSize(10);
-        doc.text(`Name: ${customerName}`, 14, 42);
-        doc.text(`Phone: ${customerPhone}`, 14, 47);
-        doc.text(`Address: ${customerAddress}`, 14, 52);
+        doc.text(`Name: ${customerName}`, 14, 58);
+        doc.text(`Phone: ${customerPhone}`, 14, 63);
+        doc.text(`Address: ${customerAddress}`, 14, 68);
 
         // System Summary
         doc.setFontSize(12);
-        doc.text("System Requirements:", 110, 36);
+        doc.text("System Requirements:", 110, 52);
         doc.setFontSize(10);
-        doc.text(`Total Running Load: ${totalRunningWatts} W`, 110, 42);
-        doc.text(`Total Surge Load: ${totalSurgeWatts} W`, 110, 47);
-        doc.text(`Night Energy Need: ${energyNeededWh} Wh`, 110, 52);
+        doc.text(`Total Running Load: ${totalRunningWatts} W`, 110, 58);
+        doc.text(`Total Surge Load: ${totalSurgeWatts} W`, 110, 63);
+        doc.text(`Night Energy Need: ${energyNeededWh} Wh`, 110, 68);
 
         // Recommendations Table
         const invDisplay = recommendedInverter.units.length > 0
@@ -163,7 +195,7 @@ export default function Step3SizingAndQuote({
         const panelDisplay = `${recommendedPanelCount}x ${recommendedPanelWattage}W Panels`;
 
         autoTable(doc, {
-            startY: 60,
+            startY: 76,
             head: [['Component', 'Recommendation']],
             body: [
                 ['Inverter System', invDisplay],
@@ -194,6 +226,7 @@ export default function Step3SizingAndQuote({
         // Financials
         const finalY = (doc as any).lastAutoTable.finalY + 15;
         doc.setFontSize(14);
+        doc.setTextColor(0);
         doc.text(`Total Estimated Cost: N${formatMoney(pricingTotal)}`, 14, finalY);
 
         doc.setFontSize(8);

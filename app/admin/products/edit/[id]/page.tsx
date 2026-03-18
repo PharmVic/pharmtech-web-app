@@ -29,6 +29,10 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     const [previewUrls, setPreviewUrls] = useState<string[]>([]);
     const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
 
+    // Promo State
+    const [isPromoActive, setIsPromoActive] = useState(false);
+    const [promoPrice, setPromoPrice] = useState("");
+
     useEffect(() => {
         fetchData();
     }, [productId]);
@@ -54,6 +58,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 setDescription(productData.description || "");
                 setPrice(productData.price ? productData.price.toString() : "");
                 setCategoryId(productData.category_id || "");
+                setIsPromoActive(productData.is_promo_active || false);
+                setPromoPrice(productData.promo_price ? productData.promo_price.toString() : "");
 
                 const urls = productData.image_urls && productData.image_urls.length > 0
                     ? productData.image_urls
@@ -129,6 +135,8 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     category_id: categoryId || null,
                     image_url: finalImageUrl,
                     image_urls: finalImageUrls,
+                    is_promo_active: isPromoActive,
+                    promo_price: promoPrice ? Number(promoPrice) : null,
                 })
                 .eq("id", productId);
 
@@ -234,6 +242,38 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                                 placeholder="0.00"
                             />
                         </div>
+                    </div>
+
+                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                        <div className="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 className="text-sm font-bold text-gray-900">Promotional Pricing</h3>
+                                <p className="text-xs text-gray-500">Enable this to show a discounted price to customers.</p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="sr-only peer"
+                                    checked={isPromoActive}
+                                    onChange={(e) => setIsPromoActive(e.target.checked)}
+                                />
+                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                        
+                        {isPromoActive && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Promo Price (₦)</label>
+                                <input
+                                    type="number"
+                                    required={isPromoActive}
+                                    value={promoPrice}
+                                    onChange={(e) => setPromoPrice(e.target.value)}
+                                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                    placeholder="Discounted Amount"
+                                />
+                            </div>
+                        )}
                     </div>
 
                     <div>

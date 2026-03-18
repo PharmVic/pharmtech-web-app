@@ -24,6 +24,10 @@ export default function NewProductPage() {
     const [imageFiles, setImageFiles] = useState<File[]>([]);
     const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
+    // Promo State
+    const [isPromoActive, setIsPromoActive] = useState(false);
+    const [promoPrice, setPromoPrice] = useState("");
+
     useEffect(() => {
         fetchCategories();
     }, []);
@@ -90,6 +94,8 @@ export default function NewProductPage() {
                 category_id: categoryId || null, // Handle no category gracefully
                 image_url: imageUrl,
                 image_urls: imageUrls,
+                is_promo_active: isPromoActive,
+                promo_price: promoPrice ? Number(promoPrice) : null,
             });
 
             if (insertError) throw insertError;
@@ -167,6 +173,38 @@ export default function NewProductPage() {
                                 placeholder="0.00"
                             />
                         </div>
+                    </div>
+
+                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                        <div className="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 className="text-sm font-bold text-gray-900">Promotional Pricing</h3>
+                                <p className="text-xs text-gray-500">Enable this to show a discounted price to customers.</p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="sr-only peer"
+                                    checked={isPromoActive}
+                                    onChange={(e) => setIsPromoActive(e.target.checked)}
+                                />
+                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                        
+                        {isPromoActive && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Promo Price (₦)</label>
+                                <input
+                                    type="number"
+                                    required={isPromoActive}
+                                    value={promoPrice}
+                                    onChange={(e) => setPromoPrice(e.target.value)}
+                                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                    placeholder="Discounted Amount"
+                                />
+                            </div>
+                        )}
                     </div>
 
                     <div>
