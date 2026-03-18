@@ -144,7 +144,7 @@ export default function Step3SizingAndQuote({
             
             // Place logo on top right. Page width = 210.
             const rightMarginX = 210 - 14 - imgWidth;
-            doc.addImage(logoImg, 'JPEG', rightMarginX, 15, imgWidth, imgHeight);
+            doc.addImage(logoImg, 'JPEG', rightMarginX, 5, imgWidth, imgHeight);
             
             doc.setFont("helvetica", "bold");
             doc.setFontSize(28);
