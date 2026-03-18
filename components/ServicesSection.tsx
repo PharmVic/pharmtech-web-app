@@ -10,6 +10,9 @@ type Service = {
     link: string;
     desc: string;
     isProduct?: boolean;
+    price?: number;
+    is_promo_active?: boolean;
+    promo_price?: number;
 };
 
 export default function ServicesSection({ initialServices }: { initialServices: Service[] }) {
@@ -54,23 +57,47 @@ export default function ServicesSection({ initialServices }: { initialServices: 
                             const itemLink = svc.isProduct ? `/product/${svc.link}` : `/products/${svc.link}`;
 
                             return (
-                                <div key={idx} className="col-md-6 col-lg-4">
-                                    <div className="service-item bg-light rounded shadow-sm hover:shadow-lg transition-all duration-300 h-100 flex-column d-flex">
+                                <div key={idx} className="col-md-6 col-lg-4 position-relative">
+                                    <div className="service-item bg-light rounded shadow-sm hover:shadow-lg transition-all duration-300 h-100 flex-column d-flex group overflow-hidden">
                                         <div className="service-img overflow-hidden rounded-top" style={{ height: "250px" }}>
-                                            <img src={`${svc.img}?w=500&auto=format`} className="img-fluid w-100 h-100 object-cover hover:scale-110 transition-transform duration-500" alt={svc.title} />
+                                            <img src={`${svc.img}?w=500&auto=format`} className="img-fluid w-100 h-100 object-cover group-hover:scale-110 transition-transform duration-500" alt={svc.title} />
                                         </div>
-                                        <div className="rounded-bottom p-4 flex-grow-1 d-flex flex-column">
+                                        <div className="rounded-bottom p-4 flex-grow-1 d-flex flex-column position-relative z-10">
                                             <div className="mb-2">
                                                 <span className="text-xs font-semibold px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
                                                     {svc.isProduct ? 'Product' : 'Service'}
                                                 </span>
                                             </div>
-                                            <Link href={itemLink} className="h4 d-inline-block mb-3 font-bold hover:text-primary transition-colors">{svc.title}</Link>
+                                            <h4 className="h4 d-inline-block mb-2 font-bold group-hover:text-primary transition-colors">{svc.title}</h4>
+                                            
+                                            {svc.isProduct && svc.price !== undefined && (
+                                                <div className="mb-3">
+                                                    {svc.is_promo_active && svc.promo_price ? (
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-sm line-through text-gray-400">
+                                                                ₦{svc.price.toLocaleString("en-NG")}
+                                                            </span>
+                                                            <span className="text-lg font-bold text-green-600">
+                                                                ₦{svc.promo_price.toLocaleString("en-NG")}
+                                                            </span>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-lg font-bold text-blue-600">
+                                                            ₦{svc.price.toLocaleString("en-NG")}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
+
                                             <p className="mb-4 text-gray-600 flex-grow-1 line-clamp-3">{svc.desc}</p>
-                                            <Link className="btn btn-primary rounded-pill py-2 px-4 text-white mt-auto align-self-start" href={itemLink}>
-                                                {svc.isProduct ? 'View Details' : 'Shop Now'}
-                                            </Link>
+                                            
+                                            <div className="mt-auto align-self-start">
+                                                <span className="btn btn-primary rounded-pill py-2 px-4 text-white">
+                                                    {svc.isProduct ? 'View Details' : 'Shop Now'}
+                                                </span>
+                                            </div>
                                         </div>
+                                        <Link href={itemLink} className="position-absolute w-100 h-100 top-0 start-0 z-20" aria-label={`View ${svc.title}`}></Link>
                                     </div>
                                 </div>
                             );

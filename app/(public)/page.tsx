@@ -77,7 +77,10 @@ export default async function Home() {
             img: (p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : (p.image_url || 'https://images.unsplash.com/photo-1509391366360-1e96f5b16e51'),
             link: p.id,
             desc: p.description || p.name,
-            isProduct: true
+            isProduct: true,
+            price: p.price,
+            is_promo_active: p.is_promo_active,
+            promo_price: p.promo_price
           }))
         ]}
       />
