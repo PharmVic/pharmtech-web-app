@@ -65,6 +65,12 @@ export default function SignUpPage() {
                 }
             });
 
+            if (authData?.user && authData.user.identities && authData.user.identities.length === 0) {
+                setError("An account with this email already exists.");
+                setLoading(false);
+                return;
+            }
+
             if (authError) {
                 console.error("Supabase Error:", authError);
                 alert(`Sign Up Failed: ${authError.message}`);
