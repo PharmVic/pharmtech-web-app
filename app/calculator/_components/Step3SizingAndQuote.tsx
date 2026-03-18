@@ -134,21 +134,29 @@ export default function Step3SizingAndQuote({
         // --- Logo / Header ---
         try {
             const logoImg = new Image();
-            logoImg.src = '/logo.jpeg'; // Make sure you put your logo image in the public folder and name it logo.jpg
+            logoImg.src = '/logo.jpeg'; 
             await new Promise((resolve, reject) => {
                 logoImg.onload = resolve;
                 logoImg.onerror = reject;
             });
-            const imgWidth = 50; 
+            const imgWidth = 40; 
             const imgHeight = (logoImg.height * imgWidth) / logoImg.width;
-            doc.addImage(logoImg, 'JPEG', 14, 15, imgWidth, imgHeight);
             
+            // Place logo on top right. Page width = 210.
+            const rightMarginX = 210 - 14 - imgWidth;
+            doc.addImage(logoImg, 'JPEG', rightMarginX, 15, imgWidth, imgHeight);
+            
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(28);
+            doc.setTextColor(242, 114, 28); // Orange brand color
+            doc.text("PHARMTECH", 14, 22);
+
             doc.setFont("helvetica", "normal");
             doc.setFontSize(16);
             doc.setTextColor(17, 0, 0); // #110000
-            doc.text("SOLAR QUOTE", 14, 15 + imgHeight + 8);
+            doc.text("SOLAR QUOTE", 14, 32);
         } catch (e) {
-            // Fallback to text if logo.png not found
+            // Fallback to text if logo.jpeg not found
             doc.setFont("helvetica", "bold");
             doc.setFontSize(28);
             doc.setTextColor(242, 114, 28); // Orange brand color
