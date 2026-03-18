@@ -21,7 +21,7 @@ export default function ServicesSection({ initialServices }: { initialServices: 
     const filteredServices = initialServices.filter((svc) =>
         svc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         svc.desc.toLowerCase().includes(searchQuery.toLowerCase())
-    ).slice(0, searchQuery ? undefined : 10);
+    );
 
     return (
         <div id="services-search" className="container-fluid service pb-5">
