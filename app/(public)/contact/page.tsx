@@ -29,7 +29,9 @@ export default function ContactPage() {
                                 </div>
                                 <div>
                                     <h3 className="font-semibold text-gray-900">Our Location</h3>
-                                    <p className="text-gray-600">7 Cedar Complex, Ibadan, Nigeria</p>
+                                    <a href="https://maps.app.goo.gl/6ZzqeSg8VU2oDZDA7?g_st=ic" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-blue-600 transition-colors block">
+                                        7 Cedar Complex, Ibadan, Nigeria
+                                    </a>
                                 </div>
                             </div>
 
@@ -53,11 +55,11 @@ export default function ContactPage() {
                                 </div>
                                 <div>
                                     <h3 className="font-semibold text-gray-900">Email Address</h3>
-                                    <p className="text-gray-600">
-                                        <a href="mailto:info@pharmtech.com" className="hover:text-purple-600 hover:underline">
-                                            info@pharmtech.com
+                                    <div className="text-gray-700">
+                                        <a href="mailto:support@pharmtechsolar.com" className="hover:text-purple-600 hover:underline">
+                                            support@pharmtechsolar.com
                                         </a>
-                                    </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

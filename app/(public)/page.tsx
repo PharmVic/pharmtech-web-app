@@ -1,6 +1,7 @@
 import HomepageHero from "@/components/HomepageHero";
 import HomepageActionIcons from "@/components/HomepageActionIcons";
 import ServicesSection from "@/components/ServicesSection";
+import PastInstallationsSection from "@/components/PastInstallationsSection";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -84,6 +85,9 @@ export default async function Home() {
           }))
         ]}
       />
+
+      {/* Past Installations Section */}
+      <PastInstallationsSection />
 
       <div className="container-fluid testimonial pb-5">
         <div className="container pb-5">

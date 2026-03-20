@@ -25,8 +25,8 @@ export default function Help() {
                         <div className="col-md-6">
                             <div className="p-4 border rounded shadow-sm">
                                 <h3 className="h5 font-bold mb-3">Contact Support</h3>
-                                <p className="mb-2">Email: support@pharmtech.com</p>
-                                <p className="mb-2">Phone: +01234567890</p>
+                                <p className="mb-2">Email: support@pharmtechsolar.com</p>
+                                <p className="mb-2">Phone: +234 815 640 1629</p>
                                 <button className="btn btn-primary text-white mt-2">Contact Us</button>
                             </div>
                         </div>

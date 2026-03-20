@@ -68,8 +68,8 @@ export default function PrivacyPolicyPage() {
                         </ul>
 
                         <p className="mt-6">To make a request, contact us at:</p>
-                        <ul className="space-y-1">
-                            <li><strong>Email:</strong> <a href="mailto:info@pharmtech.com" className="text-blue-600 hover:underline">info@pharmtech.com</a></li>
+                        <ul className="list-disc pl-6 text-gray-700 text-sm md:text-base space-y-2">
+                            <li><strong>Email:</strong> <a href="mailto:support@pharmtechsolar.com" className="text-blue-600 hover:underline">support@pharmtechsolar.com</a></li>
                             <li><strong>Phone:</strong> <a href="tel:+2348142111657" className="text-blue-600 hover:underline">+234 814 211 1657</a></li>
                         </ul>
 

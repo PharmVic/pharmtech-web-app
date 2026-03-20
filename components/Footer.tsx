@@ -39,9 +39,11 @@ export default function Footer() {
                     </div>
                     <div className="footer-item">
                         <h4 className="text-lg font-bold mb-4 text-white">Contact Info</h4>
-                        <p className="text-gray-300 mb-2">7 Cedar Complex, Ibadan, Nigeria</p>
+                        <a href="https://maps.app.goo.gl/6ZzqeSg8VU2oDZDA7?g_st=ic" target="_blank" rel="noopener noreferrer" className="text-gray-300 block mb-2 hover:text-white transition-colors">
+                            7 Cedar Complex, Ibadan, Nigeria
+                        </a>
                         <p className="text-gray-300 mb-2">+234 814 211 1657</p>
-                        <p className="text-gray-300 mb-2">info@pharmtech.com</p>
+                        <p className="text-gray-300 mb-2">support@pharmtechsolar.com</p>
                     </div>
                 </div>
             </div>
