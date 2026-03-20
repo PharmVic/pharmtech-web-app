@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, ShoppingCart, CheckCircle, ShieldCheck } from "lucide-react";
 import ProductGallery from "@/components/ProductGallery";
 import AddToCartButton from "@/components/AddToCartButton";
+import ProductComments from "@/components/ProductComments";
 
 export const dynamic = "force-dynamic";
 
@@ -133,6 +134,11 @@ export default async function ProductDetailsPage({
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {/* Product Comments Section */}
+                <div className="mt-12">
+                    <ProductComments productId={product.id} />
                 </div>
 
             </div>
