@@ -32,8 +32,8 @@ export default function Topbar() {
             <div className="row gx-0 align-items-center">
                 <div className="col-lg-8 text-center text-lg-start mb-2 mb-lg-0">
                     <div className="d-flex flex-wrap justify-content-center justify-content-lg-start">
-                        <Link href="/" className="text-primary small me-4 flex items-center gap-2 font-bold hover:text-blue-800 transition-colors">
-                            <Home className="w-4 h-4" /> Home
+                        <Link href="/" className="d-flex align-items-center me-4">
+                            <img src="/logo.jpeg" alt="Pharmtech Solar Logo" style={{ height: "40px", width: "auto" }} className="object-contain" />
                         </Link>
                     </div>
                 </div>

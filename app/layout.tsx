@@ -19,7 +19,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Pharmtech Web Application",
+  title: "Pharmtech Solar",
   description: "CCTV, Solar, Networking, Automation, Access Control",
 };
 
