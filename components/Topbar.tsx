@@ -33,7 +33,7 @@ export default function Topbar() {
                 <div className="col-lg-8 text-center text-lg-start mb-2 mb-lg-0">
                     <div className="d-flex flex-wrap justify-content-center justify-content-lg-start">
                         <Link href="/" className="d-flex align-items-center me-4">
-                            <img src="/logo.jpeg" alt="Pharmtech Solar Logo" style={{ height: "40px", width: "auto", mixBlendMode: "multiply" }} className="object-contain" />
+                            <img src="/logo.jpeg" alt="Pharmtech Solar Logo" style={{ height: "65px", width: "auto", mixBlendMode: "multiply", transform: "translateY(6px)" }} className="object-contain" />
                         </Link>
                     </div>
                 </div>
