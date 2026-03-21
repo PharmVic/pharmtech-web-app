@@ -28,6 +28,10 @@ export default function NewProductPage() {
     const [isPromoActive, setIsPromoActive] = useState(false);
     const [promoPrice, setPromoPrice] = useState("");
 
+    // Instalment State
+    const [allowInstalments, setAllowInstalments] = useState(false);
+    const [instalmentDownPayment, setInstalmentDownPayment] = useState("");
+
     useEffect(() => {
         fetchCategories();
     }, []);
@@ -96,6 +100,8 @@ export default function NewProductPage() {
                 image_urls: imageUrls,
                 is_promo_active: isPromoActive,
                 promo_price: promoPrice ? Number(promoPrice) : null,
+                allow_instalments: allowInstalments,
+                instalment_down_payment: instalmentDownPayment ? Number(instalmentDownPayment) : 0,
             });
 
             if (insertError) throw insertError;
@@ -206,6 +212,40 @@ export default function NewProductPage() {
                             </div>
                         )}
                     </div>
+
+                    {/* Instalment Settings */}
+                    <div className="bg-blue-50 p-6 rounded-xl border border-blue-200">
+                        <div className="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 className="text-sm font-bold text-gray-900">Instalment Payments</h3>
+                                <p className="text-xs text-gray-500">Enable this to allow customers to pay in instalments.</p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="sr-only peer"
+                                    checked={allowInstalments}
+                                    onChange={(e) => setAllowInstalments(e.target.checked)}
+                                />
+                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                        
+                        {allowInstalments && (
+                            <div className="mt-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Down-payment Amount (₦)</label>
+                                <input
+                                    type="number"
+                                    required={allowInstalments}
+                                    value={instalmentDownPayment}
+                                    onChange={(e) => setInstalmentDownPayment(e.target.value)}
+                                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                    placeholder="Initial required deposit"
+                                />
+                            </div>
+                        )}
+                    </div>
+
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>

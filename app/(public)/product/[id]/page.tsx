@@ -5,6 +5,7 @@ import { ArrowLeft, ShoppingCart, CheckCircle, ShieldCheck } from "lucide-react"
 import ProductGallery from "@/components/ProductGallery";
 import AddToCartButton from "@/components/AddToCartButton";
 import ProductComments from "@/components/ProductComments";
+import InstalmentForm from "@/components/InstalmentForm";
 
 export const dynamic = "force-dynamic";
 
@@ -115,7 +116,7 @@ export default async function ProductDetailsPage({
                                 </div>
                             </div>
 
-                            <div className="mt-auto pt-8 border-t border-gray-100 flex gap-4">
+                            <div className="mt-auto pt-8 border-t border-gray-100 flex flex-wrap gap-4">
                                 <AddToCartButton 
                                     product={{
                                         id: product.id,
@@ -131,6 +132,10 @@ export default async function ProductDetailsPage({
                                 >
                                     Inquire
                                 </Link>
+
+                                {product.allow_instalments && product.instalment_down_payment > 0 && (
+                                    <InstalmentForm product={product} />
+                                )}
                             </div>
                         </div>
                     </div>
