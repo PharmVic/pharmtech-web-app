@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Loader2, X, Upload } from "lucide-react";
+import { useRouter } from "next/navigation";
 import PaystackCheckout from "./PaystackCheckout";
 
 interface InstalmentFormProps {
@@ -11,6 +12,7 @@ interface InstalmentFormProps {
 }
 
 export default function InstalmentForm({ product, userId }: InstalmentFormProps) {
+    const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -46,6 +48,20 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
 
     const handleNext = () => setStep((s) => s + 1);
     const handlePrev = () => setStep((s) => s - 1);
+
+    const handleOpenForm = async () => {
+        if (!userId) {
+            setLoading(true);
+            const { data: { session } } = await supabase.auth.getSession();
+            setLoading(false);
+            if (!session) {
+                alert("You must be logged in to apply for instalments.");
+                router.push("/auth/sign-in");
+                return;
+            }
+        }
+        setIsOpen(true);
+    };
 
     const handleSubmitApplication = async () => {
         setLoading(true);
@@ -110,9 +126,11 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
     return (
         <>
             <button
-                onClick={() => setIsOpen(true)}
-                className="px-8 py-4 bg-blue-100 text-blue-700 font-bold rounded-xl hover:bg-blue-200 transition-colors flex items-center justify-center border border-blue-200"
+                onClick={handleOpenForm}
+                disabled={loading}
+                className="px-8 py-4 bg-blue-100 text-blue-700 font-bold rounded-xl hover:bg-blue-200 transition-colors flex items-center justify-center border border-blue-200 disabled:opacity-50"
             >
+                {loading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
                 Buy on Instalment
             </button>
 

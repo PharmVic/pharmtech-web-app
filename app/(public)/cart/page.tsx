@@ -2,18 +2,40 @@
 
 import { useCartStore } from "@/lib/store/cartStore";
 import Link from "next/link";
-import { Trash2, Plus, Minus, ArrowLeft } from "lucide-react";
+import { Trash2, Plus, Minus, ArrowLeft, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function CartPage() {
     const { items, removeItem, updateQuantity, getTotalAmount, clearCart } = useCartStore();
     const [mounted, setMounted] = useState(false);
+    const [checkoutLoading, setCheckoutLoading] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
     if (!mounted) return null; // Avoid hydration mismatch
+
+    const handleProceedToCheckout = async () => {
+        setCheckoutLoading(true);
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                alert("You must be logged in to checkout.");
+                router.push("/auth/sign-in");
+            } else {
+                router.push("/checkout");
+            }
+        } catch (err) {
+            console.error("Session check failed", err);
+            router.push("/checkout"); // Fallback
+        } finally {
+            setCheckoutLoading(false);
+        }
+    };
 
     if (items.length === 0) {
         return (
@@ -137,12 +159,13 @@ export default function CartPage() {
                                 </div>
                             </div>
 
-                            <Link 
-                                href="/checkout" 
-                                className="w-full bg-green-600 text-white font-bold py-4 px-4 rounded-xl flex justify-center items-center hover:bg-green-700 transition-colors shadow-sm hover:shadow-md"
+                            <button 
+                                onClick={handleProceedToCheckout} 
+                                disabled={checkoutLoading}
+                                className="w-full bg-green-600 text-white font-bold py-4 px-4 rounded-xl flex justify-center items-center hover:bg-green-700 transition-colors shadow-sm hover:shadow-md disabled:bg-gray-400"
                             >
-                                Proceed to Checkout
-                            </Link>
+                                {checkoutLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Proceed to Checkout"}
+                            </button>
                         </div>
                     </div>
                 </div>
