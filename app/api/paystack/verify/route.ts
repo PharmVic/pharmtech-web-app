@@ -14,6 +14,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: 'Reference is required' }, { status: 400 });
     }
 
+    if (!process.env.PAYSTACK_SECRET_KEY) {
+      console.error('CRITICAL ERROR: PAYSTACK_SECRET_KEY is strictly undefined on the server.');
+      return NextResponse.json({ success: false, message: 'Backend Configuration Error: Secret Key is entirely missing from the live server environment variables.' }, { status: 500 });
+    }
+
+    if (process.env.PAYSTACK_SECRET_KEY.startsWith('pk_')) {
+      console.error('CRITICAL ERROR: A public key was provided instead of a secret key.');
+      return NextResponse.json({ success: false, message: 'Backend Configuration Error: You accidentally pasted a Public Key (pk_) into the Secret Key setting in Vercel. It must be sk_live_...' }, { status: 500 });
+    }
+
     // ... paystack verification ...
     const paystackResponse = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
       method: 'GET',
