@@ -1,0 +1,262 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { Loader2, Eye, X, CheckCircle, XCircle, FileText, Download } from "lucide-react";
+
+export default function AdminInstalmentsPage() {
+    const [applications, setApplications] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedApp, setSelectedApp] = useState<any | null>(null);
+
+    useEffect(() => {
+        fetchApplications();
+    }, []);
+
+    async function fetchApplications() {
+        setLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from("instalment_applications")
+                .select(`
+                    *,
+                    products (
+                        id,
+                        name,
+                        price,
+                        instalment_down_payment
+                    )
+                `)
+                .order("created_at", { ascending: false });
+
+            if (error) throw error;
+            setApplications(data || []);
+        } catch (err: any) {
+            console.error("Error fetching applications:", err);
+            alert("Failed to load instalment applications.");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    async function updateStatus(id: string, newStatus: string) {
+        if (!confirm(`Are you sure you want to mark this application as ${newStatus}?`)) return;
+        
+        try {
+            const { error } = await supabase
+                .from("instalment_applications")
+                .update({ status: newStatus })
+                .eq("id", id);
+                
+            if (error) throw error;
+            
+            // Update local state
+            setApplications(apps => apps.map(app => 
+                app.id === id ? { ...app, status: newStatus } : app
+            ));
+            
+            if (selectedApp && selectedApp.id === id) {
+                setSelectedApp({ ...selectedApp, status: newStatus });
+            }
+            
+        } catch (err: any) {
+            console.error("Error updating status:", err);
+            alert("Failed to update status.");
+        }
+    }
+
+    return (
+        <div className="p-4 md:p-8 max-w-7xl mx-auto">
+            <div className="flex justify-between items-center mb-8">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">Instalment Applications</h1>
+                    <p className="text-gray-500 text-sm mt-1">Review customer KYC details and approve instalment payments.</p>
+                </div>
+                <button onClick={fetchApplications} className="text-sm bg-white border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition">
+                    Refresh List
+                </button>
+            </div>
+
+            {loading ? (
+                <div className="flex justify-center items-center h-64">
+                    <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                </div>
+            ) : applications.length === 0 ? (
+                <div className="bg-white rounded-xl shadow-sm border p-12 text-center text-gray-500">
+                    <FileText className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                    <p className="text-lg font-medium text-gray-700">No applications found</p>
+                    <p className="text-sm mt-1">When customers submit instalment forms, they will appear here.</p>
+                </div>
+            ) : (
+                <div className="bg-white shadow-sm border rounded-xl overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left text-sm text-gray-600">
+                            <thead className="bg-gray-50 text-gray-700 border-b">
+                                <tr>
+                                    <th className="px-6 py-4 font-semibold">Date</th>
+                                    <th className="px-6 py-4 font-semibold">Customer</th>
+                                    <th className="px-6 py-4 font-semibold">Product</th>
+                                    <th className="px-6 py-4 font-semibold">Status</th>
+                                    <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                                {applications.map((app) => (
+                                    <tr key={app.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            {new Date(app.created_at).toLocaleDateString()}
+                                            <div className="text-xs text-gray-400">{new Date(app.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="font-medium text-gray-900">{app.name}</div>
+                                            <div className="text-xs text-gray-500">{app.phone}</div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="font-medium text-gray-800 line-clamp-1">{app.products?.name || "Unknown Product"}</div>
+                                            <div className="text-xs text-green-600 font-medium">Down: ₦{app.products?.instalment_down_payment?.toLocaleString()}</div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${
+                                                app.status === 'approved' ? 'bg-green-100 text-green-700' :
+                                                app.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                                                'bg-yellow-100 text-yellow-700'
+                                            }`}>
+                                                {app.status.toUpperCase()}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <button 
+                                                onClick={() => setSelectedApp(app)}
+                                                className="text-blue-600 hover:text-blue-800 font-medium flex items-center justify-end gap-1 w-full"
+                                            >
+                                                <Eye className="w-4 h-4" /> View Details
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            {/* Application Detail Modal */}
+            {selectedApp && (
+                <div className="fixed inset-0 z-50 flex justify-end bg-black bg-opacity-60 overflow-hidden">
+                    <div className="bg-white w-full max-w-2xl h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+                        {/* Modal Header */}
+                        <div className="px-6 py-4 border-b flex justify-between items-center bg-gray-50 shadow-sm z-10">
+                            <div>
+                                <h2 className="text-xl font-bold text-gray-800">Application Details</h2>
+                                <p className="text-xs text-gray-500">ID: {selectedApp.id}</p>
+                            </div>
+                            <button onClick={() => setSelectedApp(null)} className="text-gray-500 hover:text-gray-800 p-2 bg-gray-200 rounded-full transition">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {/* Modal Body */}
+                        <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-gray-50">
+                            
+                            {/* Status Actions */}
+                            <div className="bg-white p-4 rounded-xl border shadow-sm flex items-center justify-between">
+                                <div>
+                                    <span className="text-sm text-gray-500 block mb-1">Current Status</span>
+                                    <span className={`px-3 py-1 text-sm font-bold rounded-full ${
+                                        selectedApp.status === 'approved' ? 'bg-green-100 text-green-700' :
+                                        selectedApp.status === 'rejected' ? 'bg-red-100 text-red-700' :
+                                        'bg-yellow-100 text-yellow-700'
+                                    }`}>
+                                        {selectedApp.status.toUpperCase()}
+                                    </span>
+                                </div>
+                                <div className="flex gap-2">
+                                    {selectedApp.status !== 'approved' && (
+                                        <button onClick={() => updateStatus(selectedApp.id, 'approved')} className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                                            <CheckCircle className="w-4 h-4" /> Approve
+                                        </button>
+                                    )}
+                                    {selectedApp.status !== 'rejected' && (
+                                        <button onClick={() => updateStatus(selectedApp.id, 'rejected')} className="flex items-center gap-1 bg-red-100 text-red-700 hover:bg-red-200 px-4 py-2 rounded-lg text-sm font-medium transition">
+                                            <XCircle className="w-4 h-4" /> Reject
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Section 1: Product & Payment */}
+                            <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+                                <div className="bg-gray-100 px-4 py-2 border-b font-semibold text-gray-700 text-sm uppercase tracking-wider">Product & Payment</div>
+                                <div className="p-4 grid grid-cols-2 gap-4 text-sm">
+                                    <div><span className="text-gray-500 block">Product Requested</span> <span className="font-medium">{selectedApp.products?.name}</span></div>
+                                    <div><span className="text-gray-500 block">Total Price</span> <span className="font-medium">₦{selectedApp.products?.price?.toLocaleString()}</span></div>
+                                    <div className="col-span-2"><span className="text-gray-500 block">Required Down Payment</span> <span className="font-bold text-green-600 text-lg">₦{selectedApp.products?.instalment_down_payment?.toLocaleString()}</span></div>
+                                </div>
+                            </div>
+
+                            {/* Section 2: Client Info */}
+                            <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+                                <div className="bg-blue-50 px-4 py-2 border-b font-semibold text-blue-800 text-sm uppercase tracking-wider">Client Information</div>
+                                <div className="p-4 grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
+                                    <div><span className="text-gray-500 block text-xs">Full Name</span> <span className="font-medium">{selectedApp.name}</span></div>
+                                    <div><span className="text-gray-500 block text-xs">Phone Number</span> <span className="font-medium">{selectedApp.phone}</span></div>
+                                    <div><span className="text-gray-500 block text-xs">Email Address</span> <span className="font-medium">{selectedApp.email}</span></div>
+                                    <div><span className="text-gray-500 block text-xs">BVN</span> <span className="font-mono bg-gray-100 px-2 py-0.5 rounded text-red-600 tracking-wider font-bold">{selectedApp.bvn || 'N/A'}</span></div>
+                                    <div><span className="text-gray-500 block text-xs">Relationship Status</span> <span>{selectedApp.relationship_status}</span></div>
+                                    <div><span className="text-gray-500 block text-xs">Occupation</span> <span>{selectedApp.occupation}</span></div>
+                                    <div className="col-span-2"><span className="text-gray-500 block text-xs">Residential Address</span> <span>{selectedApp.address}</span></div>
+                                </div>
+                            </div>
+
+                            {/* Section 3: Guarantor Info */}
+                            <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+                                <div className="bg-orange-50 px-4 py-2 border-b font-semibold text-orange-800 text-sm uppercase tracking-wider">Guarantor Information</div>
+                                <div className="p-4 grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
+                                    <div><span className="text-gray-500 block text-xs">Guarantor Name</span> <span className="font-medium">{selectedApp.guarantor_name}</span></div>
+                                    <div><span className="text-gray-500 block text-xs">Guarantor Phone</span> <span className="font-medium">{selectedApp.guarantor_phone}</span></div>
+                                    <div><span className="text-gray-500 block text-xs">Guarantor Email</span> <span>{selectedApp.guarantor_email || 'N/A'}</span></div>
+                                    <div><span className="text-gray-500 block text-xs">Relationship to Client</span> <span>{selectedApp.guarantor_relationship}</span></div>
+                                    <div className="col-span-2"><span className="text-gray-500 block text-xs">Guarantor Address</span> <span>{selectedApp.guarantor_address}</span></div>
+                                </div>
+                            </div>
+
+                            {/* Section 4: Documents */}
+                            <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+                                <div className="bg-purple-50 px-4 py-2 border-b font-semibold text-purple-800 text-sm uppercase tracking-wider">KYC Documents</div>
+                                <div className="p-4 space-y-4 text-sm">
+                                    <div>
+                                        <span className="text-gray-500 block text-xs mb-1">NIN Number</span>
+                                        <span className="font-mono bg-gray-100 px-2 py-0.5 rounded text-purple-700 tracking-wider font-bold">{selectedApp.nin_number || 'N/A'}</span>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t">
+                                        <a href={selectedApp.id_document_url} target="_blank" rel="noopener noreferrer" className="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition group">
+                                            <div className="bg-purple-100 p-2 rounded mr-3 text-purple-600 group-hover:bg-purple-200 transition">
+                                                <FileText className="w-6 h-6" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="font-semibold text-gray-800 text-sm">ID Document (NIN)</div>
+                                                <div className="text-xs text-blue-600 flex items-center gap-1 mt-0.5"><Download className="w-3 h-3" /> View / Download</div>
+                                            </div>
+                                        </a>
+
+                                        <a href={selectedApp.proof_of_address_url} target="_blank" rel="noopener noreferrer" className="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition group">
+                                            <div className="bg-purple-100 p-2 rounded mr-3 text-purple-600 group-hover:bg-purple-200 transition">
+                                                <FileText className="w-6 h-6" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="font-semibold text-gray-800 text-sm">Proof of Address</div>
+                                                <div className="text-xs text-blue-600 flex items-center gap-1 mt-0.5"><Download className="w-3 h-3" /> View / Download</div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}

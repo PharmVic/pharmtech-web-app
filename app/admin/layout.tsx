@@ -92,6 +92,9 @@ export default function AdminLayout({
                         <Link href="/admin/past-installations" className="text-sm font-medium text-gray-600 hover:text-blue-800 transition-colors flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 rounded-md bg-gray-50 md:bg-transparent border md:border-transparent">
                             <i className="fas fa-image w-4 h-4 flex items-center justify-center text-xs"></i> Past Installations
                         </Link>
+                        <Link href="/admin/instalments" className="text-sm font-medium text-gray-600 hover:text-blue-800 transition-colors flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 rounded-md bg-gray-50 md:bg-transparent border md:border-transparent">
+                            <i className="fas fa-file-contract w-4 h-4 flex items-center justify-center text-xs"></i> Instalments
+                        </Link>
                     </div>
                 </div>
                 <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded border border-blue-100 self-end md:self-auto -mt-10 md:mt-0">
