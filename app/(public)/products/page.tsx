@@ -47,7 +47,7 @@ export default async function ProductsPage() {
                                     <img
                                         src={category.image_url}
                                         alt={category.name}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                        className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
                                     />
                                 ) : (
                                     <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-opacity-20">

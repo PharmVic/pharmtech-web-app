@@ -32,7 +32,7 @@ export default function ProductGallery({ images, alt, isFeatured }: ProductGalle
                     <img
                         src={mainImage}
                         alt={alt}
-                        className="w-full h-full object-cover transition-opacity duration-300"
+                        className="w-full h-full object-contain bg-white transition-opacity duration-300"
                     />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-500">
@@ -56,7 +56,7 @@ export default function ProductGallery({ images, alt, isFeatured }: ProductGalle
                             className={`flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border-2 transition-all ${mainImage === url ? 'border-blue-600 opacity-100' : 'border-transparent opacity-60 hover:opacity-100'
                                 }`}
                         >
-                            <img src={url} alt={`${alt} - view ${idx + 1}`} className="w-full h-full object-cover" />
+                            <img src={url} alt={`${alt} - view ${idx + 1}`} className="w-full h-full object-contain bg-white" />
                         </button>
                     ))}
                 </div>

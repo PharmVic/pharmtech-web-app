@@ -68,7 +68,7 @@ export default function CartPage() {
                                         {/* Image */}
                                         <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-xl overflow-hidden">
                                             {item.image_url ? (
-                                                <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                                                <img src={item.image_url} alt={item.name} className="w-full h-full object-contain bg-white" />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-gray-500 text-xs">No Image</div>
                                             )}

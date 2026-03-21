@@ -63,9 +63,9 @@ export default async function CategoryProductsPage({
                             <div className="relative h-64 bg-gray-100 overflow-hidden">
                                 {product.image_url ? (
                                     <img
-                                        src={product.image_url}
+                                        src={product.image_url || "/placeholder-product.png"}
                                         alt={product.name}
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                        className="w-full h-full object-contain bg-white transition-transform duration-500 group-hover:scale-105"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500">
