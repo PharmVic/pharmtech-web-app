@@ -20,6 +20,7 @@ export async function POST(req: Request) {
       headers: {
         Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
       },
+      cache: 'no-store'
     });
 
     const paystackData = await paystackResponse.json();
@@ -50,10 +51,15 @@ export async function POST(req: Request) {
 
       return NextResponse.json({ success: true, message: 'Payment verified and saved' });
     } else {
-       return NextResponse.json({ success: false, message: 'Payment verification failed' }, { status: 400 });
+       console.error('Payment verification failed at Paystack:', paystackData);
+       return NextResponse.json({ 
+         success: false, 
+         message: paystackData.message || 'Payment verification failed',
+         paystackData 
+       }, { status: 400 });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Payment verification error:', error);
-    return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ success: false, message: error.message || 'Internal server error' }, { status: 500 });
   }
 }

@@ -59,12 +59,13 @@ export default function PaystackCheckout({
   const handlePaymentSuccess = async (reference: any) => {
     setIsProcessing(true);
     try {
+      const refString = typeof reference === 'string' ? reference : reference.reference || reference.trans;
       // Call backend to verify and save payment
       const response = await fetch('/api/paystack/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          reference: reference.reference,
+          reference: refString,
           email,
           phone,
           amount,
@@ -76,9 +77,10 @@ export default function PaystackCheckout({
       });
       const data = await response.json();
       if (data.success) {
-        if (onSuccess) onSuccess(reference.reference);
+        if (onSuccess) onSuccess(refString);
       } else {
-        alert('Payment verification failed. Please contact support.');
+        console.error('Payment verification failed details:', data);
+        alert(`Payment verification failed: ${data.message || 'Please contact support.'}`);
       }
     } catch (error) {
       console.error('Error verifying payment:', error);
