@@ -20,6 +20,8 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
     const [loading, setLoading] = useState(false);
     const [applicationId, setApplicationId] = useState<string | null>(null);
     const [durationMonths, setDurationMonths] = useState<number | null>(null);
+    const [acceptedTerms, setAcceptedTerms] = useState(false);
+    const [showTerms, setShowTerms] = useState(false);
 
     const availableDurations = [
         { label: "3 Months", value: 3, price: product?.instalment_3m_price },
@@ -226,13 +228,165 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                                         </div>
                                     )}
 
+                                    <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg flex items-start gap-3">
+                                        <input 
+                                            type="checkbox" 
+                                            id="terms" 
+                                            checked={acceptedTerms}
+                                            onChange={(e) => setAcceptedTerms(e.target.checked)}
+                                            className="mt-1 w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+                                        />
+                                        <label htmlFor="terms" className="text-sm text-gray-700 leading-relaxed cursor-pointer select-none">
+                                            By ticking this box, I confirm that I have read, understood, and agree to the 
+                                            <button 
+                                                type="button" 
+                                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowTerms(true); }} 
+                                                className="text-blue-600 hover:text-blue-800 font-bold mx-1 underline"
+                                            >
+                                                Terms and Conditions
+                                            </button>
+                                            governing the Pharmtech Inverter Multiconcept installment payment plan.
+                                        </label>
+                                    </div>
+
                                     <button 
                                         onClick={handleNext} 
-                                        disabled={!name || !phone || !email || !address || !durationMonths}
+                                        disabled={!name || !phone || !email || !address || !durationMonths || !acceptedTerms}
                                         className="mt-6 w-full py-3 bg-blue-600 text-white rounded-lg font-bold disabled:bg-gray-300 transition-colors"
                                     >
                                         Next
                                     </button>
+                                </div>
+                            )}
+
+                            {/* Terms Modal Overlay */}
+                            {showTerms && (
+                                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black bg-opacity-70 p-4">
+                                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+                                        <div className="px-6 py-4 border-b flex justify-between items-center bg-gray-50">
+                                            <h3 className="font-bold text-gray-900 text-lg">Terms and Conditions</h3>
+                                            <button onClick={() => setShowTerms(false)} className="text-gray-500 hover:text-gray-700 bg-gray-200 p-1 rounded-full"><X className="w-5 h-5"/></button>
+                                        </div>
+                                        <div className="p-6 overflow-y-auto flex-1 text-sm text-gray-700 space-y-5 leading-relaxed">
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">1. Introduction</h4>
+                                                <p>These Terms and Conditions govern the installment payment plan offered by Pharmtech Inverter Multiconcept (“the Company”) for the purchase and installation of solar systems and related products.</p>
+                                                <p className="mt-2">By opting for installment payment, the customer (“Client”) agrees to be bound by these terms.</p>
+                                            </div>
+                                            
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">2. Eligibility</h4>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>Installment payment is available only to verified customers.</li>
+                                                    <li>The Company reserves the right to approve or decline any installment request.</li>
+                                                    <li>Valid identification and proof of address may be required.</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">3. Payment Structure</h4>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>A minimum upfront deposit of 27.28% of the total cost is required before installation begins.</li>
+                                                    <li>The remaining balance shall be paid in agreed installments over a period of 3-12 months.</li>
+                                                    <li>A detailed payment schedule will be provided and agreed upon before project commencement.</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">4. Pricing & Interest</h4>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>Prices of solar packages may vary based on market conditions.</li>
+                                                    <li>Installment plans may attract a service charge/interest fee which will be clearly communicated upfront.</li>
+                                                    <li>Failure to complete payments may result in additional charges.</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">5. Installation Policy</h4>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>Installation will only commence after the required initial deposit has been received.</li>
+                                                    <li>The system remains the property of the Company until full payment is completed.</li>
+                                                    <li>The Company reserves the right to delay installation if agreed payment terms are not met.</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">6. Ownership & Title</h4>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>Ownership of all installed equipment remains with Pharmtech Solar Services until full payment is made.</li>
+                                                    <li>Upon full payment, ownership is transferred to the Client.</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">7. Default & Repossession</h4>
+                                                <p className="mb-2">If a Client fails to meet payment obligations:</p>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>A grace period of 3–7 days may be granted.</li>
+                                                    <li>After the grace period, a late payment penalty of 5% of the month's payment may apply.</li>
+                                                    <li>Continued default may result in disconnection or repossession of the solar system without refund of previous payments.</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">8. Maintenance & Warranty</h4>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>Warranty covers the installation for 6 months after installation.</li>
+                                                    <li>Warranty covers materials at given duration by the manufacturer.</li>
+                                                    <li>Any damage due to misuse, tampering, or unauthorized modifications voids warranty.</li>
+                                                    <li>Maintenance services may be offered separately.</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">9. Cancellation Policy</h4>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>Orders cannot be canceled after installation has commenced.</li>
+                                                    <li>Deposits made are non-refundable, except at the Company’s discretion.</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">10. Client Responsibilities</h4>
+                                                <p className="mb-2">The Client agrees to:</p>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>Provide safe and secure installation access.</li>
+                                                    <li>Avoid tampering with installed equipment.</li>
+                                                    <li>Make payments on time as agreed.</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">11. Liability Limitation</h4>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>The Company shall not be liable for power output variations due to weather conditions or environmental factors.</li>
+                                                    <li>The Company is not responsible for damages caused by external factors (e.g., fire, flood, theft).</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">12. Dispute Resolution</h4>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>Any disputes shall first be resolved amicably.</li>
+                                                    <li>If unresolved, disputes shall be subject to the laws of the Federal Republic of Nigeria.</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">13. Amendments</h4>
+                                                <p>Pharmtech Inverter Multiconcept reserves the right to modify these terms at any time. Clients will be notified of any changes.</p>
+                                            </div>
+                                        </div>
+                                        <div className="p-4 border-t bg-gray-50 flex justify-end gap-3">
+                                            <button onClick={() => setShowTerms(false)} className="px-5 py-2 text-gray-600 font-medium hover:bg-gray-200 rounded-lg">Close</button>
+                                            <button 
+                                                onClick={() => { setAcceptedTerms(true); setShowTerms(false); }} 
+                                                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shadow-md transition-colors"
+                                            >
+                                                Accept Terms
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
 
