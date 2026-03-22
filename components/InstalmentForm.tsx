@@ -22,6 +22,8 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
     const [durationMonths, setDurationMonths] = useState<number | null>(null);
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [showTerms, setShowTerms] = useState(false);
+    const [acceptedGuarantorTerms, setAcceptedGuarantorTerms] = useState(false);
+    const [showGuarantorTerms, setShowGuarantorTerms] = useState(false);
 
     const availableDurations = [
         { label: "3 Months", value: 3, price: product?.instalment_3m_price },
@@ -415,15 +417,159 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                                             <input type="text" value={gAddress} onChange={e => setGAddress(e.target.value)} className="w-full p-2 border rounded outline-none focus:border-blue-500" />
                                         </div>
                                     </div>
+
+                                    <div className="mt-6 p-4 bg-orange-50 border border-orange-200 rounded-lg flex items-start gap-3">
+                                        <input 
+                                            type="checkbox" 
+                                            id="gTerms" 
+                                            checked={acceptedGuarantorTerms}
+                                            onChange={(e) => setAcceptedGuarantorTerms(e.target.checked)}
+                                            className="mt-1 w-5 h-5 text-orange-600 border-gray-300 rounded focus:ring-orange-500 cursor-pointer"
+                                        />
+                                        <label htmlFor="gTerms" className="text-sm text-gray-700 leading-relaxed cursor-pointer select-none">
+                                            I confirm that my Guarantor has been informed, agrees to, and is bound by the 
+                                            <button 
+                                                type="button" 
+                                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowGuarantorTerms(true); }} 
+                                                className="text-orange-600 hover:text-orange-800 font-bold mx-1 underline"
+                                            >
+                                                Guarantor Terms and Conditions
+                                            </button>
+                                            governing this agreement.
+                                        </label>
+                                    </div>
+
                                     <div className="mt-6 flex gap-4">
-                                        <button onClick={handlePrev} className="px-6 py-3 bg-gray-100 rounded-lg font-bold text-gray-700">Back</button>
+                                        <button onClick={handlePrev} className="px-6 py-3 bg-gray-100 rounded-lg font-bold text-gray-700 hover:bg-gray-200 transition-colors">Back</button>
                                         <button 
                                             onClick={handleNext} 
-                                            disabled={!gName || !gPhone || !gAddress}
-                                            className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-bold disabled:bg-gray-300"
+                                            disabled={!gName || !gPhone || !gEmail || !gRelationship || !gAddress || !acceptedGuarantorTerms}
+                                            className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-bold disabled:bg-gray-300 transition-colors"
                                         >
                                             Next
                                         </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Guarantor Terms Modal Overlay */}
+                            {showGuarantorTerms && (
+                                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black bg-opacity-70 p-4">
+                                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+                                        <div className="px-6 py-4 border-b flex justify-between items-center bg-orange-50">
+                                            <h3 className="font-bold text-gray-900 text-lg">Guarantor Terms and Conditions</h3>
+                                            <button onClick={() => setShowGuarantorTerms(false)} className="text-gray-500 hover:text-gray-700 bg-orange-100 p-1 rounded-full"><X className="w-5 h-5"/></button>
+                                        </div>
+                                        <div className="p-6 overflow-y-auto flex-1 text-sm text-gray-700 space-y-5 leading-relaxed">
+                                            <p className="text-center font-bold text-gray-900 text-base border-b pb-4 mb-4">Pharmtech Solar Services</p>
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">1. Introduction</h4>
+                                                <p>These Terms and Conditions govern the role and obligations of the Guarantor for customers purchasing solar systems on an installment basis from Pharmtech Solar Services (“the Company”).</p>
+                                                <p className="mt-2">By signing this document, the Guarantor agrees to be legally bound by these terms.</p>
+                                            </div>
+                                            
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">2. Definition of Guarantor</h4>
+                                                <p>A Guarantor is an individual who agrees to take responsibility for the repayment of the Client’s outstanding debt in the event of default.</p>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">3. Guarantor Eligibility</h4>
+                                                <p className="mb-2">The Guarantor must:</p>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>Be at least 18 years old</li>
+                                                    <li>Provide valid identification (National ID, Voter’s Card, Driver’s License, or International Passport)</li>
+                                                    <li>Provide verifiable address and contact details</li>
+                                                    <li>Be financially capable of covering the Client’s obligation</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">4. Scope of Guarantee</h4>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>The Guarantor agrees to fully cover any unpaid balance owed by the Client.</li>
+                                                    <li>This includes: Outstanding principal amount, Applicable interest or service charges, and Late payment penalties.</li>
+                                                    <li>The obligation remains valid until the Client completes full payment.</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">5. Liability in Case of Default</h4>
+                                                <p className="mb-2">If the Client fails to meet payment obligations within the agreed time:</p>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>The Company will notify the Guarantor.</li>
+                                                    <li>The Guarantor is required to settle the outstanding amount within 3–7 days of notification.</li>
+                                                    <li>Failure by the Guarantor to comply may result in legal action.</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">6. Joint and Several Liability</h4>
+                                                <p>The Guarantor’s liability is joint and several, meaning the Company can demand payment directly from the Guarantor without first exhausting remedies against the Client.</p>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">7. Irrevocability of Guarantee</h4>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>This guarantee is irrevocable until the Client fully repays the debt.</li>
+                                                    <li>The Guarantor cannot withdraw or transfer this responsibility without written consent from the Company.</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">8. Right to Recover from Client</h4>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>If the Guarantor pays on behalf of the Client, they may independently seek reimbursement from the Client.</li>
+                                                    <li>The Company is not responsible for enforcing such recovery.</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">9. Repossession Rights</h4>
+                                                <p className="mb-2">In case of default, the Company reserves the right to:</p>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>Disconnect the solar system</li>
+                                                    <li>Repossess installed equipment</li>
+                                                </ul>
+                                                <p className="mt-2 text-sm italic">This does not eliminate the Guarantor’s obligation to settle any remaining balance.</p>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">10. Verification & Consent</h4>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>The Company reserves the right to verify all information provided by the Guarantor.</li>
+                                                    <li>The Guarantor consents to being contacted regarding the Client’s payment status.</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">11. Legal Action</h4>
+                                                <p className="mb-2">Failure to honor this agreement may result in:</p>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    <li>Legal proceedings</li>
+                                                    <li>Recovery actions as permitted under the laws of the Federal Republic of Nigeria</li>
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">12. Duration of Agreement</h4>
+                                                <p>This agreement remains valid until the Client’s full payment obligation has been satisfied.</p>
+                                            </div>
+                                            
+                                            <div>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">13. Acceptance</h4>
+                                                <p>Checking the acceptance box signifies full agreement to the Guarantor Terms defined herein.</p>
+                                            </div>
+                                        </div>
+                                        <div className="p-4 border-t bg-gray-50 flex justify-end gap-3">
+                                            <button onClick={() => setShowGuarantorTerms(false)} className="px-5 py-2 text-gray-600 font-medium hover:bg-gray-200 rounded-lg">Close</button>
+                                            <button 
+                                                onClick={() => { setAcceptedGuarantorTerms(true); setShowGuarantorTerms(false); }} 
+                                                className="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-bold shadow-md transition-colors"
+                                            >
+                                                Accept Guarantor Terms
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             )}
