@@ -143,8 +143,8 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
             
             setStep(4); // Move to Payment Step
         } catch (error: any) {
-            console.error(error);
-            alert("Error submitting application: " + error.message);
+            console.error("Application Error:", error);
+            alert("An error occurred while submitting your application. Please try again. If the issue persists, contact support.");
         } finally {
             setLoading(false);
         }

@@ -85,7 +85,8 @@ export default function EditReviewPage() {
             router.push("/admin/reviews");
             router.refresh();
         } catch (error: any) {
-            alert(error.message);
+            console.error("Review update error:", error);
+            alert("An error occurred while updating the review. Please try again.");
         } finally {
             setSaving(false);
         }

@@ -89,7 +89,7 @@ export default function PastInstallationsPage() {
             fetchImages();
         } catch (error: any) {
             console.error("Error uploading image:", error);
-            alert(error.message || "Failed to upload image.");
+            alert("Failed to upload image. Please try again.");
         } finally {
             setUploading(false);
         }

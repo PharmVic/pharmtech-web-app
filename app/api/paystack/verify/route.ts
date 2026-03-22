@@ -111,6 +111,6 @@ export async function POST(req: Request) {
     }
   } catch (error: any) {
     console.error('Payment verification error:', error);
-    return NextResponse.json({ success: false, message: error.message || 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ success: false, message: 'An internal verification error occurred. Please contact support.' }, { status: 500 });
   }
 }

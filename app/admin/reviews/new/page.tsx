@@ -54,7 +54,8 @@ export default function NewReviewPage() {
             router.refresh();
 
         } catch (error: any) {
-            alert(error.message);
+            console.error("Review save error:", error);
+            alert("An error occurred while saving the review. Please try again.");
         } finally {
             setLoading(false);
         }

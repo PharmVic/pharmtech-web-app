@@ -85,7 +85,7 @@ export default function AdminAboutImagesPage() {
 
         } catch (error: any) {
             console.error("Error uploading image:", error);
-            alert(`Error updating image: ${error.message}`);
+            alert("Error updating image. Please try again.");
         } finally {
             setUploadingPos(null);
             // reset input

@@ -358,7 +358,7 @@ export default function SolarCalculator() {
 
             if (error) {
                 console.error("Save error details:", JSON.stringify(error, null, 2));
-                alert(`Failed to save quote: ${error.message || "Unknown error"}`);
+                alert("Failed to save quote. Please try again or contact support.");
             } else {
                 alert("Quote saved successfully!");
             }

@@ -56,7 +56,8 @@ export default function CalculatorItemsAdmin() {
             if (error) throw error;
             fetchAll();
         } catch (error: any) {
-            alert("Failed to delete: " + error.message);
+            console.error("Delete error:", error);
+            alert("Failed to delete item. Please try again.");
         }
     };
 
@@ -94,7 +95,8 @@ export default function CalculatorItemsAdmin() {
             setIsEditingId(null);
             fetchAll();
         } catch (error: any) {
-            alert("Failed to save: " + error.message);
+            console.error("Save error:", error);
+            alert("Failed to save item. Please try again.");
         }
     };
 

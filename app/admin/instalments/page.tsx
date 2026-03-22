@@ -261,6 +261,18 @@ export default function AdminInstalmentsPage() {
                                                 <div className="text-xs text-blue-600 flex items-center gap-1 mt-0.5"><Download className="w-3 h-3" /> View / Download</div>
                                             </div>
                                         </a>
+
+                                        {selectedApp.guarantor_id_doc_url && (
+                                            <a href={selectedApp.guarantor_id_doc_url} target="_blank" rel="noopener noreferrer" className="flex items-center p-3 border rounded-lg hover:bg-orange-50 border-orange-100 transition group">
+                                                <div className="bg-orange-100 p-2 rounded mr-3 text-orange-600 group-hover:bg-orange-200 transition">
+                                                    <FileText className="w-6 h-6" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <div className="font-semibold text-gray-800 text-sm">Guarantor ID</div>
+                                                    <div className="text-xs text-orange-600 flex items-center gap-1 mt-0.5"><Download className="w-3 h-3" /> View / Download</div>
+                                                </div>
+                                            </a>
+                                        )}
                                     </div>
                                 </div>
                             </div>
