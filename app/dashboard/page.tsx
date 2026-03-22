@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import { User, FileText, LogOut, Award, Link as LinkIcon, Copy, ShoppingCart, CreditCard } from "lucide-react";
-import PaystackCheckout from "@/components/PaystackCheckout";
+import dynamic from 'next/dynamic';
+
+const PaystackCheckout = dynamic(() => import("@/components/PaystackCheckout"), { ssr: false });
 
 type Quote = {
     id: string;
@@ -175,7 +177,7 @@ export default function UserDashboard() {
                         <p className="text-xs text-blue-200 mb-3">Earn 1% of the purchase value when someone signs up with your link and buys our products!</p>
                         <div className="flex items-center gap-2 bg-black/20 p-2 rounded w-full overflow-hidden">
                             <code className="text-sm flex-1 truncate select-all text-yellow-100 min-w-0">
-                                {profile?.referral_code ? `${window.location.origin}/auth/sign-up?ref=${profile.referral_code}` : 'Generating...'}
+                                {profile?.referral_code ? `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/sign-up?ref=${profile.referral_code}` : 'Generating...'}
                             </code>
                             <button
                                 onClick={copyReferralLink}

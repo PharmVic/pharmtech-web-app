@@ -4,7 +4,9 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Loader2, X, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
-import PaystackCheckout from "./PaystackCheckout";
+import dynamic from 'next/dynamic';
+
+const PaystackCheckout = dynamic(() => import("./PaystackCheckout"), { ssr: false });
 
 interface InstalmentFormProps {
     product: any;
