@@ -64,3 +64,7 @@ CREATE POLICY "Users can update own schedules"
 ON public.instalment_schedules FOR UPDATE USING (
     auth.uid() = user_id
 );
+
+-- 6. Add guarantor_id_doc_url to instalment_applications
+ALTER TABLE public.instalment_applications
+ADD COLUMN IF NOT EXISTS guarantor_id_doc_url text;

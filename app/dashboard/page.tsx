@@ -225,7 +225,17 @@ export default function UserDashboard() {
                     ) : (
                         <div className="space-y-4">
                             {schedules.filter(s => s.status === 'pending').map((schedule) => {
-                                const isLate = new Date(schedule.due_date) < new Date();
+                                const dueDate = new Date(schedule.due_date);
+                                const now = new Date();
+                                const gracePeriodEnd = new Date(dueDate);
+                                gracePeriodEnd.setDate(gracePeriodEnd.getDate() + 7);
+                                
+                                const isLate = now > dueDate;
+                                const isPenaltyApplied = now > gracePeriodEnd;
+                                
+                                const baseAmount = Number(schedule.amount_due);
+                                const finalAmount = isPenaltyApplied ? baseAmount * 1.05 : baseAmount;
+
                                 return (
                                     <div key={schedule.id} className={`border p-5 rounded-xl shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${isLate ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-white'}`}>
                                         <div className="flex-1">
@@ -234,19 +244,20 @@ export default function UserDashboard() {
                                             </div>
                                             <div className="flex items-center gap-2 mb-2">
                                                 <span className={`text-xs font-bold px-2 py-1 rounded border ${isLate ? 'bg-red-100 text-red-700 border-red-200' : 'bg-blue-50 text-blue-700 border-blue-100'}`}>
-                                                    {isLate ? 'OVERDUE' : 'UPCOMING'}
+                                                    {isPenaltyApplied ? 'OVERDUE (+5% PENALTY)' : isLate ? 'OVERDUE (GRACE PERIOD)' : 'UPCOMING'}
                                                 </span>
                                                 <span className="text-sm font-medium text-gray-600">
-                                                    Due Date: {new Date(schedule.due_date).toLocaleDateString()}
+                                                    Due Date: {dueDate.toLocaleDateString()}
                                                 </span>
                                             </div>
-                                            <div className="text-2xl font-extrabold text-blue-800">
-                                                ₦{Number(schedule.amount_due).toLocaleString()}
+                                            <div className="text-2xl font-extrabold text-blue-800 flex items-center flex-wrap gap-2">
+                                                ₦{finalAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                                                {isPenaltyApplied && <span className="text-sm font-semibold text-red-500 bg-red-100 px-2 py-0.5 rounded-full">+5% Late Fee</span>}
                                             </div>
                                         </div>
                                         <div className="w-full sm:w-auto shrink-0 min-w-[200px]">
                                             <PaystackCheckout 
-                                                amount={Number(schedule.amount_due)}
+                                                amount={finalAmount}
                                                 email={user?.email || ""}
                                                 phone={user?.user_metadata?.phone || "0000000000"}
                                                 location={user?.user_metadata?.address || "N/A"}

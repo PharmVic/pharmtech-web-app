@@ -52,6 +52,7 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
     const [ninNumber, setNinNumber] = useState("");
     const [idDoc, setIdDoc] = useState<File | null>(null);
     const [proofDoc, setProofDoc] = useState<File | null>(null);
+    const [gIdDoc, setGIdDoc] = useState<File | null>(null);
 
     const closeModal = () => {
         if (!loading) {
@@ -80,8 +81,8 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
     const handleSubmitApplication = async () => {
         setLoading(true);
         try {
-            if (!idDoc || !proofDoc) {
-                alert("Please upload both required documents.");
+            if (!idDoc || !proofDoc || !gIdDoc) {
+                alert("Please upload all three required documents.");
                 setLoading(false);
                 return;
             }
@@ -99,6 +100,13 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
             const { error: proofError } = await supabase.storage.from("kyc-documents").upload(proofPath, proofDoc);
             if (proofError) throw proofError;
             const { data: proofUrl } = supabase.storage.from("kyc-documents").getPublicUrl(proofPath);
+
+            // Upload Guarantor ID
+            const gIdExt = gIdDoc.name.split(".").pop();
+            const gIdPath = `gid_${Date.now()}.${gIdExt}`;
+            const { error: gIdError } = await supabase.storage.from("kyc-documents").upload(gIdPath, gIdDoc);
+            if (gIdError) throw gIdError;
+            const { data: gIdUrl } = supabase.storage.from("kyc-documents").getPublicUrl(gIdPath);
 
             const monthlyPayment = availableDurations.find(d => d.value === durationMonths)?.price || 0;
 
@@ -123,6 +131,7 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                 nin_number: ninNumber,
                 id_document_url: idUrl.publicUrl,
                 proof_of_address_url: proofUrl.publicUrl,
+                guarantor_id_doc_url: gIdUrl.publicUrl,
                 status: "pending"
             }).select();
 
@@ -601,11 +610,20 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                                         {proofDoc && <p className="text-sm mt-2 text-gray-600 flex items-center bg-gray-200 px-3 py-1 rounded-full">{proofDoc.name}</p>}
                                     </div>
 
+                                    <div className="border border-dashed border-orange-200 rounded-lg p-6 bg-orange-50/50 flex flex-col items-center">
+                                        <Upload className="w-8 h-8 text-orange-400 mb-2" />
+                                        <label className="font-semibold text-orange-600 cursor-pointer text-center">
+                                            Upload Guarantor's Means of Identification (NIN / Voter's Card / Passport)
+                                            <input type="file" className="hidden" accept="image/*,.pdf" onChange={e => setGIdDoc(e.target.files?.[0] || null)} />
+                                        </label>
+                                        {gIdDoc && <p className="text-sm mt-2 text-gray-600 flex items-center bg-gray-200 px-3 py-1 rounded-full">{gIdDoc.name}</p>}
+                                    </div>
+
                                     <div className="mt-6 flex gap-4">
-                                        <button onClick={handlePrev} disabled={loading} className="px-6 py-3 bg-gray-100 rounded-lg font-bold text-gray-700 disabled:opacity-50">Back</button>
+                                        <button onClick={handlePrev} disabled={loading} className="px-6 py-3 bg-gray-100 rounded-lg font-bold text-gray-700 disabled:opacity-50 hover:bg-gray-200 transition-colors">Back</button>
                                         <button 
                                             onClick={handleSubmitApplication} 
-                                            disabled={!ninNumber || !idDoc || !proofDoc || loading}
+                                            disabled={!ninNumber || !idDoc || !proofDoc || !gIdDoc || loading}
                                             className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-bold disabled:bg-gray-300 flex items-center justify-center gap-2"
                                         >
                                             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
