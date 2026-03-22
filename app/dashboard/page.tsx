@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
-import { User, FileText, LogOut, Award, Link as LinkIcon, Copy, ShoppingCart } from "lucide-react";
+import { User, FileText, LogOut, Award, Link as LinkIcon, Copy, ShoppingCart, CreditCard } from "lucide-react";
+import PaystackCheckout from "@/components/PaystackCheckout";
 
 type Quote = {
     id: string;
@@ -34,6 +35,7 @@ export default function UserDashboard() {
     const [profile, setProfile] = useState<Profile | null>(null);
     const [quotes, setQuotes] = useState<Quote[]>([]);
     const [payments, setPayments] = useState<Payment[]>([]);
+    const [schedules, setSchedules] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
 
@@ -95,6 +97,23 @@ export default function UserDashboard() {
             .eq("user_id", userId)
             .order("created_at", { ascending: false });
         if (paymentsData) setPayments(paymentsData);
+
+        // Fetch user's instalment schedules
+        const { data: schedulesData } = await supabase
+            .from("instalment_schedules")
+            .select(`
+                *,
+                instalment_applications (
+                    id,
+                    product_id,
+                    products (
+                        name
+                    )
+                )
+            `)
+            .eq("user_id", userId)
+            .order("due_date", { ascending: true });
+        if (schedulesData) setSchedules(schedulesData);
 
         setLoading(false);
     }
@@ -189,6 +208,65 @@ export default function UserDashboard() {
                             <span className="font-medium text-gray-900 text-right truncate min-w-0">{user?.user_metadata?.address || "N/A"}</span>
                         </div>
                     </div>
+                </div>
+
+                {/* Active Instalments Card */}
+                <div className="bg-white p-4 md:p-6 rounded-xl border border-blue-100 shadow-sm overflow-hidden min-w-0 md:col-span-2">
+                    <div className="flex items-center gap-3 mb-4 text-blue-700">
+                        <CreditCard className="w-6 h-6" />
+                        <h2 className="font-semibold text-lg">Active Instalments & Upcoming Bills</h2>
+                    </div>
+                    {schedules.filter(s => s.status === 'pending').length === 0 ? (
+                        <div className="text-center py-6 bg-blue-50/50 rounded-lg border border-dashed border-blue-200 text-blue-600 text-sm">
+                            You have no pending instalment payments.
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {schedules.filter(s => s.status === 'pending').map((schedule) => {
+                                const isLate = new Date(schedule.due_date) < new Date();
+                                return (
+                                    <div key={schedule.id} className={`border p-5 rounded-xl shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${isLate ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-white'}`}>
+                                        <div className="flex-1">
+                                            <div className="font-bold text-gray-900 text-lg mb-1">
+                                                {schedule.instalment_applications?.products?.name || "Product Instalment"}
+                                            </div>
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className={`text-xs font-bold px-2 py-1 rounded border ${isLate ? 'bg-red-100 text-red-700 border-red-200' : 'bg-blue-50 text-blue-700 border-blue-100'}`}>
+                                                    {isLate ? 'OVERDUE' : 'UPCOMING'}
+                                                </span>
+                                                <span className="text-sm font-medium text-gray-600">
+                                                    Due Date: {new Date(schedule.due_date).toLocaleDateString()}
+                                                </span>
+                                            </div>
+                                            <div className="text-2xl font-extrabold text-blue-800">
+                                                ₦{Number(schedule.amount_due).toLocaleString()}
+                                            </div>
+                                        </div>
+                                        <div className="w-full sm:w-auto shrink-0 min-w-[200px]">
+                                            <PaystackCheckout 
+                                                amount={Number(schedule.amount_due)}
+                                                email={user?.email || ""}
+                                                phone={user?.user_metadata?.phone || "0000000000"}
+                                                location={user?.user_metadata?.address || "N/A"}
+                                                deliveryDate="Instalment Payment"
+                                                items={[{ name: `Monthly Instalment - ${schedule.instalment_applications?.products?.name}`, quantity: 1, price: schedule.amount_due }]}
+                                                userId={user?.id || ""}
+                                                onSuccess={async (ref) => {
+                                                    await supabase.from('instalment_schedules').update({
+                                                        status: 'paid',
+                                                        paystack_reference: ref,
+                                                        paid_at: new Date().toISOString()
+                                                    }).eq('id', schedule.id);
+                                                    alert("Payment successful! Your instalment schedule has been updated.");
+                                                    fetchDashboardData(user.id);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
 
                 {/* Recent Orders Card */}

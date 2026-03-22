@@ -11,6 +11,7 @@ interface PaystackCheckoutProps {
   deliveryDate: string;
   items?: any[];
   userId: string;
+  applicationId?: string | null;
   onSuccess?: (reference: string) => void;
   onClose?: () => void;
 }
@@ -23,6 +24,7 @@ export default function PaystackCheckout({
   deliveryDate,
   items,
   userId,
+  applicationId,
   onSuccess,
   onClose,
 }: PaystackCheckoutProps) {
@@ -73,6 +75,7 @@ export default function PaystackCheckout({
           deliveryDate,
           items, // Pass items to Backend
           userId, // Link to user account
+          applicationId, // Send application if this is an instalment!
         }),
       });
       const data = await response.json();

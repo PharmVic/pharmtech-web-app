@@ -17,6 +17,14 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [applicationId, setApplicationId] = useState<string | null>(null);
+    const [durationMonths, setDurationMonths] = useState<number | null>(null);
+
+    const availableDurations = [
+        { label: "3 Months", value: 3, price: product?.instalment_3m_price },
+        { label: "6 Months", value: 6, price: product?.instalment_6m_price },
+        { label: "9 Months", value: 9, price: product?.instalment_9m_price },
+        { label: "12 Months", value: 12, price: product?.instalment_12m_price },
+    ].filter(d => d.price != null && d.price > 0);
 
     // Step 1
     const [name, setName] = useState("");
@@ -86,10 +94,14 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
             if (proofError) throw proofError;
             const { data: proofUrl } = supabase.storage.from("kyc-documents").getPublicUrl(proofPath);
 
+            const monthlyPayment = availableDurations.find(d => d.value === durationMonths)?.price || 0;
+
             // Insert Application
             const { data, error } = await supabase.from("instalment_applications").insert({
                 product_id: product.id,
                 user_id: userId || null,
+                duration_months: durationMonths,
+                monthly_payment_amount: monthlyPayment,
                 bvn,
                 name,
                 phone,
@@ -186,10 +198,36 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                                             <input type="text" value={address} onChange={e => setAddress(e.target.value)} className="w-full p-2 border rounded outline-none focus:border-blue-500" />
                                         </div>
                                     </div>
+
+                                    {availableDurations.length > 0 && (
+                                        <div className="mt-6 p-4 border border-blue-200 rounded-xl bg-blue-50 animate-in fade-in slide-in-from-top-2">
+                                            <label className="block text-base font-bold text-blue-900 mb-3">Select Instalment Duration Framework</label>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                {availableDurations.map(opt => (
+                                                    <button
+                                                        key={opt.value}
+                                                        type="button"
+                                                        onClick={() => setDurationMonths(opt.value)}
+                                                        className={`p-3 rounded-lg border text-left transition ${
+                                                            durationMonths === opt.value 
+                                                                ? 'border-blue-600 bg-blue-600 text-white shadow-md transform scale-[1.02]' 
+                                                                : 'border-gray-300 bg-white text-gray-800 hover:border-blue-400'
+                                                        }`}
+                                                    >
+                                                        <div className="font-bold text-lg">{opt.label}</div>
+                                                        <div className={`text-sm mt-1 font-medium ${durationMonths === opt.value ? 'text-blue-100' : 'text-gray-500'}`}>
+                                                            ₦{Number(opt.price).toLocaleString()} / month
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
                                     <button 
                                         onClick={handleNext} 
-                                        disabled={!name || !phone || !email || !address}
-                                        className="mt-6 w-full py-3 bg-blue-600 text-white rounded-lg font-bold disabled:bg-gray-300"
+                                        disabled={!name || !phone || !email || !address || !durationMonths}
+                                        className="mt-6 w-full py-3 bg-blue-600 text-white rounded-lg font-bold disabled:bg-gray-300 transition-colors"
                                     >
                                         Next
                                     </button>
@@ -294,6 +332,14 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                                             <span className="text-gray-600">Initial Down Payment:</span>
                                             <span className="font-bold text-green-600">₦{Number(product.instalment_down_payment).toLocaleString()}</span>
                                         </div>
+                                        <div className="flex justify-between border-t pt-2 mt-2">
+                                            <span className="text-gray-600">Instalment Plan:</span>
+                                            <span className="font-semibold text-blue-700">{durationMonths} Months</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-600">Monthly Payment:</span>
+                                            <span className="font-bold text-blue-700">₦{Number(availableDurations.find(d => d.value === durationMonths)?.price || 0).toLocaleString()} / month</span>
+                                        </div>
                                     </div>
 
                                     <div className="w-full">
@@ -305,6 +351,7 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                                             deliveryDate="N/A (Instalment)"
                                             items={[]}
                                             userId={userId || ""}
+                                            applicationId={applicationId}
                                             onSuccess={() => {
                                                 alert("Payment successfully recorded! We will process your order and contact you shortly.");
                                                 closeModal();

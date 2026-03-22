@@ -31,6 +31,10 @@ export default function NewProductPage() {
     // Instalment State
     const [allowInstalments, setAllowInstalments] = useState(false);
     const [instalmentDownPayment, setInstalmentDownPayment] = useState("");
+    const [instalment3m, setInstalment3m] = useState("");
+    const [instalment6m, setInstalment6m] = useState("");
+    const [instalment9m, setInstalment9m] = useState("");
+    const [instalment12m, setInstalment12m] = useState("");
 
     useEffect(() => {
         fetchCategories();
@@ -102,6 +106,10 @@ export default function NewProductPage() {
                 promo_price: promoPrice ? Number(promoPrice) : null,
                 allow_instalments: allowInstalments,
                 instalment_down_payment: instalmentDownPayment ? Number(instalmentDownPayment) : 0,
+                instalment_3m_price: instalment3m ? Number(instalment3m) : null,
+                instalment_6m_price: instalment6m ? Number(instalment6m) : null,
+                instalment_9m_price: instalment9m ? Number(instalment9m) : null,
+                instalment_12m_price: instalment12m ? Number(instalment12m) : null,
             });
 
             if (insertError) throw insertError;
@@ -232,16 +240,40 @@ export default function NewProductPage() {
                         </div>
                         
                         {allowInstalments && (
-                            <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Down-payment Amount (₦)</label>
-                                <input
-                                    type="number"
-                                    required={allowInstalments}
-                                    value={instalmentDownPayment}
-                                    onChange={(e) => setInstalmentDownPayment(e.target.value)}
-                                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                    placeholder="Initial required deposit"
-                                />
+                            <div className="mt-4 space-y-4 animate-in fade-in slide-in-from-top-2">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Required Initial Down-Payment (₦)</label>
+                                    <input
+                                        type="number"
+                                        required={allowInstalments}
+                                        value={instalmentDownPayment}
+                                        onChange={(e) => setInstalmentDownPayment(e.target.value)}
+                                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        placeholder="Initial required deposit"
+                                    />
+                                    <p className="text-xs text-blue-600 mt-1">This is the flat amount the client must pay today to begin the application.</p>
+                                </div>
+                                <div className="border-t border-blue-100 pt-4 mt-4">
+                                    <h4 className="text-sm font-semibold text-gray-800 mb-3">Define EXACT Monthly Bills (Leave blank if not offered):</h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-semibold text-gray-600 mb-1">3-Month Term: Monthly Bill (₦)</label>
+                                            <input type="number" placeholder="Monthly Fee for 3 Months" value={instalment3m} onChange={(e) => setInstalment3m(e.target.value)} className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold text-gray-600 mb-1">6-Month Term: Monthly Bill (₦)</label>
+                                            <input type="number" placeholder="Monthly Fee for 6 Months" value={instalment6m} onChange={(e) => setInstalment6m(e.target.value)} className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold text-gray-600 mb-1">9-Month Term: Monthly Bill (₦)</label>
+                                            <input type="number" placeholder="Monthly Fee for 9 Months" value={instalment9m} onChange={(e) => setInstalment9m(e.target.value)} className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold text-gray-600 mb-1">12-Month Term: Monthly Bill (₦)</label>
+                                            <input type="number" placeholder="Monthly Fee for 12 Months" value={instalment12m} onChange={(e) => setInstalment12m(e.target.value)} className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>

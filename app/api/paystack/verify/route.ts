@@ -8,7 +8,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { reference, email, phone, amount, location, deliveryDate, items, userId } = body;
+    const { reference, email, phone, amount, location, deliveryDate, items, userId, applicationId } = body;
 
     if (!reference) {
       return NextResponse.json({ success: false, message: 'Reference is required' }, { status: 400 });
@@ -36,7 +36,48 @@ export async function POST(req: Request) {
     const paystackData = await paystackResponse.json();
 
     if (paystackData.data && paystackData.data.status === 'success') {
-      // Transaction successful, save to database
+      
+      // INSTALMENT PROCESSING LOGIC
+      if (applicationId) {
+        // Fetch the application
+        const { data: appData, error: appError } = await supabase
+          .from('instalment_applications')
+          .select('*')
+          .eq('id', applicationId)
+          .single();
+
+        if (appData && !appError) {
+          const duration = appData.duration_months || 0;
+          const monthlyFee = appData.monthly_payment_amount || 0;
+          
+          if (duration > 0 && monthlyFee > 0) {
+            // Generate the schedules exactly 30 days apart incrementally
+            const schedules = [];
+            for (let i = 1; i <= duration; i++) {
+              const dueDate = new Date();
+              dueDate.setDate(dueDate.getDate() + (30 * i));
+              
+              schedules.push({
+                application_id: applicationId,
+                user_id: userId,
+                amount_due: monthlyFee,
+                due_date: dueDate.toISOString(),
+                status: 'pending'
+              });
+            }
+
+            // Bulk Insert
+            await supabase.from('instalment_schedules').insert(schedules);
+
+            // Update application status to active, meaning down-payment cleared and schedules built.
+            await supabase.from('instalment_applications').update({ status: 'active' }).eq('id', applicationId);
+          }
+        } else {
+            console.error("Failed to find application or fetch error:", appError);
+        }
+      }
+
+      // Transaction successful, save base checkout record to database
       const { error } = await supabase
         .from('payments')
         .insert([
