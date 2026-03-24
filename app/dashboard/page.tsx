@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
-import { User, FileText, LogOut, Award, Link as LinkIcon, Copy, ShoppingCart, CreditCard } from "lucide-react";
+import { User, FileText, LogOut, Award, Link as LinkIcon, Copy, ShoppingCart, CreditCard, Clock } from "lucide-react";
 import dynamic from 'next/dynamic';
 
 const PaystackCheckout = dynamic(() => import("@/components/PaystackCheckout"), { ssr: false });
@@ -38,6 +38,7 @@ export default function UserDashboard() {
     const [quotes, setQuotes] = useState<Quote[]>([]);
     const [payments, setPayments] = useState<Payment[]>([]);
     const [schedules, setSchedules] = useState<any[]>([]);
+    const [pendingApplications, setPendingApplications] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
 
@@ -116,6 +117,15 @@ export default function UserDashboard() {
             .eq("user_id", userId)
             .order("due_date", { ascending: true });
         if (schedulesData) setSchedules(schedulesData);
+
+        // Fetch user's pending applications
+        const { data: pendingAppsData } = await supabase
+            .from("instalment_applications")
+            .select(`*, products (name, instalment_down_payment)`)
+            .eq("user_id", userId)
+            .eq("status", "pending")
+            .order("created_at", { ascending: false });
+        if (pendingAppsData) setPendingApplications(pendingAppsData);
 
         setLoading(false);
     }
@@ -211,6 +221,71 @@ export default function UserDashboard() {
                         </div>
                     </div>
                 </div>
+
+                {/* Pending Applications Card */}
+                {pendingApplications.length > 0 && (
+                    <div className="bg-white p-4 md:p-6 rounded-xl border border-orange-100 shadow-sm overflow-hidden min-w-0 md:col-span-2">
+                        <div className="flex items-center gap-3 mb-4 text-orange-600">
+                            <Clock className="w-6 h-6" />
+                            <h2 className="font-semibold text-lg">Pending Instalment Applications</h2>
+                        </div>
+                        <div className="text-sm text-orange-800 mb-4 bg-orange-50 p-3 rounded-lg border border-orange-100">
+                            You have incomplete instalment applications. Please pay the required down payment to finalize your agreement and generate your payment schedule.
+                        </div>
+                        <div className="space-y-4">
+                            {pendingApplications.map((app) => (
+                                <div key={app.id} className="border border-orange-200 bg-orange-50/30 p-5 rounded-xl shadow-sm flex flex-col sm:flex-row justify-between items-start gap-4">
+                                    <div className="flex-1">
+                                        <div className="font-bold text-gray-900 text-lg mb-1">
+                                            {app.products?.name || "Product"}
+                                        </div>
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className="text-xs font-bold px-2 py-1 rounded border bg-orange-100 text-orange-700 border-orange-200">
+                                                AWAITING DOWN PAYMENT
+                                            </span>
+                                            <span className="text-sm font-medium text-gray-600">
+                                                Applied on: {new Date(app.created_at).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4 mt-3 text-sm">
+                                            <div>
+                                                <div className="text-gray-500">Duration</div>
+                                                <div className="font-semibold text-gray-900">{app.duration_months} Months</div>
+                                            </div>
+                                            <div>
+                                                <div className="text-gray-500">Monthly Repayment</div>
+                                                <div className="font-semibold text-gray-900">₦{Number(app.monthly_payment_amount).toLocaleString()}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="w-full sm:w-auto shrink-0 min-w-[200px] flex flex-col gap-2">
+                                        <div className="text-center sm:text-right mb-1">
+                                            <div className="text-xs text-gray-500">Required Down Payment</div>
+                                            <div className="text-xl font-extrabold text-blue-800">
+                                                ₦{Number(app.products?.instalment_down_payment || 0).toLocaleString()}
+                                            </div>
+                                        </div>
+                                        <PaystackCheckout 
+                                            amount={Number(app.products?.instalment_down_payment || 0)}
+                                            email={app.email || user?.email || ""}
+                                            phone={app.phone || user?.user_metadata?.phone || "0000000000"}
+                                            location={app.address || user?.user_metadata?.address || "N/A"}
+                                            deliveryDate="N/A (Instalment)"
+                                            items={[]}
+                                            userId={user?.id || ""}
+                                            applicationId={app.id}
+                                            onSuccess={() => {
+                                                alert("Payment successfully recorded! Your application is now active.");
+                                                fetchDashboardData(user.id);
+                                            }}
+                                            onClose={() => {}}
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Active Instalments Card */}
                 <div className="bg-white p-4 md:p-6 rounded-xl border border-blue-100 shadow-sm overflow-hidden min-w-0 md:col-span-2">
