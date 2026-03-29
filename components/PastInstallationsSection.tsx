@@ -75,11 +75,11 @@ export default function PastInstallationsSection() {
                     {/* Render the images twice to create an infinite seamless loop effect */}
                     {[...images, ...images].map((img, idx) => (
                         <div key={`${img.id}-${idx}`} className="group relative rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 w-[250px] shrink-0">
-                            <div className="aspect-[4/3] w-full overflow-hidden bg-gray-100">
+                            <div className="h-[320px] w-full overflow-hidden bg-white flex items-center justify-center">
                                 <img 
                                     src={`${img.image_url}?w=600&auto=format`} 
                                     alt={img.title || "Installation Project"} 
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                                 />
                             </div>
                             {img.title && (
