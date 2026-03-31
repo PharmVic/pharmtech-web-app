@@ -53,6 +53,12 @@ export default async function ProductDetailsPage({
             content_name: product.name,
             value: currentPrice || 0,
             currency: "NGN",
+            contents: [{
+                content_id: product.id,
+                content_name: product.name,
+                quantity: 1,
+                price: currentPrice || 0
+            }]
         }
     }).catch(console.error);
 

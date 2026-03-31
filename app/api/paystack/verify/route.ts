@@ -109,6 +109,8 @@ export async function POST(req: Request) {
               phone: phone || undefined,
           },
           properties: {
+              content_type: "product_group",
+              content_id: items?.map((item: any) => item.id).join(',') || "",
               value: amount,
               currency: "NGN",
               contents: items?.map((item: any) => ({

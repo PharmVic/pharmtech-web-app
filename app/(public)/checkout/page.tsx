@@ -59,6 +59,8 @@ export default function CheckoutPage() {
                     phone: phone || undefined,
                 },
                 properties: {
+                    content_type: "product_group",
+                    content_id: items.map(item => item.id).join(','),
                     value: getTotalAmount(),
                     currency: "NGN",
                     contents: items.map(item => ({
