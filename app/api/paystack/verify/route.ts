@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { sendTikTokEvent } from '@/lib/tiktok';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -99,6 +100,25 @@ export async function POST(req: Request) {
         // We still return success: false or true here? True since they technically paid, but with a warning.
         return NextResponse.json({ success: true, saved: false, message: 'Payment verified but not saved to DB' });
       }
+
+      // Track the successful Purchase on TikTok Events API
+      sendTikTokEvent({
+          event: "Purchase",
+          user: {
+              email: email || undefined,
+              phone: phone || undefined,
+          },
+          properties: {
+              value: amount,
+              currency: "NGN",
+              contents: items?.map((item: any) => ({
+                  content_id: item.id,
+                  content_name: item.name,
+                  quantity: item.quantity,
+                  price: item.price
+              })) || []
+          }
+      }).catch(err => console.error("TikTok Tracking Error:", err));
 
       return NextResponse.json({ success: true, message: 'Payment verified and saved' });
     } else {

@@ -5,6 +5,7 @@ import { useCartStore } from "@/lib/store/cartStore";
 
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
+import { sendTikTokEvent } from "@/lib/tiktok";
 
 interface AddToCartButtonProps {
     product: {
@@ -44,6 +45,27 @@ export default function AddToCartButton({ product, large = false }: AddToCartBut
             quantity: 1,
             image_url: product.image_url,
         });
+        
+        // Track AddToCart TikTok Event
+        sendTikTokEvent({
+            event: "AddToCart",
+            user: {
+                email: data.session?.user?.email,
+            },
+            properties: {
+                content_type: "product",
+                content_id: product.id,
+                content_name: product.name,
+                value: product.price,
+                currency: "NGN",
+                contents: [{
+                    content_id: product.id,
+                    content_name: product.name,
+                    quantity: 1,
+                    price: product.price,
+                }]
+            }
+        }).catch(console.error);
         
         alert("Added to cart!"); // Simple feedback for now
     };

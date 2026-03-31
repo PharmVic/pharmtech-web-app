@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, ShoppingCart, CheckCircle, ShieldCheck } from "lucide-react";
 import ProductGallery from "@/components/ProductGallery";
 import AddToCartButton from "@/components/AddToCartButton";
+import { sendTikTokEvent } from "@/lib/tiktok";
 import ProductComments from "@/components/ProductComments";
 import InstalmentForm from "@/components/InstalmentForm";
 
@@ -41,6 +42,19 @@ export default async function ProductDetailsPage({
     const imageUrls = product.image_urls && product.image_urls.length > 0
         ? product.image_urls
         : (product.image_url ? [product.image_url] : []);
+
+    const currentPrice = (product.is_promo_active && product.promo_price) ? product.promo_price : product.price;
+
+    sendTikTokEvent({
+        event: "ViewContent",
+        properties: {
+            content_type: "product",
+            content_id: product.id,
+            content_name: product.name,
+            value: currentPrice || 0,
+            currency: "NGN",
+        }
+    }).catch(console.error);
 
     return (
         <div className="bg-gray-50 min-h-screen py-12">

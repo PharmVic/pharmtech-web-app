@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabaseClient";
+import { sendTikTokEvent } from "@/lib/tiktok";
 
 const PaystackCheckout = dynamic(() => import("@/components/PaystackCheckout"), {
     ssr: false,
@@ -24,6 +25,7 @@ export default function CheckoutPage() {
     const [deliveryDate, setDeliveryDate] = useState(defaultDate.toISOString().split("T")[0]);
 
     const [mounted, setMounted] = useState(false);
+    const [trackedCheckout, setTrackedCheckout] = useState(false);
 
     useEffect(() => {
         setMounted(true);
@@ -46,6 +48,29 @@ export default function CheckoutPage() {
             router.push("/cart");
         }
     }, [mounted, items, router]);
+
+    useEffect(() => {
+        if (mounted && items.length > 0 && userId && !trackedCheckout) {
+            setTrackedCheckout(true);
+            sendTikTokEvent({
+                event: "InitiateCheckout",
+                user: {
+                    email: email || undefined,
+                    phone: phone || undefined,
+                },
+                properties: {
+                    value: getTotalAmount(),
+                    currency: "NGN",
+                    contents: items.map(item => ({
+                        content_id: item.id,
+                        content_name: item.name,
+                        quantity: item.quantity,
+                        price: item.price
+                    }))
+                }
+            }).catch(console.error);
+        }
+    }, [mounted, items, userId, trackedCheckout, email, phone, getTotalAmount]);
 
     if (!mounted || items.length === 0 || !userId) return null; // Let the effect handle it
 
