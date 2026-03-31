@@ -1,6 +1,6 @@
 "use server";
 
-export const TIKTOK_PIXEL_ID = "D75UG83C77U0P1Q07MP0";
+const TIKTOK_PIXEL_ID = "D75UG83C77U0P1Q07MP0";
 const TIKTOK_ACCESS_TOKEN = "4ce4caba3be12f743053739ad369a0bed6aa55e5";
 
 type TikTokEvent = "ViewContent" | "AddToCart" | "InitiateCheckout" | "Purchase";
