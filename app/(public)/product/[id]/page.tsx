@@ -7,6 +7,7 @@ import AddToCartButton from "@/components/AddToCartButton";
 import { sendTikTokEvent } from "@/lib/tiktok";
 import ProductComments from "@/components/ProductComments";
 import InstalmentForm from "@/components/InstalmentForm";
+import ShareButton from "@/components/ShareButton";
 
 export const dynamic = "force-dynamic";
 
@@ -152,6 +153,8 @@ export default async function ProductDetailsPage({
                                 >
                                     Inquire
                                 </Link>
+
+                                <ShareButton title={product.name} />
 
                                 {product.allow_instalments && product.instalment_down_payment > 0 && (
                                     <InstalmentForm product={product} />
