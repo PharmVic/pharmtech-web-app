@@ -25,7 +25,8 @@ export default async function Home() {
   const { data: products } = await supabase
     .from("products")
     .select("*")
-    .order("is_featured", { ascending: false })
+    .order("is_available", { ascending: false, nullsFirst: true })
+    .order("is_featured", { ascending: false, nullsFirst: false })
     .order("created_at", { ascending: false });
 
   const dynamicReviews = (reviews || []).map(r => ({

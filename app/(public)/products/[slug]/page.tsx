@@ -33,7 +33,8 @@ export default async function CategoryProductsPage({
         .from("products")
         .select("*")
         .eq("category_id", category.id)
-        .order("is_featured", { ascending: false }) // Featured first
+        .order("is_available", { ascending: false, nullsFirst: true }) // Available first
+        .order("is_featured", { ascending: false, nullsFirst: false }) // Featured first
         .order("created_at", { ascending: false });
 
     return (
