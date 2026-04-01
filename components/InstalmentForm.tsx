@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Loader2, X, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -54,6 +54,48 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
     const [proofDoc, setProofDoc] = useState<File | null>(null);
     const [gIdDoc, setGIdDoc] = useState<File | null>(null);
 
+    const storageKey = `instalment_draft_${product?.id || 'new'}`;
+
+    // Load draft
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const draft = localStorage.getItem(storageKey);
+            if (draft) {
+                try {
+                    const parsed = JSON.parse(draft);
+                    if (parsed.name) setName(parsed.name);
+                    if (parsed.phone) setPhone(parsed.phone);
+                    if (parsed.email) setEmail(parsed.email);
+                    if (parsed.bvn) setBvn(parsed.bvn);
+                    if (parsed.relationshipStatus) setRelationshipStatus(parsed.relationshipStatus);
+                    if (parsed.occupation) setOccupation(parsed.occupation);
+                    if (parsed.address) setAddress(parsed.address);
+                    if (parsed.gName) setGName(parsed.gName);
+                    if (parsed.gPhone) setGPhone(parsed.gPhone);
+                    if (parsed.gEmail) setGEmail(parsed.gEmail);
+                    if (parsed.gRelationship) setGRelationship(parsed.gRelationship);
+                    if (parsed.gAddress) setGAddress(parsed.gAddress);
+                    if (parsed.ninNumber) setNinNumber(parsed.ninNumber);
+                    if (parsed.durationMonths) setDurationMonths(parsed.durationMonths);
+                } catch (e) {
+                    console.error("Failed to parse draft", e);
+                }
+            }
+        }
+    }, [storageKey]);
+
+    // Save draft
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const draft = {
+                name, phone, email, bvn, relationshipStatus, occupation, address,
+                gName, gPhone, gEmail, gRelationship, gAddress,
+                ninNumber, durationMonths
+            };
+            localStorage.setItem(storageKey, JSON.stringify(draft));
+        }
+    }, [name, phone, email, bvn, relationshipStatus, occupation, address, gName, gPhone, gEmail, gRelationship, gAddress, ninNumber, durationMonths, storageKey]);
+
     const closeModal = () => {
         if (!loading) {
             setIsOpen(false);
@@ -65,16 +107,41 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
     const handlePrev = () => setStep((s) => s - 1);
 
     const handleOpenForm = async () => {
-        if (!userId) {
-            setLoading(true);
+        setLoading(true);
+        let currentUserId = userId;
+
+        if (!currentUserId) {
             const { data: { session } } = await supabase.auth.getSession();
-            setLoading(false);
             if (!session) {
+                setLoading(false);
                 alert("You must be logged in to apply for instalments.");
                 router.push("/auth/sign-in");
                 return;
             }
+            currentUserId = session.user.id;
         }
+
+        // Check for existing pending applications to skip upload phases
+        try {
+            const { data: existingApps } = await supabase
+                .from("instalment_applications")
+                .select("id, duration_months")
+                .eq("product_id", product.id)
+                .eq("user_id", currentUserId)
+                .eq("status", "pending")
+                .order("created_at", { ascending: false })
+                .limit(1);
+
+            if (existingApps && existingApps.length > 0) {
+                setApplicationId(existingApps[0].id);
+                setDurationMonths(existingApps[0].duration_months);
+                setStep(4);
+            }
+        } catch (e) {
+            console.error("Error checking pending apps:", e);
+        }
+
+        setLoading(false);
         setIsOpen(true);
     };
 
@@ -141,6 +208,7 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                 setApplicationId(data[0].id);
             }
             
+            localStorage.removeItem(storageKey); // Clear draft since application submitted
             setStep(4); // Move to Payment Step
         } catch (error: any) {
             console.error("Application Error:", error);

@@ -24,6 +24,37 @@ export default function CheckoutPage() {
     defaultDate.setDate(defaultDate.getDate() + 3);
     const [deliveryDate, setDeliveryDate] = useState(defaultDate.toISOString().split("T")[0]);
 
+    const storageKey = 'checkout_draft';
+
+    // Load draft
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const draft = localStorage.getItem(storageKey);
+            if (draft) {
+                try {
+                    const parsed = JSON.parse(draft);
+                    if (parsed.email) setEmail(parsed.email);
+                    if (parsed.phone) setPhone(parsed.phone);
+                    if (parsed.location) setLocation(parsed.location);
+                    if (parsed.deliveryDate) setDeliveryDate(parsed.deliveryDate);
+                } catch (e) {
+                    console.error("Failed to parse checkout draft", e);
+                }
+            }
+        }
+    }, [storageKey]);
+
+    // Save draft
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const draft = { email, phone, location, deliveryDate };
+            // Only save if there's actually some data typed to prevent overwriting with empty defaults immediately
+            if (email || phone || location) {
+                localStorage.setItem(storageKey, JSON.stringify(draft));
+            }
+        }
+    }, [email, phone, location, deliveryDate, storageKey]);
+
     const [mounted, setMounted] = useState(false);
     const [trackedCheckout, setTrackedCheckout] = useState(false);
 
@@ -78,6 +109,7 @@ export default function CheckoutPage() {
 
     const handlePaymentSuccess = (reference: string) => {
         useCartStore.getState().clearCart();
+        localStorage.removeItem(storageKey); // Clear checkout draft
         alert(`Payment successful! Reference: ${reference}`);
         router.push("/dashboard"); // Redirect to dashboard to see their order!
     };
