@@ -13,6 +13,7 @@ interface AddToCartButtonProps {
         name: string;
         price: number;
         image_url?: string;
+        is_available?: boolean;
     };
     large?: boolean; // If true, renders a larger button with text (for product detail page). If false, renders just the icon (for product cards).
 }
@@ -82,6 +83,22 @@ export default function AddToCartButton({ product, large = false }: AddToCartBut
         }
         return (
             <div className="w-10 h-10 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center cursor-not-allowed" title="Price not available">
+                <ShoppingCart className="w-5 h-5" />
+            </div>
+        );
+    }
+
+    if (product.is_available === false) {
+        if (large) {
+             return (
+                 <button disabled className="flex-1 bg-gray-300 text-gray-500 font-semibold py-4 rounded-xl cursor-not-allowed flex items-center justify-center gap-2">
+                    <ShoppingCart className="w-5 h-5" />
+                    Out of Stock
+                </button>
+             )
+        }
+        return (
+            <div className="w-10 h-10 rounded-full bg-red-50 text-red-400 flex items-center justify-center cursor-not-allowed" title="Out of Stock">
                 <ShoppingCart className="w-5 h-5" />
             </div>
         );

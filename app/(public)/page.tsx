@@ -81,7 +81,8 @@ export default async function Home() {
             isProduct: true,
             price: p.price,
             is_promo_active: p.is_promo_active,
-            promo_price: p.promo_price
+            promo_price: p.promo_price,
+            is_available: p.is_available
           }))
         ]}
       />

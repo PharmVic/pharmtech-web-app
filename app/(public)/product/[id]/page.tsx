@@ -100,6 +100,14 @@ export default async function ProductDetailsPage({
                                 {product.name}
                             </h1>
 
+                            {product.is_available === false && (
+                                <div className="mb-4">
+                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-800">
+                                        Out of Stock
+                                    </span>
+                                </div>
+                            )}
+
                             <div className="mb-6">
                                 {product.is_promo_active && product.promo_price ? (
                                     <div className="flex flex-col">
@@ -144,6 +152,7 @@ export default async function ProductDetailsPage({
                                         name: product.name,
                                         price: (product.is_promo_active && product.promo_price) ? product.promo_price : product.price,
                                         image_url: imageUrls[0],
+                                        is_available: product.is_available,
                                     }}
                                     large={true}
                                 />
@@ -156,7 +165,7 @@ export default async function ProductDetailsPage({
 
                                 <ShareButton title={product.name} />
 
-                                {product.allow_instalments && product.instalment_down_payment > 0 && (
+                                {product.is_available !== false && product.allow_instalments && product.instalment_down_payment > 0 && (
                                     <InstalmentForm product={product} />
                                 )}
                             </div>

@@ -79,6 +79,15 @@ export default async function CategoryProductsPage({
                                         Featured
                                     </div>
                                 )}
+
+                                {/* Out of Stock Overlay */}
+                                {product.is_available === false && (
+                                    <div className="absolute inset-0 bg-white/60 flex items-center justify-center z-10 transition-opacity">
+                                        <span className="bg-red-600 text-white font-bold px-4 py-2 rounded-lg shadow-lg rotate-12 text-sm uppercase tracking-wider border-2 border-white">
+                                            Out of Stock
+                                        </span>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Product Details */}
@@ -120,6 +129,7 @@ export default async function CategoryProductsPage({
                                                 name: product.name,
                                                 price: (product.is_promo_active && product.promo_price) ? product.promo_price : product.price,
                                                 image_url: product.image_url,
+                                                is_available: product.is_available,
                                             }}
                                             large={false}
                                         />

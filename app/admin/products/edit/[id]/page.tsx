@@ -33,6 +33,9 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     const [isPromoActive, setIsPromoActive] = useState(false);
     const [promoPrice, setPromoPrice] = useState("");
 
+    // Availability State
+    const [isAvailable, setIsAvailable] = useState(true);
+
     // Instalment State
     const [allowInstalments, setAllowInstalments] = useState(false);
     const [instalmentDownPayment, setInstalmentDownPayment] = useState("");
@@ -68,6 +71,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 setCategoryId(productData.category_id || "");
                 setIsPromoActive(productData.is_promo_active || false);
                 setPromoPrice(productData.promo_price ? productData.promo_price.toString() : "");
+                setIsAvailable(productData.is_available !== false);
                 setAllowInstalments(productData.allow_instalments || false);
                 setInstalmentDownPayment(productData.instalment_down_payment ? productData.instalment_down_payment.toString() : "");
                 setInstalment3m(productData.instalment_3m_price ? productData.instalment_3m_price.toString() : "");
@@ -151,6 +155,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     image_urls: finalImageUrls,
                     is_promo_active: isPromoActive,
                     promo_price: promoPrice ? Number(promoPrice) : null,
+                    is_available: isAvailable,
                     allow_instalments: allowInstalments,
                     instalment_down_payment: instalmentDownPayment ? Number(instalmentDownPayment) : 0,
                     instalment_3m_price: instalment3m ? Number(instalment3m) : null,
@@ -261,6 +266,24 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                                 className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                                 placeholder="0.00"
                             />
+                        </div>
+                    </div>
+
+                    <div className="bg-green-50 p-6 rounded-xl border border-green-200">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h3 className="text-sm font-bold text-gray-900">Product Availability</h3>
+                                <p className="text-xs text-gray-500">Toggle off to mark the product as "Out of Stock" on the storefront.</p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="sr-only peer"
+                                    checked={isAvailable}
+                                    onChange={(e) => setIsAvailable(e.target.checked)}
+                                />
+                                <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                            </label>
                         </div>
                     </div>
 

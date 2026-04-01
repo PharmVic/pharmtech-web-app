@@ -14,6 +14,7 @@ type Product = {
     description: string;
     is_promo_active?: boolean;
     promo_price?: number;
+    is_available?: boolean;
     // We'll join category name later or just fetch raw
 };
 
@@ -48,6 +49,28 @@ export default function AdminProductsPage() {
             alert("Failed to delete product");
         } else {
             setProducts(products.filter((p) => p.id !== id));
+        }
+    }
+
+    async function toggleAvailability(id: string, currentStatus: boolean | undefined) {
+        const newStatus = currentStatus === false ? true : false;
+        
+        // Optimistic update
+        setProducts(products.map(p => 
+            p.id === id ? { ...p, is_available: newStatus } : p
+        ));
+
+        const { error } = await supabase
+            .from("products")
+            .update({ is_available: newStatus })
+            .eq("id", id);
+
+        if (error) {
+            alert("Failed to update product availability");
+            // Revert optimistic update
+            setProducts(products.map(p => 
+                p.id === id ? { ...p, is_available: currentStatus } : p
+            ));
         }
     }
 
@@ -91,6 +114,7 @@ export default function AdminProductsPage() {
                                 <th className="px-6 py-4 font-semibold text-gray-700">Image</th>
                                 <th className="px-6 py-4 font-semibold text-gray-700">Name</th>
                                 <th className="px-6 py-4 font-semibold text-gray-700">Price</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
                                 <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                             </tr>
                         </thead>
@@ -127,6 +151,23 @@ export default function AdminProductsPage() {
                                         ) : (
                                             <span>₦{product.price.toLocaleString("en-NG")}</span>
                                         )}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <button
+                                            onClick={() => toggleAvailability(product.id, product.is_available)}
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                                                product.is_available !== false ? 'bg-green-500' : 'bg-gray-300'
+                                            }`}
+                                        >
+                                            <span
+                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition duration-200 ease-in-out ${
+                                                    product.is_available !== false ? 'translate-x-6' : 'translate-x-1'
+                                                }`}
+                                            />
+                                        </button>
+                                        <span className="ml-2 text-xs text-gray-500 whitespace-nowrap">
+                                            {product.is_available !== false ? 'In Stock' : 'Out of Stock'}
+                                        </span>
                                     </td>
                                     <td className="px-6 py-4 flex gap-3">
                                         <Link

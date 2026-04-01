@@ -13,6 +13,7 @@ type Service = {
     price?: number;
     is_promo_active?: boolean;
     promo_price?: number;
+    is_available?: boolean;
 };
 
 export default function ServicesSection({ initialServices }: { initialServices: Service[] }) {
@@ -67,6 +68,11 @@ export default function ServicesSection({ initialServices }: { initialServices: 
                                                 <span className="text-xs font-semibold px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
                                                     {svc.isProduct ? 'Product' : 'Service'}
                                                 </span>
+                                                {svc.isProduct && svc.is_available === false && (
+                                                    <span className="text-xs font-semibold px-2 py-1 bg-red-100 text-red-800 rounded-full ml-2">
+                                                        Out of Stock
+                                                    </span>
+                                                )}
                                             </div>
                                             <h4 className="h4 d-inline-block mb-2 font-bold group-hover:text-primary transition-colors">{svc.title}</h4>
                                             
