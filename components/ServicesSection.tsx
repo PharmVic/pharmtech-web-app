@@ -14,6 +14,7 @@ type Service = {
     is_promo_active?: boolean;
     promo_price?: number;
     is_available?: boolean;
+    is_featured?: boolean;
 };
 
 export default function ServicesSection({ initialServices }: { initialServices: Service[] }) {
@@ -60,8 +61,13 @@ export default function ServicesSection({ initialServices }: { initialServices: 
                             return (
                                 <div key={idx} className="col-md-6 col-lg-4 position-relative">
                                     <div className="service-item bg-light rounded shadow-sm hover:shadow-lg transition-all duration-300 h-100 flex-column d-flex group overflow-hidden">
-                                        <div className="service-img overflow-hidden rounded-top" style={{ height: "250px" }}>
+                                        <div className="service-img overflow-hidden rounded-top position-relative" style={{ height: "250px" }}>
                                             <img src={`${svc.img}?w=500&auto=format`} className="img-fluid w-100 h-100 object-cover group-hover:scale-110 transition-transform duration-500" alt={svc.title} />
+                                            {svc.isProduct && svc.is_featured && (
+                                                <div className="absolute top-4 left-4 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-full shadow-sm z-20">
+                                                    Featured
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="rounded-bottom p-4 flex-grow-1 d-flex flex-column position-relative z-10">
                                             <div className="mb-2">

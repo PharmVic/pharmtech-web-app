@@ -15,6 +15,7 @@ type Product = {
     is_promo_active?: boolean;
     promo_price?: number;
     is_available?: boolean;
+    is_featured?: boolean;
     // We'll join category name later or just fetch raw
 };
 
@@ -74,6 +75,28 @@ export default function AdminProductsPage() {
         }
     }
 
+    async function toggleFeatured(id: string, currentStatus: boolean | undefined) {
+        const newStatus = !currentStatus;
+        
+        // Optimistic update
+        setProducts(products.map(p => 
+            p.id === id ? { ...p, is_featured: newStatus } : p
+        ));
+
+        const { error } = await supabase
+            .from("products")
+            .update({ is_featured: newStatus })
+            .eq("id", id);
+
+        if (error) {
+            alert("Failed to update featured status");
+            // Revert optimistic update
+            setProducts(products.map(p => 
+                p.id === id ? { ...p, is_featured: currentStatus } : p
+            ));
+        }
+    }
+
     return (
         <div className="p-8 max-w-7xl mx-auto">
             <div className="flex justify-between items-center mb-8">
@@ -115,6 +138,7 @@ export default function AdminProductsPage() {
                                 <th className="px-6 py-4 font-semibold text-gray-700">Name</th>
                                 <th className="px-6 py-4 font-semibold text-gray-700">Price</th>
                                 <th className="px-6 py-4 font-semibold text-gray-700">Status</th>
+                                <th className="px-6 py-4 font-semibold text-gray-700">Featured</th>
                                 <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                             </tr>
                         </thead>
@@ -167,6 +191,23 @@ export default function AdminProductsPage() {
                                         </button>
                                         <span className="ml-2 text-xs text-gray-500 whitespace-nowrap">
                                             {product.is_available !== false ? 'In Stock' : 'Out of Stock'}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <button
+                                            onClick={() => toggleFeatured(product.id, product.is_featured)}
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 ${
+                                                product.is_featured ? 'bg-yellow-400' : 'bg-gray-200'
+                                            }`}
+                                        >
+                                            <span
+                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition duration-200 ease-in-out ${
+                                                    product.is_featured ? 'translate-x-6' : 'translate-x-1'
+                                                }`}
+                                            />
+                                        </button>
+                                        <span className="ml-2 text-xs text-gray-500 whitespace-nowrap">
+                                            {product.is_featured ? 'Starred' : '-'}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 flex gap-3">

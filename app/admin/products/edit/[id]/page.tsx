@@ -36,6 +36,9 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     // Availability State
     const [isAvailable, setIsAvailable] = useState(true);
 
+    // Featured State
+    const [isFeatured, setIsFeatured] = useState(false);
+
     // Instalment State
     const [allowInstalments, setAllowInstalments] = useState(false);
     const [instalmentDownPayment, setInstalmentDownPayment] = useState("");
@@ -72,6 +75,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                 setIsPromoActive(productData.is_promo_active || false);
                 setPromoPrice(productData.promo_price ? productData.promo_price.toString() : "");
                 setIsAvailable(productData.is_available !== false);
+                setIsFeatured(productData.is_featured || false);
                 setAllowInstalments(productData.allow_instalments || false);
                 setInstalmentDownPayment(productData.instalment_down_payment ? productData.instalment_down_payment.toString() : "");
                 setInstalment3m(productData.instalment_3m_price ? productData.instalment_3m_price.toString() : "");
@@ -156,6 +160,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                     is_promo_active: isPromoActive,
                     promo_price: promoPrice ? Number(promoPrice) : null,
                     is_available: isAvailable,
+                    is_featured: isFeatured,
                     allow_instalments: allowInstalments,
                     instalment_down_payment: instalmentDownPayment ? Number(instalmentDownPayment) : 0,
                     instalment_3m_price: instalment3m ? Number(instalment3m) : null,
@@ -283,6 +288,24 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                                     onChange={(e) => setIsAvailable(e.target.checked)}
                                 />
                                 <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div className="bg-yellow-50 p-6 rounded-xl border border-yellow-200">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h3 className="text-sm font-bold text-gray-900">Featured Product</h3>
+                                <p className="text-xs text-gray-500">Toggle on to pin this product to the top of pages and add a 'Featured' badge.</p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="sr-only peer"
+                                    checked={isFeatured}
+                                    onChange={(e) => setIsFeatured(e.target.checked)}
+                                />
+                                <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-yellow-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-400"></div>
                             </label>
                         </div>
                     </div>

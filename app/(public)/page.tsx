@@ -24,7 +24,9 @@ export default async function Home() {
   // Fetch all products for the search bar
   const { data: products } = await supabase
     .from("products")
-    .select("*");
+    .select("*")
+    .order("is_featured", { ascending: false })
+    .order("created_at", { ascending: false });
 
   const dynamicReviews = (reviews || []).map(r => ({
     name: r.name,
@@ -82,7 +84,8 @@ export default async function Home() {
             price: p.price,
             is_promo_active: p.is_promo_active,
             promo_price: p.promo_price,
-            is_available: p.is_available
+            is_available: p.is_available,
+            is_featured: p.is_featured
           }))
         ]}
       />
