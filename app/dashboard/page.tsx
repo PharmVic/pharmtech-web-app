@@ -101,22 +101,19 @@ export default function UserDashboard() {
             .order("created_at", { ascending: false });
         if (paymentsData) setPayments(paymentsData);
 
-        // Fetch user's instalment schedules
-        const { data: schedulesData } = await supabase
-            .from("instalment_schedules")
-            .select(`
-                *,
-                instalment_applications (
-                    id,
-                    product_id,
-                    products (
-                        name
-                    )
-                )
-            `)
-            .eq("user_id", userId)
-            .order("due_date", { ascending: true });
-        if (schedulesData) setSchedules(schedulesData);
+        // Fetch user's instalment schedules securely via our API route
+        // This bypasses any Next.js caching bugs and any potentially faulty RLS `SELECT` policies.
+        try {
+            const schedulesRes = await fetch(`/api/user-schedules?userId=${userId}`, { cache: 'no-store' });
+            if (schedulesRes.ok) {
+                const json = await schedulesRes.json();
+                if (json.schedules) {
+                    setSchedules(json.schedules);
+                }
+            }
+        } catch (err) {
+            console.error("Failed to fetch schedules:", err);
+        }
 
         // Fetch user's pending applications
         const { data: pendingAppsData } = await supabase
@@ -308,6 +305,7 @@ export default function UserDashboard() {
                                             onSuccess={() => {
                                                 alert("Payment successfully recorded! Your application is now active.");
                                                 fetchDashboardData(user.id);
+                                                router.refresh();
                                             }}
                                             onClose={() => {}}
                                         />
