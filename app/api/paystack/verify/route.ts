@@ -49,8 +49,34 @@ export async function POST(req: Request) {
 
         if (appData && !appError) {
             // Update application status to active, meaning down-payment cleared. 
-            // Schedules were already generated securely at the time of application.
+            // Schedules are generated here since the application is now officially active.
             await supabase.from('instalment_applications').update({ status: 'active' }).eq('id', applicationId);
+            
+            // Generate schedules if they don't already exist for this application
+            const { data: existingSchedules } = await supabase.from('instalment_schedules').select('id').eq('application_id', applicationId);
+            
+            if (!existingSchedules || existingSchedules.length === 0) {
+                const durationMonths = appData.duration_months;
+                const monthlyPayment = appData.monthly_payment_amount;
+
+                if (durationMonths && monthlyPayment > 0) {
+                    const schedules = [];
+                    for (let i = 1; i <= durationMonths; i++) {
+                      const dueDate = new Date();
+                      dueDate.setDate(dueDate.getDate() + (30 * i));
+                      
+                      schedules.push({
+                        application_id: applicationId,
+                        user_id: appData.user_id,
+                        amount_due: monthlyPayment,
+                        due_date: dueDate.toISOString(),
+                        status: 'pending'
+                      });
+                    }
+                    // Service key handles this insert
+                    await supabase.from('instalment_schedules').insert(schedules);
+                }
+            }
         } else {
             console.error("Failed to find application or fetch error:", appError);
         }
