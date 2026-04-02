@@ -324,13 +324,13 @@ export default function UserDashboard() {
                         <CreditCard className="w-6 h-6" />
                         <h2 className="font-semibold text-lg">Active Instalments & Upcoming Bills</h2>
                     </div>
-                    {schedules.filter(s => s.status === 'pending' && s.instalment_applications?.status === 'active').length === 0 ? (
+                    {schedules.filter(s => s.status === 'pending' && (s.instalment_applications?.status === 'active' || s.instalment_applications?.status === 'approved')).length === 0 ? (
                         <div className="text-center py-6 bg-blue-50/50 rounded-lg border border-dashed border-blue-200 text-blue-600 text-sm">
                             You have no pending instalment payments.
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            {schedules.filter(s => s.status === 'pending' && s.instalment_applications?.status === 'active').map((schedule) => {
+                            {schedules.filter(s => s.status === 'pending' && (s.instalment_applications?.status === 'active' || s.instalment_applications?.status === 'approved')).map((schedule) => {
                                 const dueDate = new Date(schedule.due_date);
                                 const now = new Date();
                                 const gracePeriodEnd = new Date(dueDate);
