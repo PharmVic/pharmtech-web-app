@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       
       // INSTALMENT PROCESSING LOGIC
       if (applicationId) {
-        // Fetch the application
+        // Fetch the application just to make sure it exists
         const { data: appData, error: appError } = await supabase
           .from('instalment_applications')
           .select('*')
@@ -48,31 +48,9 @@ export async function POST(req: Request) {
           .single();
 
         if (appData && !appError) {
-          const duration = appData.duration_months || 0;
-          const monthlyFee = appData.monthly_payment_amount || 0;
-          
-          if (duration > 0 && monthlyFee > 0) {
-            // Generate the schedules exactly 30 days apart incrementally
-            const schedules = [];
-            for (let i = 1; i <= duration; i++) {
-              const dueDate = new Date();
-              dueDate.setDate(dueDate.getDate() + (30 * i));
-              
-              schedules.push({
-                application_id: applicationId,
-                user_id: userId,
-                amount_due: monthlyFee,
-                due_date: dueDate.toISOString(),
-                status: 'pending'
-              });
-            }
-
-            // Bulk Insert
-            await supabase.from('instalment_schedules').insert(schedules);
-
-            // Update application status to active, meaning down-payment cleared and schedules built.
+            // Update application status to active, meaning down-payment cleared. 
+            // Schedules were already generated securely at the time of application.
             await supabase.from('instalment_applications').update({ status: 'active' }).eq('id', applicationId);
-          }
         } else {
             console.error("Failed to find application or fetch error:", appError);
         }

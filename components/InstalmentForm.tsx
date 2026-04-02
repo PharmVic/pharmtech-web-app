@@ -24,6 +24,11 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
     const [showTerms, setShowTerms] = useState(false);
     const [acceptedGuarantorTerms, setAcceptedGuarantorTerms] = useState(false);
     const [showGuarantorTerms, setShowGuarantorTerms] = useState(false);
+    
+    // Static state for display consistency
+    const [staticDownPayment, setStaticDownPayment] = useState<number | null>(null);
+    const [staticProductName, setStaticProductName] = useState<string | null>(null);
+    const [staticMonthlyPayment, setStaticMonthlyPayment] = useState<number | null>(null);
 
     const availableDurations = [
         { label: "3 Months", value: 3, price: product?.instalment_3m_price },
@@ -125,7 +130,7 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
         try {
             const { data: existingApps } = await supabase
                 .from("instalment_applications")
-                .select("id, duration_months")
+                .select("id, duration_months, down_payment_amount, monthly_payment_amount, product_name_snapshot")
                 .eq("product_id", product.id)
                 .eq("user_id", currentUserId)
                 .eq("status", "pending")
@@ -135,6 +140,9 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
             if (existingApps && existingApps.length > 0) {
                 setApplicationId(existingApps[0].id);
                 setDurationMonths(existingApps[0].duration_months);
+                setStaticDownPayment(existingApps[0].down_payment_amount);
+                setStaticMonthlyPayment(existingApps[0].monthly_payment_amount);
+                setStaticProductName(existingApps[0].product_name_snapshot);
                 setStep(4);
             }
         } catch (e) {
@@ -199,13 +207,37 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                 id_document_url: idUrl.publicUrl,
                 proof_of_address_url: proofUrl.publicUrl,
                 guarantor_id_doc_url: gIdUrl.publicUrl,
-                status: "pending"
+                status: "pending",
+                down_payment_amount: Number(product.instalment_down_payment || 0),
+                product_name_snapshot: product.name
             }).select();
 
             if (error) throw error;
             
             if (data && data.length > 0) {
-                setApplicationId(data[0].id);
+                const appId = data[0].id;
+                setApplicationId(appId);
+                setStaticDownPayment(Number(product.instalment_down_payment));
+                setStaticProductName(product.name);
+                setStaticMonthlyPayment(monthlyPayment);
+
+                // Generate the schedules exactly 30 days apart incrementally IMMEDIATELY upon application
+                if (durationMonths && monthlyPayment > 0) {
+                    const schedules = [];
+                    for (let i = 1; i <= durationMonths; i++) {
+                      const dueDate = new Date();
+                      dueDate.setDate(dueDate.getDate() + (30 * i));
+                      
+                      schedules.push({
+                        application_id: appId,
+                        user_id: userId || null,
+                        amount_due: monthlyPayment,
+                        due_date: dueDate.toISOString(),
+                        status: 'pending'
+                      });
+                    }
+                    await supabase.from('instalment_schedules').insert(schedules);
+                }
             }
             
             localStorage.removeItem(storageKey); // Clear draft since application submitted
@@ -714,11 +746,11 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                                     <div className="bg-gray-50 p-6 rounded-xl border mb-6 text-left">
                                         <div className="flex justify-between mb-2">
                                             <span className="text-gray-600">Product:</span>
-                                            <span className="font-semibold">{product.name}</span>
+                                            <span className="font-semibold">{staticProductName || product.name}</span>
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-600">Initial Down Payment:</span>
-                                            <span className="font-bold text-green-600">₦{Number(product.instalment_down_payment).toLocaleString()}</span>
+                                            <span className="font-bold text-green-600">₦{Number(staticDownPayment !== null ? staticDownPayment : product.instalment_down_payment).toLocaleString()}</span>
                                         </div>
                                         <div className="flex justify-between border-t pt-2 mt-2">
                                             <span className="text-gray-600">Instalment Plan:</span>
@@ -726,13 +758,13 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-600">Monthly Payment:</span>
-                                            <span className="font-bold text-blue-700">₦{Number(availableDurations.find(d => d.value === durationMonths)?.price || 0).toLocaleString()} / month</span>
+                                            <span className="font-bold text-blue-700">₦{Number(staticMonthlyPayment !== null ? staticMonthlyPayment : (availableDurations.find(d => d.value === durationMonths)?.price || 0)).toLocaleString()} / month</span>
                                         </div>
                                     </div>
 
                                     <div className="w-full">
                                         <PaystackCheckout 
-                                            amount={Number(product.instalment_down_payment)}
+                                            amount={Number(staticDownPayment !== null ? staticDownPayment : product.instalment_down_payment)}
                                             email={email}
                                             phone={phone}
                                             location={address}

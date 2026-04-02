@@ -237,7 +237,7 @@ export default function UserDashboard() {
                                 <div key={app.id} className="border border-orange-200 bg-orange-50/30 p-5 rounded-xl shadow-sm flex flex-col sm:flex-row justify-between items-start gap-4">
                                     <div className="flex-1">
                                         <div className="font-bold text-gray-900 text-lg mb-1">
-                                            {app.products?.name || "Product"}
+                                            {app.product_name_snapshot || app.products?.name || "Product"}
                                         </div>
                                         <div className="flex items-center gap-2 mb-2">
                                             <span className="text-xs font-bold px-2 py-1 rounded border bg-orange-100 text-orange-700 border-orange-200">
@@ -262,11 +262,11 @@ export default function UserDashboard() {
                                         <div className="text-center sm:text-right mb-1">
                                             <div className="text-xs text-gray-500">Required Down Payment</div>
                                             <div className="text-xl font-extrabold text-blue-800">
-                                                ₦{Number(app.products?.instalment_down_payment || 0).toLocaleString()}
+                                                ₦{Number(app.down_payment_amount !== null ? app.down_payment_amount : (app.products?.instalment_down_payment || 0)).toLocaleString()}
                                             </div>
                                         </div>
                                         <PaystackCheckout 
-                                            amount={Number(app.products?.instalment_down_payment || 0)}
+                                            amount={Number(app.down_payment_amount !== null ? app.down_payment_amount : (app.products?.instalment_down_payment || 0))}
                                             email={app.email || user?.email || ""}
                                             phone={app.phone || user?.user_metadata?.phone || "0000000000"}
                                             location={app.address || user?.user_metadata?.address || "N/A"}
