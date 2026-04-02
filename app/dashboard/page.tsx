@@ -136,6 +136,29 @@ export default function UserDashboard() {
         router.refresh();
     }
 
+    async function handleCancelApplication(appId: string) {
+        if (!confirm("Are you sure you want to cancel this instalment application? This action cannot be undone.")) return;
+        
+        try {
+            const res = await fetch("/api/instalments/cancel", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ applicationId: appId, userId: user.id })
+            });
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || "Failed to cancel application");
+            }
+
+            alert("Application successfully cancelled.");
+            fetchDashboardData(user.id);
+        } catch (error: any) {
+            console.error("Cancel err:", error);
+            alert(error.message || "Failed to cancel application. Please try again.");
+        }
+    }
+
     const copyReferralLink = () => {
         if (profile?.referral_code) {
             const baseUrl = window.location.origin;
@@ -257,6 +280,14 @@ export default function UserDashboard() {
                                                 <div className="font-semibold text-gray-900">₦{Number(app.monthly_payment_amount).toLocaleString()}</div>
                                             </div>
                                         </div>
+                                        <div className="flex gap-2">
+                                            <button 
+                                                onClick={() => handleCancelApplication(app.id)}
+                                                className="w-full text-center px-4 py-3 bg-white border border-red-200 text-red-600 rounded-lg font-bold text-sm hover:bg-red-50 transition-colors"
+                                            >
+                                                Cancel Application
+                                            </button>
+                                        </div>
                                     </div>
                                     <div className="w-full sm:w-auto shrink-0 min-w-[200px] flex flex-col gap-2">
                                         <div className="text-center sm:text-right mb-1">
@@ -293,13 +324,13 @@ export default function UserDashboard() {
                         <CreditCard className="w-6 h-6" />
                         <h2 className="font-semibold text-lg">Active Instalments & Upcoming Bills</h2>
                     </div>
-                    {schedules.filter(s => s.status === 'pending').length === 0 ? (
+                    {schedules.filter(s => s.status === 'pending' && s.instalment_applications?.status === 'active').length === 0 ? (
                         <div className="text-center py-6 bg-blue-50/50 rounded-lg border border-dashed border-blue-200 text-blue-600 text-sm">
                             You have no pending instalment payments.
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            {schedules.filter(s => s.status === 'pending').map((schedule) => {
+                            {schedules.filter(s => s.status === 'pending' && s.instalment_applications?.status === 'active').map((schedule) => {
                                 const dueDate = new Date(schedule.due_date);
                                 const now = new Date();
                                 const gracePeriodEnd = new Date(dueDate);
@@ -315,7 +346,7 @@ export default function UserDashboard() {
                                     <div key={schedule.id} className={`border p-5 rounded-xl shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${isLate ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-white'}`}>
                                         <div className="flex-1">
                                             <div className="font-bold text-gray-900 text-lg mb-1">
-                                                {schedule.instalment_applications?.products?.name || "Product Instalment"}
+                                                {schedule.instalment_applications?.product_name_snapshot || schedule.instalment_applications?.products?.name || "Product Instalment"}
                                             </div>
                                             <div className="flex items-center gap-2 mb-2">
                                                 <span className={`text-xs font-bold px-2 py-1 rounded border ${isLate ? 'bg-red-100 text-red-700 border-red-200' : 'bg-blue-50 text-blue-700 border-blue-100'}`}>
