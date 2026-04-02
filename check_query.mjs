@@ -1,20 +1,26 @@
-const supabaseUrl = 'https://tibpiutltoaagkxilayc.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpYnBpdXRsdG9hYWdreGlsYXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2NzYzNTcsImV4cCI6MjA4NDI1MjM1N30.a0TVKV62jL__P-EcIR9qB7ZAStM99Co2krl6DkOd5FA';
+import { createClient } from '@supabase/supabase-js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const categoryId = '2a83ce5d-e3f4-4bc0-98d2-1d59e840274e';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const envData = fs.readFileSync(path.resolve(__dirname, '.env.local'), 'utf-8');
+envData.split('\n').forEach(line => {
+    const match = line.match(/^([^=]+)=(.*)$/);
+    if (match) process.env[match[1]] = match[2].replace('\r', '');
+});
 
-async function checkQuery() {
-    try {
-        const prodRes = await fetch(`${supabaseUrl}/rest/v1/products?select=*&category_id=eq.${categoryId}&order=is_featured.desc,created_at.desc`, {
-            headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
-        });
-        const products = await prodRes.json();
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-        console.log("\nProducts API Result:");
-        console.log(JSON.stringify(products, null, 2));
-
-    } catch (err) {
-        console.error(err);
-    }
+async function check() {
+    const { data: schedules } = await supabase.from('instalment_schedules').select('*');
+    console.log("Total schedules:", schedules?.length);
+    console.log("Sample schedules:", schedules?.slice(0, 3));
+    
+    const { data: apps } = await supabase.from('instalment_applications').select('*');
+    console.log("\nTotal apps:", apps?.length);
+    console.log("Sample apps:", apps?.slice(0, 2));
 }
-checkQuery();
+
+check();

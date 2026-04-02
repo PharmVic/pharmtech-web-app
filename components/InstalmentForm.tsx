@@ -185,10 +185,13 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
 
             const monthlyPayment = availableDurations.find(d => d.value === durationMonths)?.price || 0;
 
+            const { data: { session } } = await supabase.auth.getSession();
+            const activeUserId = userId || session?.user?.id;
+
             // Insert Application
             const { data, error } = await supabase.from("instalment_applications").insert({
                 product_id: product.id,
-                user_id: userId || null,
+                user_id: activeUserId || null,
                 duration_months: durationMonths,
                 monthly_payment_amount: monthlyPayment,
                 bvn,
@@ -230,7 +233,7 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                       
                       schedules.push({
                         application_id: appId,
-                        user_id: userId || null,
+                        user_id: activeUserId || null,
                         amount_due: monthlyPayment,
                         due_date: dueDate.toISOString(),
                         status: 'pending'
@@ -750,7 +753,7 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-600">Initial Down Payment:</span>
-                                            <span className="font-bold text-green-600">₦{Number(staticDownPayment !== null ? staticDownPayment : product.instalment_down_payment).toLocaleString()}</span>
+                                            <span className="font-bold text-green-600">₦{Number(staticDownPayment != null ? staticDownPayment : product.instalment_down_payment).toLocaleString()}</span>
                                         </div>
                                         <div className="flex justify-between border-t pt-2 mt-2">
                                             <span className="text-gray-600">Instalment Plan:</span>
@@ -758,13 +761,13 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-gray-600">Monthly Payment:</span>
-                                            <span className="font-bold text-blue-700">₦{Number(staticMonthlyPayment !== null ? staticMonthlyPayment : (availableDurations.find(d => d.value === durationMonths)?.price || 0)).toLocaleString()} / month</span>
+                                            <span className="font-bold text-blue-700">₦{Number(staticMonthlyPayment != null ? staticMonthlyPayment : (availableDurations.find(d => d.value === durationMonths)?.price || 0)).toLocaleString()} / month</span>
                                         </div>
                                     </div>
 
                                     <div className="w-full">
                                         <PaystackCheckout 
-                                            amount={Number(staticDownPayment !== null ? staticDownPayment : product.instalment_down_payment)}
+                                            amount={Number(staticDownPayment != null ? staticDownPayment : product.instalment_down_payment)}
                                             email={email}
                                             phone={phone}
                                             location={address}

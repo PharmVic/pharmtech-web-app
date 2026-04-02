@@ -262,11 +262,11 @@ export default function UserDashboard() {
                                         <div className="text-center sm:text-right mb-1">
                                             <div className="text-xs text-gray-500">Required Down Payment</div>
                                             <div className="text-xl font-extrabold text-blue-800">
-                                                ₦{Number(app.down_payment_amount !== null ? app.down_payment_amount : (app.products?.instalment_down_payment || 0)).toLocaleString()}
+                                                ₦{Number(app.down_payment_amount != null ? app.down_payment_amount : (app.products?.instalment_down_payment || 0)).toLocaleString()}
                                             </div>
                                         </div>
                                         <PaystackCheckout 
-                                            amount={Number(app.down_payment_amount !== null ? app.down_payment_amount : (app.products?.instalment_down_payment || 0))}
+                                            amount={Number(app.down_payment_amount != null ? app.down_payment_amount : (app.products?.instalment_down_payment || 0))}
                                             email={app.email || user?.email || ""}
                                             phone={app.phone || user?.user_metadata?.phone || "0000000000"}
                                             location={app.address || user?.user_metadata?.address || "N/A"}
