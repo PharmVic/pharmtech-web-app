@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Search } from "lucide-react";
 
 type Service = {
@@ -62,7 +63,12 @@ export default function ServicesSection({ initialServices }: { initialServices: 
                                 <div key={idx} className="col-md-6 col-lg-4 position-relative">
                                     <div className="service-item bg-light rounded shadow-sm hover:shadow-lg transition-all duration-300 h-100 flex-column d-flex group overflow-hidden">
                                         <div className="service-img overflow-hidden rounded-top position-relative" style={{ height: "250px" }}>
-                                            <img src={`${svc.img}?w=500&auto=format`} className="img-fluid w-100 h-100 object-cover group-hover:scale-110 transition-transform duration-500" alt={svc.title} />
+                                            <Image 
+                                                src={svc.img} 
+                                                className="object-cover group-hover:scale-110 transition-transform duration-500" 
+                                                alt={svc.title} 
+                                                fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                            />
                                             {svc.isProduct && svc.is_featured && (
                                                 <div className="absolute top-4 left-4 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-full shadow-sm z-20">
                                                     Featured

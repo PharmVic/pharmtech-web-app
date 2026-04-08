@@ -1,5 +1,6 @@
 
 import React from 'react';
+import Image from 'next/image';
 import { supabase } from "@/lib/supabaseClient";
 
 export default async function About() {
@@ -55,12 +56,20 @@ export default async function About() {
                     <div className="col-xl-5">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-4">
-                                <img src={getImgUrl(1, "https://images.unsplash.com/photo-1509391366360-1e96f5b16e51?w=500&auto=format")} className="rounded-2xl shadow-lg w-full h-48 sm:h-64 object-cover hover:scale-105 transition-transform duration-500" alt="About Position 1" />
-                                <img src={getImgUrl(2, "https://images.unsplash.com/photo-1544197150-b99a580bbcbf?w=500&auto=format")} className="rounded-2xl shadow-lg w-full h-64 sm:h-80 object-cover hover:scale-105 transition-transform duration-500" alt="About Position 2" />
+                                <div className="relative w-full h-48 sm:h-64 rounded-2xl shadow-lg overflow-hidden transition-transform duration-500 hover:scale-105">
+                                    <Image fill src={getImgUrl(1, "https://images.unsplash.com/photo-1509391366360-1e96f5b16e51")} className="object-cover" alt="About Position 1" sizes="(max-width: 768px) 100vw, 50vw" />
+                                </div>
+                                <div className="relative w-full h-64 sm:h-80 rounded-2xl shadow-lg overflow-hidden transition-transform duration-500 hover:scale-105">
+                                    <Image fill src={getImgUrl(2, "https://images.unsplash.com/photo-1544197150-b99a580bbcbf")} className="object-cover" alt="About Position 2" sizes="(max-width: 768px) 100vw, 50vw" />
+                                </div>
                             </div>
                             <div className="space-y-4 lg:mt-12">
-                                <img src={getImgUrl(3, "https://images.unsplash.com/photo-1557064619-2169b476c535?w=500&auto=format")} className="rounded-2xl shadow-lg w-full h-64 sm:h-80 object-cover hover:scale-105 transition-transform duration-500" alt="About Position 3" />
-                                <img src={getImgUrl(4, "https://images.unsplash.com/photo-1558002038-1091a086e98c?w=500&auto=format")} className="rounded-2xl shadow-lg w-full h-48 sm:h-64 object-cover hover:scale-105 transition-transform duration-500" alt="About Position 4" />
+                                <div className="relative w-full h-64 sm:h-80 rounded-2xl shadow-lg overflow-hidden transition-transform duration-500 hover:scale-105">
+                                    <Image fill src={getImgUrl(3, "https://images.unsplash.com/photo-1557064619-2169b476c535")} className="object-cover" alt="About Position 3" sizes="(max-width: 768px) 100vw, 50vw" />
+                                </div>
+                                <div className="relative w-full h-48 sm:h-64 rounded-2xl shadow-lg overflow-hidden transition-transform duration-500 hover:scale-105">
+                                    <Image fill src={getImgUrl(4, "https://images.unsplash.com/photo-1558002038-1091a086e98c")} className="object-cover" alt="About Position 4" sizes="(max-width: 768px) 100vw, 50vw" />
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -2,6 +2,7 @@
 
 import { useCartStore } from "@/lib/store/cartStore";
 import Link from "next/link";
+import Image from "next/image";
 import { Trash2, Plus, Minus, ArrowLeft, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -88,9 +89,9 @@ export default function CartPage() {
                                     <div key={item.id} className="flex flex-col sm:flex-row items-center gap-6 py-4 border-b border-gray-50 last:border-0 last:pb-0">
                                         
                                         {/* Image */}
-                                        <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-xl overflow-hidden">
+                                        <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-xl overflow-hidden relative">
                                             {item.image_url ? (
-                                                <img src={item.image_url} alt={item.name} className="w-full h-full object-contain bg-white" />
+                                                <Image src={item.image_url} alt={item.name} fill sizes="96px" className="object-contain bg-white" />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-gray-500 text-xs">No Image</div>
                                             )}
