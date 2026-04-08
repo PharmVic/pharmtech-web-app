@@ -3,6 +3,7 @@ import HomepageActionIcons from "@/components/HomepageActionIcons";
 import ServicesSection from "@/components/ServicesSection";
 import PastInstallationsSection from "@/components/PastInstallationsSection";
 import Link from "next/link";
+import Image from "next/image";
 import { supabase } from "@/lib/supabaseClient";
 
 export const dynamic = "force-dynamic";
@@ -119,9 +120,9 @@ export default async function Home() {
                     <i className="fas fa-quote-left fa-2x"></i>
                   </div>
                   <div className="testimonial-img d-flex justify-content-center my-4">
-                    <div className="overflow-hidden rounded-circle shadow-sm" style={{ width: "100px", height: "100px", border: "5px solid white" }}>
+                    <div className="overflow-hidden rounded-circle shadow-sm position-relative" style={{ width: "100px", height: "100px", border: "5px solid white" }}>
                       {review.img ? (
-                        <img src={review.img} className="img-fluid w-100 h-100 object-cover hover:scale-110 transition-transform duration-500" alt={review.name} />
+                        <Image src={review.img} fill sizes="100px" className="object-cover hover:scale-110 transition-transform duration-500" alt={review.name} />
                       ) : (
                         <div className="bg-white w-100 h-100 d-flex align-items-center justify-content-center">
                           <i className="fas fa-user fa-3x text-gray-300"></i>

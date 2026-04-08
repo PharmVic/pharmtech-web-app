@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabaseClient";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -44,10 +45,12 @@ export default async function ProductsPage() {
                     but let's stick to a solid fallback for simplicity/robustness first.
                  */}
                                 {category.image_url ? (
-                                    <img
+                                    <Image
                                         src={category.image_url}
                                         alt={category.name}
-                                        className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, 33vw"
+                                        className="object-contain transition-transform duration-700 group-hover:scale-110"
                                     />
                                 ) : (
                                     <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-opacity-20">

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
 import AddToCartButton from "@/components/AddToCartButton";
+import Image from "next/image";
 
 export const dynamic = "force-dynamic";
 
@@ -63,10 +64,12 @@ export default async function CategoryProductsPage({
                             {/* Product Image */}
                             <div className="relative h-64 bg-gray-100 overflow-hidden">
                                 {product.image_url ? (
-                                    <img
+                                    <Image
                                         src={product.image_url || "/placeholder-product.png"}
                                         alt={product.name}
-                                        className="w-full h-full object-contain bg-white transition-transform duration-500 group-hover:scale-105"
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                        className="object-contain bg-white transition-transform duration-500 group-hover:scale-105"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500">
