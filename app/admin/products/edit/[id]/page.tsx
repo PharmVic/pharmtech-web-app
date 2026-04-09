@@ -132,7 +132,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
                     const { error: uploadError } = await supabase.storage
                         .from("products")
-                        .upload(filePath, file);
+                        .upload(filePath, file, { cacheControl: '31536000', upsert: false });
 
                     if (uploadError) throw uploadError;
 

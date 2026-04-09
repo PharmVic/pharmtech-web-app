@@ -47,7 +47,7 @@ export default function NewCategoryPage() {
 
                 const { error: uploadError } = await supabase.storage
                     .from("products") // Reusing the same public products bucket for simplicity
-                    .upload(filePath, imageFile);
+                    .upload(filePath, imageFile, { cacheControl: '31536000', upsert: false });
 
                 if (uploadError) throw uploadError;
 

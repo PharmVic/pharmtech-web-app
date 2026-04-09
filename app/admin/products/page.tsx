@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import Link from "next/link";
+import Image from "next/image";
 import { Plus, Package, Edit, Trash2, Loader2, Image as ImageIcon } from "lucide-react";
 
 type Product = {
@@ -147,11 +148,15 @@ export default function AdminProductsPage() {
                                 <tr key={product.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-6 py-4">
                                         {product.image_url ? (
-                                            <img
-                                                src={product.image_url}
-                                                alt={product.name}
-                                                className="w-12 h-12 rounded object-cover border"
-                                            />
+                                            <div className="relative w-12 h-12">
+                                                <Image
+                                                    src={product.image_url}
+                                                    alt={product.name}
+                                                    fill
+                                                    sizes="48px"
+                                                    className="rounded object-cover border"
+                                                />
+                                            </div>
                                         ) : (
                                             <div className="w-12 h-12 rounded bg-gray-100 flex items-center justify-center text-gray-500">
                                                 <ImageIcon className="w-6 h-6" />

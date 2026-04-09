@@ -165,21 +165,21 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
             // Upload ID
             const idExt = idDoc.name.split(".").pop();
             const idPath = `id_${Date.now()}.${idExt}`;
-            const { error: idError } = await supabase.storage.from("kyc-documents").upload(idPath, idDoc);
+            const { error: idError } = await supabase.storage.from("kyc-documents").upload(idPath, idDoc, { cacheControl: '31536000', upsert: false });
             if (idError) throw idError;
             const { data: idUrl } = supabase.storage.from("kyc-documents").getPublicUrl(idPath);
 
             // Upload Proof
             const proofExt = proofDoc.name.split(".").pop();
             const proofPath = `proof_${Date.now()}.${proofExt}`;
-            const { error: proofError } = await supabase.storage.from("kyc-documents").upload(proofPath, proofDoc);
+            const { error: proofError } = await supabase.storage.from("kyc-documents").upload(proofPath, proofDoc, { cacheControl: '31536000', upsert: false });
             if (proofError) throw proofError;
             const { data: proofUrl } = supabase.storage.from("kyc-documents").getPublicUrl(proofPath);
 
             // Upload Guarantor ID
             const gIdExt = gIdDoc.name.split(".").pop();
             const gIdPath = `gid_${Date.now()}.${gIdExt}`;
-            const { error: gIdError } = await supabase.storage.from("kyc-documents").upload(gIdPath, gIdDoc);
+            const { error: gIdError } = await supabase.storage.from("kyc-documents").upload(gIdPath, gIdDoc, { cacheControl: '31536000', upsert: false });
             if (gIdError) throw gIdError;
             const { data: gIdUrl } = supabase.storage.from("kyc-documents").getPublicUrl(gIdPath);
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import Link from "next/link";
+import Image from "next/image";
 import { Plus, Edit, Trash2, Loader2, Star } from "lucide-react";
 
 type Review = {
@@ -92,11 +93,15 @@ export default function AdminReviewsPage() {
                                         <div className="flex items-center">
                                             <div className="flex-shrink-0 h-10 w-10 relative bg-gray-100 rounded-full flex items-center justify-center overflow-hidden border border-gray-200">
                                                 {review.image_url ? (
-                                                    <img
-                                                        src={review.image_url}
-                                                        alt={review.name}
-                                                        className="h-10 w-10 rounded-full object-cover"
-                                                    />
+                                                    <div className="relative h-10 w-10">
+                                                        <Image
+                                                            src={review.image_url}
+                                                            alt={review.name}
+                                                            fill
+                                                            sizes="40px"
+                                                            className="rounded-full object-cover"
+                                                        />
+                                                    </div>
                                                 ) : (
                                                     <span className="text-gray-500 text-sm font-bold">
                                                         {review.name.charAt(0)}

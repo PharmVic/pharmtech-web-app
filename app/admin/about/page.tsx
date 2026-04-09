@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Upload, Loader2, Image as ImageIcon } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface AboutImage {
     id: string;
@@ -54,7 +55,7 @@ export default function AdminAboutImagesPage() {
 
             const { error: uploadError } = await supabase.storage
                 .from("products")
-                .upload(filePath, file);
+                .upload(filePath, file, { cacheControl: '31536000', upsert: false });
 
             if (uploadError) throw uploadError;
 
@@ -143,7 +144,9 @@ export default function AdminAboutImagesPage() {
                                     </div>
                                 ) : imgData ? (
                                     <>
-                                        <img src={imgData.image_url} alt={`Position ${position}`} className="w-full h-full object-cover" />
+                                        <div className="relative w-full h-full block">
+                                            <Image src={imgData.image_url} alt={`Position ${position}`} fill sizes="400px" className="object-cover" />
+                                        </div>
                                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                             <label className="cursor-pointer bg-white text-gray-900 px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 hover:bg-gray-100 transition-colors shadow-lg">
                                                 <Upload className="w-4 h-4" />

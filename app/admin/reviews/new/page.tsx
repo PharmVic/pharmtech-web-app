@@ -28,7 +28,7 @@ export default function NewReviewPage() {
 
                 const { error: uploadError } = await supabase.storage
                     .from('products')
-                    .upload(filePath, imageFile);
+                    .upload(filePath, imageFile, { cacheControl: '31536000', upsert: false });
 
                 if (uploadError) throw uploadError;
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import Image from "next/image";
 import { Loader2, Plus, Trash2, Image as ImageIcon } from "lucide-react";
 
 type InstallationImage = {
@@ -60,7 +61,7 @@ export default function PastInstallationsPage() {
 
             const { error: uploadError } = await supabase.storage
                 .from('past-installations')
-                .upload(filePath, selectedFile);
+                .upload(filePath, selectedFile, { cacheControl: '31536000', upsert: false });
 
             if (uploadError) throw uploadError;
 
@@ -190,10 +191,12 @@ export default function PastInstallationsPage() {
                         {images.map((img) => (
                             <div key={img.id} className="group relative border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex flex-col">
                                 <div className="aspect-video w-full bg-gray-200 relative">
-                                    <img 
+                                    <Image 
                                         src={img.image_url} 
                                         alt={img.title || "Installation"} 
-                                        className="w-full h-full object-cover"
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, 33vw"
+                                        className="object-cover"
                                     />
                                     <button
                                         onClick={() => handleDelete(img.id, img.image_url)}
