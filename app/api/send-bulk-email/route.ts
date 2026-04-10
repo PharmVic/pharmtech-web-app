@@ -116,16 +116,15 @@ export async function POST(req: Request) {
             }
             
             console.log(`Bulk Email Job Finished. Success: ${successCount}, Failed: ${failureCount}`);
+            return { successCount, failureCount };
         };
 
-        // Trigger the background process without awaiting it 
-        // to return the response immediately as requested.
-        // Note: For < 100 users on Vercel, Node often finishes this before Vercel freezes the instance.
-        sendEmailsBatch().catch(console.error);
+        // Await the batch process so Vercel doesn't freeze the environment before completion
+        const { successCount, failureCount } = await sendEmailsBatch();
 
         return NextResponse.json({ 
             success: true, 
-            message: `Email broadcast initiated for ${targetEmails.length} users.`,
+            message: `Email broadcast completed. Success: ${successCount}, Failed: ${failureCount}.`,
             recipientCount: targetEmails.length
         }, { status: 200 });
 
