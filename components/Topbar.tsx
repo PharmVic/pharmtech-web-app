@@ -20,8 +20,13 @@ export default function Topbar() {
         });
 
         // Listen for auth state changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
             setUser(session?.user || null);
+            
+            // Force navigation to the update password page if recovering
+            if (event === "PASSWORD_RECOVERY") {
+                window.location.href = "/auth/update-password";
+            }
         });
 
         return () => subscription.unsubscribe();
