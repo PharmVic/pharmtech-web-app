@@ -66,12 +66,7 @@ export default function SignInPage() {
                             />
                         </div>
                         <div>
-                            <div className="flex items-center justify-between">
-                                <label className="block text-sm font-medium text-gray-700">Password</label>
-                                <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:text-blue-500 hover:underline">
-                                    Forgot password?
-                                </Link>
-                            </div>
+                            <label className="block text-sm font-medium text-gray-700">Password</label>
                             <div className="relative mt-1">
                                 <input
                                     type={showPassword ? "text" : "password"}
@@ -104,6 +99,12 @@ export default function SignInPage() {
                                 "Sign in"
                             )}
                         </button>
+                    </div>
+
+                    <div className="text-center mt-4">
+                        <Link href="/auth/forgot-password" className="text-sm font-medium text-blue-600 hover:text-blue-500 hover:underline">
+                            Forgot your password?
+                        </Link>
                     </div>
                 </form>
 
