@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Send, Loader2, Mail } from "lucide-react";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function AdminEmailPage() {
     const [subject, setSubject] = useState("");
@@ -18,9 +19,15 @@ export default function AdminEmailPage() {
         setErrorText("");
 
         try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const token = session?.access_token;
+
             const res = await fetch("/api/send-bulk-email", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": token ? `Bearer ${token}` : ""
+                },
                 body: JSON.stringify({
                     subject,
                     message,

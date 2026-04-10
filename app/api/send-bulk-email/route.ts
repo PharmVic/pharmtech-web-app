@@ -4,17 +4,24 @@ import nodemailer from "nodemailer";
 
 export async function POST(req: Request) {
     try {
-        // 1. Verify Admin Session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        // 1. Verify Admin Session via Token
+        const authHeader = req.headers.get("Authorization");
+        const token = authHeader?.replace("Bearer ", "");
         
-        if (sessionError || !session) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        if (!token) {
+            return NextResponse.json({ error: "Unauthorized: Missing Token" }, { status: 401 });
+        }
+
+        const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+        
+        if (userError || !user) {
+            return NextResponse.json({ error: "Unauthorized: Invalid Token" }, { status: 401 });
         }
 
         const { data: profile, error: profileError } = await supabase
             .from("profiles")
             .select("role")
-            .eq("id", session.user.id)
+            .eq("id", user.id)
             .single();
 
         if (profileError || !profile || profile.role !== "admin") {
