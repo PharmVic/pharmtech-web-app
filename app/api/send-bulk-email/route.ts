@@ -91,6 +91,7 @@ export async function POST(req: Request) {
             const DELAY_MS = 200; // Delay between batches
             let successCount = 0;
             let failureCount = 0;
+            let errorDetails: string[] = [];
 
             for (let i = 0; i < targetEmails.length; i += BATCH_SIZE) {
                 const batch = targetEmails.slice(i, i + BATCH_SIZE);
@@ -103,6 +104,7 @@ export async function POST(req: Request) {
                         html: htmlContent,
                     }).then(() => { successCount++; }).catch(err => { 
                         console.error(`Failed sending to ${email}:`, err);
+                        errorDetails.push(err.message || String(err));
                         failureCount++; 
                     })
                 );
@@ -116,15 +118,20 @@ export async function POST(req: Request) {
             }
             
             console.log(`Bulk Email Job Finished. Success: ${successCount}, Failed: ${failureCount}`);
-            return { successCount, failureCount };
+            return { successCount, failureCount, errorDetails };
         };
 
         // Await the batch process so Vercel doesn't freeze the environment before completion
-        const { successCount, failureCount } = await sendEmailsBatch();
+        const { successCount, failureCount, errorDetails } = await sendEmailsBatch();
+
+        // Reveal the specific error if testing a single email
+        if (failureCount > 0 && targetEmails.length === 1) {
+            return NextResponse.json({ error: `SMTP Target Error: ${errorDetails[0]}` }, { status: 400 });
+        }
 
         return NextResponse.json({ 
             success: true, 
-            message: `Email broadcast completed. Success: ${successCount}, Failed: ${failureCount}.`,
+            message: `Email broadcast completed. Success: ${successCount}, Failed: ${failureCount}. ${failureCount > 0 ? `Issues: ${errorDetails.join(', ')}` : ''}`,
             recipientCount: targetEmails.length
         }, { status: 200 });
 
