@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Package, Search, MapPin, Phone, Mail, Calendar, CheckCircle, ChevronDown, ChevronUp, Clock, Truck, Check } from "lucide-react";
 
