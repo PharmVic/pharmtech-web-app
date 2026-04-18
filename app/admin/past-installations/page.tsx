@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 import { Loader2, Plus, Trash2, Image as ImageIcon } from "lucide-react";
+import imageCompression from 'browser-image-compression';
 
 type InstallationImage = {
     id: string;
@@ -54,14 +55,17 @@ export default function PastInstallationsPage() {
         try {
             setUploading(true);
 
+            const options = { maxSizeMB: 0.2, maxWidthOrHeight: 1920, useWebWorker: true };
+            const compressedFile = await imageCompression(selectedFile, options);
+
             // 1. Upload file to Supabase Storage
-            const fileExt = selectedFile.name.split('.').pop();
+            const fileExt = compressedFile.name.split('.').pop() || 'jpg';
             const fileName = `${Math.random()}.${fileExt}`;
             const filePath = `${fileName}`;
 
             const { error: uploadError } = await supabase.storage
                 .from('past-installations')
-                .upload(filePath, selectedFile, { cacheControl: '31536000', upsert: false });
+                .upload(filePath, compressedFile, { cacheControl: '31536000', upsert: false });
 
             if (uploadError) throw uploadError;
 

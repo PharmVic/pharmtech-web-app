@@ -2,13 +2,8 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  // If we are already on the maintenance page, do nothing
-  if (request.nextUrl.pathname === '/maintenance') {
-    return NextResponse.next()
-  }
-
-  // Redirect all other non-static, non-API traffic to maintenance
-  return NextResponse.redirect(new URL('/maintenance', request.url))
+  // Pass through all traffic
+  return NextResponse.next()
 }
 
 export const config = {

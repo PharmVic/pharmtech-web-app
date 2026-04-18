@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Upload, Loader2, Image as ImageIcon } from "lucide-react";
+import imageCompression from 'browser-image-compression';
 import Link from "next/link";
 
 type Category = {
@@ -78,8 +79,10 @@ export default function NewProductPage() {
 
             // 1. Upload Images (if selected)
             if (imageFiles.length > 0) {
-                for (const file of imageFiles) {
-                    const fileExt = file.name.split(".").pop();
+                const options = { maxSizeMB: 0.2, maxWidthOrHeight: 1920, useWebWorker: true };
+                for (const originalFile of imageFiles) {
+                    const file = await imageCompression(originalFile, options);
+                    const fileExt = file.name.split(".").pop() || 'jpg';
                     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
                     const filePath = `${fileName}`;
 

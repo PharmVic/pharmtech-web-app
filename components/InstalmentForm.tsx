@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Loader2, X, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
+import imageCompression from 'browser-image-compression';
 import dynamic from 'next/dynamic';
 
 const PaystackCheckout = dynamic(() => import("./PaystackCheckout"), { ssr: false });
@@ -162,24 +163,40 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                 return;
             }
 
+            // Helper to compress image or return PDF unchanged
+            const compressOptions = {
+                maxSizeMB: 0.2,
+                maxWidthOrHeight: 1920,
+                useWebWorker: true,
+            };
+            const processFile = async (file: File) => {
+                if (file.type === 'application/pdf') return file;
+                try { return await imageCompression(file, compressOptions); } 
+                catch (e) { console.error("Compression err", e); return file; }
+            };
+
+            const procIdDoc = await processFile(idDoc);
+            const procProofDoc = await processFile(proofDoc);
+            const procGIdDoc = await processFile(gIdDoc);
+
             // Upload ID
-            const idExt = idDoc.name.split(".").pop();
+            const idExt = procIdDoc.name.split(".").pop();
             const idPath = `id_${Date.now()}.${idExt}`;
-            const { error: idError } = await supabase.storage.from("kyc-documents").upload(idPath, idDoc, { cacheControl: '31536000', upsert: false });
+            const { error: idError } = await supabase.storage.from("kyc-documents").upload(idPath, procIdDoc, { cacheControl: '31536000', upsert: false });
             if (idError) throw idError;
             const { data: idUrl } = supabase.storage.from("kyc-documents").getPublicUrl(idPath);
 
             // Upload Proof
-            const proofExt = proofDoc.name.split(".").pop();
+            const proofExt = procProofDoc.name.split(".").pop();
             const proofPath = `proof_${Date.now()}.${proofExt}`;
-            const { error: proofError } = await supabase.storage.from("kyc-documents").upload(proofPath, proofDoc, { cacheControl: '31536000', upsert: false });
+            const { error: proofError } = await supabase.storage.from("kyc-documents").upload(proofPath, procProofDoc, { cacheControl: '31536000', upsert: false });
             if (proofError) throw proofError;
             const { data: proofUrl } = supabase.storage.from("kyc-documents").getPublicUrl(proofPath);
 
             // Upload Guarantor ID
-            const gIdExt = gIdDoc.name.split(".").pop();
+            const gIdExt = procGIdDoc.name.split(".").pop();
             const gIdPath = `gid_${Date.now()}.${gIdExt}`;
-            const { error: gIdError } = await supabase.storage.from("kyc-documents").upload(gIdPath, gIdDoc, { cacheControl: '31536000', upsert: false });
+            const { error: gIdError } = await supabase.storage.from("kyc-documents").upload(gIdPath, procGIdDoc, { cacheControl: '31536000', upsert: false });
             if (gIdError) throw gIdError;
             const { data: gIdUrl } = supabase.storage.from("kyc-documents").getPublicUrl(gIdPath);
 

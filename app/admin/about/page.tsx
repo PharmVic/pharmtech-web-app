@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, Upload, Loader2, Image as ImageIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import imageCompression from 'browser-image-compression';
 
 interface AboutImage {
     id: string;
@@ -48,14 +49,17 @@ export default function AdminAboutImagesPage() {
         setUploadingPos(position);
 
         try {
+            const options = { maxSizeMB: 0.2, maxWidthOrHeight: 1920, useWebWorker: true };
+            const compressedFile = await imageCompression(file, options);
+
             // 1. Upload to Storage
-            const fileExt = file.name.split(".").pop();
+            const fileExt = compressedFile.name.split(".").pop() || 'jpg';
             const fileName = `about-pos-${position}-${Date.now()}.${fileExt}`;
             const filePath = `about/${fileName}`;
 
             const { error: uploadError } = await supabase.storage
                 .from("products")
-                .upload(filePath, file, { cacheControl: '31536000', upsert: false });
+                .upload(filePath, compressedFile, { cacheControl: '31536000', upsert: false });
 
             if (uploadError) throw uploadError;
 
