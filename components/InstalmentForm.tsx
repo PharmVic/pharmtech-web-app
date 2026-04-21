@@ -165,8 +165,8 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
 
             // Helper to compress image or return PDF unchanged
             const compressOptions = {
-                maxSizeMB: 0.2,
-                maxWidthOrHeight: 1920,
+                maxSizeMB: 0.05,
+                maxWidthOrHeight: 1024,
                 useWebWorker: true,
             };
             const processFile = async (file: File) => {

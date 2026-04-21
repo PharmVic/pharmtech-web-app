@@ -55,7 +55,7 @@ export default function PastInstallationsPage() {
         try {
             setUploading(true);
 
-            const options = { maxSizeMB: 0.2, maxWidthOrHeight: 1920, useWebWorker: true };
+            const options = { maxSizeMB: 0.05, maxWidthOrHeight: 1024, useWebWorker: true };
             const compressedFile = await imageCompression(selectedFile, options);
 
             // 1. Upload file to Supabase Storage

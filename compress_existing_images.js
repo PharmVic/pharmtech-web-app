@@ -13,7 +13,7 @@ const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = env.SUPABASE_SERVICE_ROLE_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const TARGET_MAX_SIZE = 200 * 1024; // 200kb
+const TARGET_MAX_SIZE = 50 * 1024; // 50kb
 const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.heic'];
 
 async function compressImageCache() {
@@ -44,8 +44,8 @@ async function compressImageCache() {
                     
                     // 2. Compress image using sharp
                     const compressedBuffer = await sharp(Buffer.from(buffer))
-                        .resize({ width: 1920, height: 1920, fit: 'inside', withoutEnlargement: true })
-                        .jpeg({ quality: 80 }) // Fallback, could be better to use original format
+                        .resize({ width: 1024, height: 1024, fit: 'inside', withoutEnlargement: true })
+                        .jpeg({ quality: 60 }) // Fallback, lower quality for 50kb target
                         .toBuffer();
                         
                     console.log(` -> Compressed to ${Math.round(compressedBuffer.length / 1024)} KB`);

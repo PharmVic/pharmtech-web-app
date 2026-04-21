@@ -126,7 +126,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
             // 1. Upload New Images
             if (imageFiles.length > 0) {
-                const options = { maxSizeMB: 0.2, maxWidthOrHeight: 1920, useWebWorker: true };
+                const options = { maxSizeMB: 0.05, maxWidthOrHeight: 1024, useWebWorker: true };
                 for (const originalFile of imageFiles) {
                     const file = await imageCompression(originalFile, options);
                     const fileExt = file.name.split(".").pop() || 'jpg';
