@@ -157,8 +157,8 @@ export default function ProductComments({ productId }: { productId: string }) {
                         <UserCircle className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                         <h4 className="text-lg font-medium text-gray-900 mb-2">Join the Conversation</h4>
                         <p className="text-gray-600 mb-4">You must be logged in to leave a comment on this product.</p>
-                        {/* If they have a login page, link to it. Usually it's /login or similar. Since we don't know the exact route, standard /auth/login or /login. */}
-                        <a href="/login" className="inline-block bg-white text-blue-600 border border-blue-600 font-semibold px-6 py-2 rounded-lg hover:bg-blue-50 transition-colors">
+                        {/* Link to the correct /auth/sign-in page */}
+                        <a href="/auth/sign-in" className="inline-block bg-white text-blue-600 border border-blue-600 font-semibold px-6 py-2 rounded-lg hover:bg-blue-50 transition-colors">
                             Log In to Comment
                         </a>
                     </div>

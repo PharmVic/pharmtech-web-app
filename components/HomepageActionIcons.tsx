@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { Calculator, Package, Phone, FileText } from 'lucide-react';
+import { Calculator, GraduationCap, Phone, FileText } from 'lucide-react';
 
 const actions = [
-    { label: 'Products', icon: Package, href: '/products', color: 'bg-blue-100 text-blue-600' },
+    { label: 'Apprenticeship', icon: GraduationCap, href: '/apprenticeship', color: 'bg-blue-100 text-blue-600' },
     { label: 'Get Quote', icon: FileText, href: 'https://wa.me/2348142111657?text=Hello,%20I%20would%20like%20to%20get%20a%20quote.', color: 'bg-green-100 text-green-600' },
     { label: 'Solar Calc', icon: Calculator, href: '/calculator', color: 'bg-yellow-100 text-yellow-600' },
     { label: 'Contact', icon: Phone, href: '/contact', color: 'bg-purple-100 text-purple-600' },
