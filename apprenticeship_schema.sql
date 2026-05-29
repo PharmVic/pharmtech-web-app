@@ -36,8 +36,8 @@ CREATE TABLE IF NOT EXISTS public.apprenticeship_applications (
     course_department TEXT,
     year_graduated TEXT NOT NULL,
     
-    -- 4. Apprenticeship Position Applied For
-    position_applied TEXT NOT NULL, -- Solar Panel Installation, Inverter Technician, Electrical Installation, Battery Systems, CCTV / Security Systems, Technical Support, Other
+    -- 4. Apprenticeship Positions Applied For
+    positions_applied TEXT[] DEFAULT '{}'::TEXT[] NOT NULL, -- Array of positions: Solar Panel Installation, Inverter Technician, Electrical Installation, Battery Systems, CCTV / Security Systems, Technical Support, Other
     position_applied_other TEXT,
     
     -- 5. Skills & Experience
@@ -91,3 +91,8 @@ USING (
 WITH CHECK (
     (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin'
 );
+
+-- MIGRATION PATH FOR EXISTING TABLES:
+-- If you have already created the table, run the following SQL commands to update the schema:
+-- ALTER TABLE public.apprenticeship_applications DROP COLUMN IF EXISTS position_applied;
+-- ALTER TABLE public.apprenticeship_applications ADD COLUMN IF NOT EXISTS positions_applied TEXT[] DEFAULT '{}'::TEXT[] NOT NULL;

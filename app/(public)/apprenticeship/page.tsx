@@ -51,7 +51,7 @@ export default function ApprenticeshipPage() {
     yearGraduated: "",
 
     // Apprenticeship Position Applied For
-    positionApplied: "",
+    positionsApplied: [] as string[],
     positionAppliedOther: "",
 
     // Skills & Experience
@@ -145,6 +145,18 @@ export default function ApprenticeshipPage() {
     });
   };
 
+  // Handle position applied checkboxes
+  const handlePositionCheckboxChange = (pos: string) => {
+    setFormData(prev => {
+      const positions = [...prev.positionsApplied];
+      if (positions.includes(pos)) {
+        return { ...prev, positionsApplied: positions.filter(p => p !== pos) };
+      } else {
+        return { ...prev, positionsApplied: [...positions, pos] };
+      }
+    });
+  };
+
   // File uploading helper
   const uploadFileToSupabase = async (file: File, folderName: string): Promise<string> => {
     const fileExt = file.name.split(".").pop();
@@ -174,6 +186,12 @@ export default function ApprenticeshipPage() {
     setUploading(true);
 
     // Validations
+    if (formData.positionsApplied.length === 0) {
+      setErrorMsg("Please select at least one department/position you are applying for.");
+      setUploading(false);
+      return;
+    }
+
     if (!formData.agreedToTerms) {
       setErrorMsg("You must read and agree to the terms and conditions.");
       setUploading(false);
@@ -222,8 +240,8 @@ export default function ApprenticeshipPage() {
         course_department: formData.courseDepartment || null,
         year_graduated: formData.yearGraduated,
 
-        position_applied: formData.positionApplied,
-        position_applied_other: formData.positionApplied === "Other" ? formData.positionAppliedOther : null,
+        positions_applied: formData.positionsApplied,
+        position_applied_other: formData.positionsApplied.includes("Other") ? formData.positionAppliedOther : null,
 
         has_experience: formData.hasExperience === "yes",
         experience_description: formData.hasExperience === "yes" ? formData.experienceDescription : null,
@@ -264,6 +282,11 @@ export default function ApprenticeshipPage() {
   const getWhatsAppLink = () => {
     if (!successData) return "";
     const phoneNum = "2348142111657";
+    const displayPositions = successData.positions_applied?.map((p: string) => 
+      p === "Other" && successData.position_applied_other 
+        ? `Other (${successData.position_applied_other})` 
+        : p
+    ).join(", ") || "";
     const text = `Hello Pharmtech Inverter Multiconcept,
 
 I have just completed my Apprenticeship Application Form online.
@@ -271,7 +294,7 @@ Here are my registration details:
 • Name: ${successData.first_name} ${successData.last_name}
 • Phone: ${successData.phone}
 • Email: ${successData.email}
-• Position Applied: ${successData.position_applied}
+• Positions Applied: ${displayPositions}
 • Age / Gender: ${successData.age} / ${successData.gender}
 
 Please review my application. Thank you!`;
@@ -538,7 +561,7 @@ Please review my application. Thank you!`;
               </h3>
 
               <div className="space-y-3">
-                <label className="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wider">Please select the department you are applying for: <span className="text-red-500">*</span></label>
+                <label className="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wider">Please select the department(s) you are applying for: <span className="text-red-500">*</span></label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {[
                     "Solar Panel Installation Apprentice",
@@ -551,20 +574,19 @@ Please review my application. Thank you!`;
                   ].map((pos) => (
                     <label key={pos} className="flex items-center gap-2.5 p-3 rounded-lg border border-gray-200 hover:bg-green-50 transition-all cursor-pointer">
                       <input 
-                        type="radio" 
-                        name="positionApplied" 
+                        type="checkbox" 
+                        name="positionsApplied" 
                         value={pos} 
-                        checked={formData.positionApplied === pos} 
-                        onChange={handleChange} 
-                        required
-                        className="w-4 h-4 text-green-700 focus:ring-green-600" 
+                        checked={formData.positionsApplied.includes(pos)} 
+                        onChange={() => handlePositionCheckboxChange(pos)} 
+                        className="w-4 h-4 text-green-700 focus:ring-green-600 rounded" 
                       />
                       <span className="text-sm font-semibold text-gray-700">{pos}</span>
                     </label>
                   ))}
                 </div>
 
-                {formData.positionApplied === "Other" && (
+                {formData.positionsApplied.includes("Other") && (
                   <div className="mt-3">
                     <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Specify Other Position <span className="text-red-500">*</span></label>
                     <input type="text" name="positionAppliedOther" required value={formData.positionAppliedOther} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Enter department" />
@@ -794,7 +816,7 @@ Please review my application. Thank you!`;
             <div className="space-y-2">
               <h2 className="text-3xl font-extrabold text-green-800">Application Submitted!</h2>
               <p className="text-gray-600 max-w-md mx-auto text-sm md:text-base">
-                Thank you, <span className="font-bold text-gray-800">{successData.first_name} {successData.last_name}</span>. Your application for <span className="font-bold text-gray-800">{successData.position_applied}</span> has been received and saved securely in our database.
+                Thank you, <span className="font-bold text-gray-800">{successData.first_name} {successData.last_name}</span>. Your application for <span className="font-bold text-gray-800">{successData.positions_applied?.map((p: string) => p === "Other" && successData.position_applied_other ? `Other (${successData.position_applied_other})` : p).join(", ")}</span> has been received and saved securely in our database.
               </p>
             </div>
 
@@ -845,7 +867,7 @@ Please review my application. Thank you!`;
                     schoolName: "",
                     courseDepartment: "",
                     yearGraduated: "",
-                    positionApplied: "",
+                    positionsApplied: [],
                     positionAppliedOther: "",
                     hasExperience: "no",
                     experienceDescription: "",

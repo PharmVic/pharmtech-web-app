@@ -119,7 +119,8 @@ export default function AdminApprenticeshipsPage() {
       app.phone.includes(searchTerm);
 
     const statusMatch = statusFilter === "all" || app.status === statusFilter;
-    const positionMatch = positionFilter === "all" || app.position_applied === positionFilter;
+    const positions = app.positions_applied || [];
+    const positionMatch = positionFilter === "all" || positions.includes(positionFilter);
 
     return searchMatch && statusMatch && positionMatch;
   });
@@ -309,13 +310,23 @@ export default function AdminApprenticeshipsPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      {app.position_applied === "Other" ? (
-                        <span className="text-gray-700 bg-purple-50 border border-purple-100 text-xs px-2 py-1 rounded">
-                          Other: {app.position_applied_other}
-                        </span>
-                      ) : (
-                        <span className="text-gray-900">{app.position_applied}</span>
-                      )}
+                      <div className="flex flex-wrap gap-1 max-w-xs">
+                        {app.positions_applied && app.positions_applied.length > 0 ? (
+                          app.positions_applied.map((pos: string) => (
+                            pos === "Other" ? (
+                              <span key={pos} className="text-purple-800 bg-purple-50 border border-purple-100 text-[10px] font-bold px-2 py-0.5 rounded" title={app.position_applied_other || "Other"}>
+                                Other: {app.position_applied_other || "N/A"}
+                              </span>
+                            ) : (
+                              <span key={pos} className="text-blue-800 bg-blue-50 border border-blue-100 text-[10px] font-bold px-2 py-0.5 rounded" title={pos}>
+                                {pos.replace(" Apprentice", "")}
+                              </span>
+                            )
+                          ))
+                        ) : (
+                          <span className="text-gray-400 italic text-xs">None</span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-xs font-semibold">
                       <div className="flex items-center gap-1.5 text-gray-700">
@@ -401,7 +412,10 @@ export default function AdminApprenticeshipsPage() {
                       Current: {getStatusLabel(selectedApp.status)}
                     </span>
                     <span className="bg-gray-100 text-gray-700 text-xs px-2.5 py-0.5 rounded-full font-bold">
-                      Position: {selectedApp.position_applied === "Other" ? selectedApp.position_applied_other : selectedApp.position_applied}
+                      Positions: {selectedApp.positions_applied && selectedApp.positions_applied.length > 0 
+                        ? selectedApp.positions_applied.map((pos: string) => pos === "Other" && selectedApp.position_applied_other ? `Other (${selectedApp.position_applied_other})` : pos).join(", ")
+                        : "None"
+                      }
                     </span>
                   </div>
                 </div>
