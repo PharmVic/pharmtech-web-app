@@ -25,6 +25,14 @@ export default function AdminInstalmentsPage() {
                         name,
                         price,
                         instalment_down_payment
+                    ),
+                    instalment_schedules (
+                        id,
+                        status,
+                        due_date,
+                        amount_due,
+                        paid_at,
+                        paystack_reference
                     )
                 `)
                 .order("created_at", { ascending: false });
@@ -62,6 +70,99 @@ export default function AdminInstalmentsPage() {
         } catch (err: any) {
             console.error("Error updating status:", err);
             alert("Failed to update status.");
+        }
+    }
+
+    async function markScheduleAsPaid(scheduleId: string, appId: string) {
+        if (!confirm("Are you sure you want to mark this instalment month as paid?")) return;
+        
+        try {
+            const now = new Date().toISOString();
+            const { data, error } = await supabase
+                .from("instalment_schedules")
+                .update({ 
+                    status: "paid",
+                    paid_at: now,
+                    paystack_reference: "OFFLINE_PAYMENT_" + Date.now()
+                })
+                .eq("id", scheduleId)
+                .select()
+                .single();
+                
+            if (error) throw error;
+            
+            // Update local state for schedules nested inside applications
+            setApplications(apps => apps.map(app => {
+                if (app.id === appId) {
+                    const updatedSchedules = app.instalment_schedules?.map((s: any) => 
+                        s.id === scheduleId ? data : s
+                    ) || [data];
+                    return { ...app, instalment_schedules: updatedSchedules };
+                }
+                return app;
+            }));
+            
+            // Also update selectedApp if it matches
+            if (selectedApp && selectedApp.id === appId) {
+                const updatedSchedules = selectedApp.instalment_schedules?.map((s: any) => 
+                    s.id === scheduleId ? data : s
+                ) || [data];
+                setSelectedApp({ ...selectedApp, instalment_schedules: updatedSchedules });
+            }
+            
+            alert("Payment schedule marked as paid successfully.");
+        } catch (err: any) {
+            console.error("Error marking schedule as paid:", err);
+            alert("Failed to update payment status.");
+        }
+    }
+
+    async function generateSchedules(app: any) {
+        if (!confirm(`Are you sure you want to generate ${app.duration_months} month payment schedules for this application?`)) return;
+        
+        try {
+            const durationMonths = app.duration_months;
+            const monthlyPayment = app.monthly_payment_amount;
+
+            if (!durationMonths || !monthlyPayment) {
+                alert("This application does not have a duration or monthly payment amount set.");
+                return;
+            }
+
+            const schedules = [];
+            for (let i = 1; i <= durationMonths; i++) {
+                const dueDate = new Date();
+                dueDate.setDate(dueDate.getDate() + (30 * i));
+                
+                schedules.push({
+                    application_id: app.id,
+                    user_id: app.user_id,
+                    amount_due: monthlyPayment,
+                    due_date: dueDate.toISOString(),
+                    status: 'pending'
+                });
+            }
+
+            const { data, error } = await supabase
+                .from('instalment_schedules')
+                .insert(schedules)
+                .select();
+                
+            if (error) throw error;
+
+            // Update local state
+            setApplications(apps => apps.map(a => 
+                a.id === app.id ? { ...a, instalment_schedules: data } : a
+            ));
+            
+            if (selectedApp && selectedApp.id === app.id) {
+                setSelectedApp({ ...selectedApp, instalment_schedules: data });
+            }
+            
+            alert("Schedules generated successfully.");
+        } catch (err: any) {
+            console.error("Error generating schedules:", err);
+            alert("Failed to generate payment schedules.");
         }
     }
 
@@ -115,8 +216,11 @@ export default function AdminInstalmentsPage() {
                                             <div className="font-medium text-gray-800 line-clamp-1">{app.products?.name || "Unknown Product"}</div>
                                             <div className="text-xs text-green-600 font-medium">Down: ₦{app.products?.instalment_down_payment?.toLocaleString()}</div>
                                             {app.duration_months && (
-                                                <div className="text-xs text-blue-600 font-medium flex mt-1 items-center gap-1">
-                                                    Plan: {app.duration_months} Mos @ ₦{Number(app.monthly_payment_amount).toLocaleString()}/mo
+                                                <div className="text-xs text-blue-600 font-medium flex flex-col gap-0.5 mt-1">
+                                                    <div>Plan: {app.duration_months} Mos @ ₦{Number(app.monthly_payment_amount).toLocaleString()}/mo</div>
+                                                    <div className="inline-flex items-center gap-1 text-[10px] text-green-700 bg-green-50 border border-green-100 rounded px-1.5 py-0.5 w-max font-bold">
+                                                        Paid: {app.instalment_schedules?.filter((s: any) => s.status === 'paid').length || 0} / {app.duration_months} Mos
+                                                    </div>
                                                 </div>
                                             )}
                                         </td>
@@ -198,9 +302,15 @@ export default function AdminInstalmentsPage() {
                                     <div><span className="text-gray-500 block text-xs">Required Down Payment</span> <span className="font-bold text-green-600">₦{selectedApp.products?.instalment_down_payment?.toLocaleString()}</span></div>
                                     
                                     {selectedApp.duration_months && (
-                                        <div className="col-span-2 grid grid-cols-2 gap-4 mt-2 pt-4 border-t border-gray-100">
+                                        <div className="col-span-2 grid grid-cols-3 gap-4 mt-2 pt-4 border-t border-gray-100">
                                             <div><span className="text-gray-500 block text-xs">Agreed Term</span> <span className="font-bold text-blue-700">{selectedApp.duration_months} Months</span></div>
                                             <div><span className="text-gray-500 block text-xs">Monthly Repayment</span> <span className="font-bold text-blue-700">₦{Number(selectedApp.monthly_payment_amount).toLocaleString()} / mo</span></div>
+                                            <div>
+                                                <span className="text-gray-500 block text-xs">Repayment Progress</span>
+                                                <span className="font-bold text-green-700 block">
+                                                    {selectedApp.instalment_schedules?.filter((s: any) => s.status === 'paid').length || 0} / {selectedApp.duration_months} Months Paid
+                                                </span>
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -276,6 +386,67 @@ export default function AdminInstalmentsPage() {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Section 5: Payment Schedule */}
+                            {selectedApp.duration_months && (
+                                <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+                                    <div className="bg-green-50 px-4 py-2.5 border-b font-semibold text-green-800 text-sm uppercase tracking-wider flex justify-between items-center">
+                                        <span>Repayment Schedule</span>
+                                        <span className="text-xs text-green-700 bg-green-100 px-2 py-0.5 rounded-full font-bold">
+                                            {selectedApp.instalment_schedules?.filter((s: any) => s.status === 'paid').length || 0} of {selectedApp.duration_months} Months Cleared
+                                        </span>
+                                    </div>
+                                    <div className="p-4 text-sm space-y-3 divide-y divide-gray-100">
+                                        {selectedApp.instalment_schedules && selectedApp.instalment_schedules.length > 0 ? (
+                                            selectedApp.instalment_schedules
+                                                .sort((a: any, b: any) => new Date(a.due_date).getTime() - new Date(b.due_date).getTime())
+                                                .map((schedule: any, idx: number) => (
+                                                    <div key={schedule.id} className="pt-3 first:pt-0 flex justify-between items-center gap-4">
+                                                        <div>
+                                                            <div className="font-semibold text-gray-800">Month {idx + 1} Payment</div>
+                                                            <div className="text-xs text-gray-400">Due: {new Date(schedule.due_date).toLocaleDateString()}</div>
+                                                            {schedule.paid_at && (
+                                                                <div className="text-[10px] text-gray-500 mt-0.5">
+                                                                    Paid on: {new Date(schedule.paid_at).toLocaleDateString()} {schedule.paystack_reference && `(Ref: ${schedule.paystack_reference})`}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex items-center gap-3">
+                                                            <span className="font-semibold text-gray-700">₦{Number(schedule.amount_due).toLocaleString()}</span>
+                                                            <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${
+                                                                schedule.status === 'paid' ? 'bg-green-100 text-green-700' :
+                                                                schedule.status === 'late' ? 'bg-red-100 text-red-700' :
+                                                                'bg-yellow-100 text-yellow-700'
+                                                            }`}>
+                                                                {schedule.status}
+                                                            </span>
+                                                            {schedule.status !== 'paid' && (
+                                                                <button
+                                                                    onClick={() => markScheduleAsPaid(schedule.id, selectedApp.id)}
+                                                                    className="text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold px-2 py-1 rounded border border-blue-200 transition cursor-pointer"
+                                                                >
+                                                                    Mark Paid
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                ))
+                                        ) : (
+                                            <div className="text-center py-6 text-gray-505">
+                                                <p className="text-xs italic">No schedules generated yet.</p>
+                                                {selectedApp.status === 'approved' && (
+                                                    <button
+                                                        onClick={() => generateSchedules(selectedApp)}
+                                                        className="mt-3 text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg transition cursor-pointer"
+                                                    >
+                                                        Generate Payment Schedules
+                                                    </button>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
 
                         </div>
                     </div>
