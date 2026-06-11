@@ -117,12 +117,12 @@ export default function UserDashboard() {
             console.error("Failed to fetch schedules:", err);
         }
 
-        // Fetch user's pending applications
+        // Fetch user's pending, approved, or rejected applications
         const { data: pendingAppsData } = await supabase
             .from("instalment_applications")
             .select(`*, products (name, instalment_down_payment)`)
             .eq("user_id", userId)
-            .eq("status", "pending")
+            .in("status", ["pending", "approved", "rejected"])
             .order("created_at", { ascending: false });
         if (pendingAppsData) setPendingApplications(pendingAppsData);
 
@@ -363,74 +363,142 @@ export default function UserDashboard() {
 
                 {/* Pending Applications Card */}
                 {pendingApplications.length > 0 && (
-                    <div className="bg-white p-4 md:p-6 rounded-xl border border-orange-100 shadow-sm overflow-hidden min-w-0 md:col-span-2">
-                        <div className="flex items-center gap-3 mb-4 text-orange-600">
+                    <div className="bg-white p-4 md:p-6 rounded-xl border border-blue-100 shadow-sm overflow-hidden min-w-0 md:col-span-2">
+                        <div className="flex items-center gap-3 mb-4 text-blue-700">
                             <Clock className="w-6 h-6" />
-                            <h2 className="font-semibold text-lg">Pending Instalment Applications</h2>
+                            <h2 className="font-semibold text-lg">Instalment Applications</h2>
                         </div>
-                        <div className="text-sm text-orange-800 mb-4 bg-orange-50 p-3 rounded-lg border border-orange-100">
-                            You have incomplete instalment applications. Please pay the required down payment to finalize your agreement and generate your payment schedule.
+                        <div className="text-sm text-blue-800 mb-4 bg-blue-50 p-3 rounded-lg border border-blue-100">
+                            Track the status of your instalment applications. Once approved by our team, you will be able to complete your down payment here to activate your plan.
                         </div>
                         <div className="space-y-4">
-                            {pendingApplications.map((app) => (
-                                <div key={app.id} className="border border-orange-200 bg-orange-50/30 p-5 rounded-xl shadow-sm flex flex-col sm:flex-row justify-between items-start gap-4">
-                                    <div className="flex-1">
-                                        <div className="font-bold text-gray-900 text-lg mb-1">
-                                            {app.product_name_snapshot || app.products?.name || "Product"}
-                                        </div>
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <span className="text-xs font-bold px-2 py-1 rounded border bg-orange-100 text-orange-700 border-orange-200">
-                                                AWAITING DOWN PAYMENT
-                                            </span>
-                                            <span className="text-sm font-medium text-gray-600">
-                                                Applied on: {new Date(app.created_at).toLocaleDateString()}
-                                            </span>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-4 mt-3 text-sm">
-                                            <div>
-                                                <div className="text-gray-500">Duration</div>
-                                                <div className="font-semibold text-gray-900">{app.duration_months} Months</div>
+                            {pendingApplications.map((app) => {
+                                const isPending = app.status === "pending";
+                                const isApproved = app.status === "approved";
+                                const isRejected = app.status === "rejected";
+
+                                return (
+                                    <div 
+                                        key={app.id} 
+                                        className={`border p-5 rounded-xl shadow-sm flex flex-col sm:flex-row justify-between items-start gap-4 transition-all duration-205 hover:shadow-md ${
+                                            isPending 
+                                                ? "border-yellow-200 bg-yellow-50/20" 
+                                                : isApproved 
+                                                ? "border-emerald-200 bg-emerald-50/20" 
+                                                : "border-red-205 bg-red-50/20"
+                                        }`}
+                                    >
+                                        <div className="flex-1">
+                                            <div className="font-bold text-gray-900 text-lg mb-1">
+                                                {app.product_name_snapshot || app.products?.name || "Product"}
                                             </div>
-                                            <div>
-                                                <div className="text-gray-500">Monthly Repayment</div>
-                                                <div className="font-semibold text-gray-900">₦{Number(app.monthly_payment_amount).toLocaleString()}</div>
+                                            <div className="flex flex-wrap items-center gap-2 mb-3">
+                                                {isPending && (
+                                                    <span className="text-xs font-bold px-2.5 py-1 rounded-full border bg-yellow-100 text-yellow-800 border-yellow-300">
+                                                        UNDER REVIEW
+                                                    </span>
+                                                )}
+                                                {isApproved && (
+                                                    <span className="text-xs font-bold px-2.5 py-1 rounded-full border bg-emerald-100 text-emerald-800 border-emerald-300">
+                                                        APPROVED - AWAITING DOWN PAYMENT
+                                                    </span>
+                                                )}
+                                                {isRejected && (
+                                                    <span className="text-xs font-bold px-2.5 py-1 rounded-full border bg-red-100 text-red-850 border-red-300">
+                                                        REJECTED
+                                                    </span>
+                                                )}
+                                                <span className="text-sm font-medium text-gray-500">
+                                                    Applied on: {new Date(app.created_at).toLocaleDateString()}
+                                                </span>
                                             </div>
+
+                                            {/* Informational Message */}
+                                            <div className="text-sm mb-4">
+                                                {isPending && (
+                                                    <p className="text-yellow-800 bg-yellow-50 p-3 rounded-lg border border-yellow-100">
+                                                        Your application is currently under review by our admin. You will be able to make the down payment here once approved.
+                                                    </p>
+                                                )}
+                                                {isApproved && (
+                                                    <p className="text-emerald-800 bg-emerald-50 p-3 rounded-lg border border-emerald-100">
+                                                        Your application has been approved! Please make the down payment below to activate your instalment plan.
+                                                    </p>
+                                                )}
+                                                {isRejected && (
+                                                    <p className="text-red-800 bg-red-50/50 p-3 rounded-lg border border-red-100">
+                                                        Unfortunately, your application was not approved by the admin. Please contact support for more details.
+                                                    </p>
+                                                )}
+                                            </div>
+
+                                            <div className="grid grid-cols-2 gap-4 mt-3 text-sm mb-4">
+                                                <div>
+                                                    <div className="text-gray-500">Duration</div>
+                                                    <div className="font-semibold text-gray-900">{app.duration_months} Months</div>
+                                                </div>
+                                                <div>
+                                                    <div className="text-gray-500">Monthly Repayment</div>
+                                                    <div className="font-semibold text-gray-900">₦{Number(app.monthly_payment_amount).toLocaleString()}</div>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Cancel application button only for pending or approved applications */}
+                                            {!isRejected && (
+                                                <div className="flex gap-2 max-w-xs">
+                                                    <button 
+                                                        onClick={() => handleCancelApplication(app.id)}
+                                                        className="w-full text-center px-4 py-2.5 bg-white border border-red-205 text-red-600 rounded-lg font-bold text-sm hover:bg-red-50 transition-colors"
+                                                    >
+                                                        Cancel Application
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
-                                        <div className="flex gap-2">
-                                            <button 
-                                                onClick={() => handleCancelApplication(app.id)}
-                                                className="w-full text-center px-4 py-3 bg-white border border-red-200 text-red-600 rounded-lg font-bold text-sm hover:bg-red-50 transition-colors"
-                                            >
-                                                Cancel Application
-                                            </button>
+
+                                        {/* Action/Checkout Panel */}
+                                        <div className="w-full sm:w-auto shrink-0 min-w-[200px] flex flex-col gap-2">
+                                            <div className="text-center sm:text-right mb-1">
+                                                <div className="text-xs text-gray-500">Required Down Payment</div>
+                                                <div className="text-xl font-extrabold text-blue-800">
+                                                    ₦{Number(app.down_payment_amount != null ? app.down_payment_amount : (app.products?.instalment_down_payment || 0)).toLocaleString()}
+                                                </div>
+                                            </div>
+
+                                            {isApproved && (
+                                                <PaystackCheckout 
+                                                    amount={Number(app.down_payment_amount != null ? app.down_payment_amount : (app.products?.instalment_down_payment || 0))}
+                                                    email={app.email || user?.email || ""}
+                                                    phone={app.phone || user?.user_metadata?.phone || "0000000000"}
+                                                    location={app.address || user?.user_metadata?.address || "N/A"}
+                                                    deliveryDate="N/A (Instalment)"
+                                                    items={[]}
+                                                    userId={user?.id || ""}
+                                                    applicationId={app.id}
+                                                    onSuccess={() => {
+                                                        alert("Payment successfully recorded! Your application is now active.");
+                                                        fetchDashboardData(user.id);
+                                                        router.refresh();
+                                                    }}
+                                                    onClose={() => {}}
+                                                />
+                                            )}
+
+                                            {isPending && (
+                                                <div className="text-center py-2.5 px-3 bg-yellow-100/50 border border-yellow-200 text-yellow-800 text-xs font-semibold rounded-lg">
+                                                    Awaiting Admin Approval
+                                                </div>
+                                            )}
+
+                                            {isRejected && (
+                                                <div className="text-center py-2.5 px-3 bg-red-100/50 border border-red-200 text-red-800 text-xs font-semibold rounded-lg">
+                                                    Checkout Disabled
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                    <div className="w-full sm:w-auto shrink-0 min-w-[200px] flex flex-col gap-2">
-                                        <div className="text-center sm:text-right mb-1">
-                                            <div className="text-xs text-gray-500">Required Down Payment</div>
-                                            <div className="text-xl font-extrabold text-blue-800">
-                                                ₦{Number(app.down_payment_amount != null ? app.down_payment_amount : (app.products?.instalment_down_payment || 0)).toLocaleString()}
-                                            </div>
-                                        </div>
-                                        <PaystackCheckout 
-                                            amount={Number(app.down_payment_amount != null ? app.down_payment_amount : (app.products?.instalment_down_payment || 0))}
-                                            email={app.email || user?.email || ""}
-                                            phone={app.phone || user?.user_metadata?.phone || "0000000000"}
-                                            location={app.address || user?.user_metadata?.address || "N/A"}
-                                            deliveryDate="N/A (Instalment)"
-                                            items={[]}
-                                            userId={user?.id || ""}
-                                            applicationId={app.id}
-                                            onSuccess={() => {
-                                                alert("Payment successfully recorded! Your application is now active.");
-                                                fetchDashboardData(user.id);
-                                                router.refresh();
-                                            }}
-                                            onClose={() => {}}
-                                        />
-                                    </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 )}

@@ -732,7 +732,7 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                                             className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-bold disabled:bg-gray-300 flex items-center justify-center gap-2"
                                         >
                                             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                                            {loading ? "Uploading Documents..." : "Submit & Proceed to Payment"}
+                                            {loading ? "Uploading Documents..." : "Submit Application"}
                                         </button>
                                     </div>
                                 </div>
@@ -740,22 +740,20 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
 
                             {step === 4 && (
                                 <div className="space-y-6 text-center py-8">
-                                    <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                                        <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                                    <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                                        <svg className="w-8 h-8 text-blue-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
                                     </div>
-                                    <h3 className="text-2xl font-bold text-gray-800">Application Received!</h3>
+                                    <h3 className="text-2xl font-bold text-gray-800">Application Submitted!</h3>
                                     <p className="text-gray-600 px-4">
-                                        Your KYC documents have been securely uploaded. To complete your instalment agreement, please make the required down payment.
+                                        Your application and KYC documents have been successfully submitted and are currently <strong>under review</strong>.
                                     </p>
                                     
                                     <div className="bg-gray-50 p-6 rounded-xl border mb-6 text-left">
                                         <div className="flex justify-between mb-2">
                                             <span className="text-gray-600">Product:</span>
-                                            <span className="font-semibold">{staticProductName || product.name}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-600">Initial Down Payment:</span>
-                                            <span className="font-bold text-green-600">₦{Number(staticDownPayment != null ? staticDownPayment : product.instalment_down_payment).toLocaleString()}</span>
+                                            <span className="font-semibold text-gray-900">{staticProductName || product.name}</span>
                                         </div>
                                         <div className="flex justify-between border-t pt-2 mt-2">
                                             <span className="text-gray-600">Instalment Plan:</span>
@@ -765,24 +763,34 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                                             <span className="text-gray-600">Monthly Payment:</span>
                                             <span className="font-bold text-blue-700">₦{Number(staticMonthlyPayment != null ? staticMonthlyPayment : (availableDurations.find(d => d.value === durationMonths)?.price || 0)).toLocaleString()} / month</span>
                                         </div>
+                                        <div className="flex justify-between border-t pt-2 mt-2">
+                                            <span className="text-gray-600">Status:</span>
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                Under Review
+                                            </span>
+                                        </div>
                                     </div>
 
-                                    <div className="w-full">
-                                        <PaystackCheckout 
-                                            amount={Number(staticDownPayment != null ? staticDownPayment : product.instalment_down_payment)}
-                                            email={email}
-                                            phone={phone}
-                                            location={address}
-                                            deliveryDate="N/A (Instalment)"
-                                            items={[]}
-                                            userId={userId || ""}
-                                            applicationId={applicationId}
-                                            onSuccess={() => {
-                                                alert("Payment successfully recorded! We will process your order and contact you shortly.");
+                                    <div className="text-sm text-gray-500 mb-6 px-4">
+                                        Once your application is approved by an administrator, you will be able to make the down payment of <strong className="text-green-600 font-bold">₦{Number(staticDownPayment != null ? staticDownPayment : product.instalment_down_payment).toLocaleString()}</strong> directly from your User Dashboard.
+                                    </div>
+
+                                    <div className="flex flex-col sm:flex-row gap-3 justify-center px-4">
+                                        <button
+                                            onClick={() => {
                                                 closeModal();
+                                                router.push("/dashboard");
                                             }}
-                                            onClose={() => {}}
-                                        />
+                                            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5"
+                                        >
+                                            Go to Dashboard
+                                        </button>
+                                        <button
+                                            onClick={closeModal}
+                                            className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-all duration-200"
+                                        >
+                                            Close
+                                        </button>
                                     </div>
                                 </div>
                             )}
