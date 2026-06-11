@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, CheckCircle2, Sun, Battery as BatteryIcon, Zap, Share2, Plus, Minus, ShoppingCart } from "lucide-react";
+import { Download, CheckCircle2, Sun, Battery as BatteryIcon, Zap, Share2, ShoppingCart, ChevronLeft } from "lucide-react";
 import type { InverterCatalogItem, BatteryCatalogItem } from "@/lib/pricing";
 import { useCartStore } from "@/lib/store/cartStore";
 import { useRouter } from "next/navigation";
@@ -10,7 +10,7 @@ function formatMoney(n: number) {
     return new Intl.NumberFormat("en-NG").format(Math.round(n));
 }
 
-type Step3Props = {
+type Step4Props = {
     customerName: string;
     customerPhone: string;
     customerAddress: string;
@@ -20,36 +20,17 @@ type Step3Props = {
     totalSurgeWatts: number;
     energyNeededWh: number;
 
-    // Updated props to match complex recommendation structure
     recommendedInverter: { units: InverterCatalogItem[]; warnings: string[] };
     inverterType: "normal" | "hybrid";
-    setInverterType: (t: "normal" | "hybrid") => void;
-
-    // Manual Inverter Props
-    originalRecommendedKva?: number;
-    availableInverters: InverterCatalogItem[];
-    manualInverterId: string | null;
-    setManualInverterId: (id: string | null) => void;
 
     recommendedPanelCount: number;
-    setManualPanelCount: (n: number) => void;
-
     recommendedPanelWattage: number;
     preferredPanelWattage: number | null;
-    setPreferredPanelWattage: (n: number | null) => void;
 
     recommendedBattery: { battery: BatteryCatalogItem | null; units: number };
     activeBatteryType: string;
-    setBatteryType: (t: any) => void;
-
-    // New Battery Props
-    availableLithiumBatteries?: BatteryCatalogItem[];
-    preferredBatteryAh?: number | null;
-    setPreferredBatteryAh?: (n: number | null) => void;
 
     manualBatteryCount: number;
-    setManualBatteryCount: (n: number) => void;
-
     batteryDisplay: string;
     pricingTotal: number;
 
@@ -58,7 +39,7 @@ type Step3Props = {
     isSaving: boolean;
 };
 
-export default function Step3SizingAndQuote({
+export default function Step4Quote({
     customerName,
     customerPhone,
     customerAddress,
@@ -68,32 +49,18 @@ export default function Step3SizingAndQuote({
     energyNeededWh,
     recommendedInverter,
     inverterType,
-    setInverterType,
-    originalRecommendedKva,
-    availableInverters,
-    manualInverterId,
-    setManualInverterId,
     recommendedPanelCount,
-    setManualPanelCount,
     recommendedPanelWattage,
     preferredPanelWattage,
-    setPreferredPanelWattage,
     recommendedBattery,
     activeBatteryType,
-    setBatteryType,
-
-    availableLithiumBatteries = [],
-    preferredBatteryAh,
-    setPreferredBatteryAh,
-
     manualBatteryCount,
-    setManualBatteryCount,
     batteryDisplay,
     pricingTotal,
     onBack,
     onSave,
     isSaving,
-}: Step3Props) {
+}: Step4Props) {
     const addItem = useCartStore((state) => state.addItem);
     const router = useRouter();
 
@@ -126,7 +93,6 @@ export default function Step3SizingAndQuote({
         // --- Watermark ---
         doc.setFontSize(60);
         doc.setTextColor(230, 230, 230); // Very light gray
-        // Rotate text for watermark
         doc.text("PHARMTECH", 105, 150, { angle: 45, align: "center" });
         doc.text("PHARMTECH", 105, 50, { angle: 45, align: "center" });
         doc.text("PHARMTECH", 105, 250, { angle: 45, align: "center" });
@@ -142,29 +108,27 @@ export default function Step3SizingAndQuote({
             const imgWidth = 40; 
             const imgHeight = (logoImg.height * imgWidth) / logoImg.width;
             
-            // Place logo on top right. Page width = 210.
             const rightMarginX = 210 - 14 - imgWidth;
             doc.addImage(logoImg, 'JPEG', rightMarginX, 5, imgWidth, imgHeight);
             
             doc.setFont("helvetica", "bold");
             doc.setFontSize(28);
-            doc.setTextColor(242, 114, 28); // Orange brand color
+            doc.setTextColor(242, 114, 28);
             doc.text("PHARMTECH", 14, 22);
 
             doc.setFont("helvetica", "normal");
             doc.setFontSize(16);
-            doc.setTextColor(17, 0, 0); // #110000
+            doc.setTextColor(17, 0, 0);
             doc.text("SOLAR QUOTE", 14, 32);
         } catch (e) {
-            // Fallback to text if logo.jpeg not found
             doc.setFont("helvetica", "bold");
             doc.setFontSize(28);
-            doc.setTextColor(242, 114, 28); // Orange brand color
+            doc.setTextColor(242, 114, 28);
             doc.text("PHARMTECH", 14, 22);
             
             doc.setFont("helvetica", "normal");
             doc.setFontSize(16);
-            doc.setTextColor(17, 0, 0); // #110000
+            doc.setTextColor(17, 0, 0);
             doc.text("SOLAR QUOTE", 14, 32);
         }
 
@@ -246,7 +210,6 @@ export default function Step3SizingAndQuote({
 
     // WhatsApp Function
     function sendToWhatsApp() {
-        // Auto-save when sharing
         onSave();
 
         const supportNumber = "2348142111657";
@@ -267,7 +230,7 @@ Address: ${customerAddress}
 - Night Energy: ${energyNeededWh}Wh
 
 *Proposed System:*
-- Inverter: ${invDisplay}
+- Inverter: ${invDisplay} (${inverterType})
 - Panels: ${recommendedPanelCount}x ${recommendedPanelWattage}W
 - Battery: ${batteryDisplay}
 
@@ -279,10 +242,14 @@ Please review and confirm availability.`;
         window.open(`https://wa.me/${supportNumber}?text=${encodedMessage}`, '_blank');
     }
 
-    // Helper for display
+    // Inverter label
     const inverterText = recommendedInverter.units.length > 0
-        ? `${recommendedInverter.units.length}x ${recommendedInverter.units[0].kva}kVA`
+        ? `${recommendedInverter.units.length}x ${recommendedInverter.units[0].kva}kVA ${inverterType === 'hybrid' ? 'Hybrid' : 'Non-hybrid'} Inverter (${recommendedInverter.units[0].voltage}V)`
         : "Pending";
+
+    // Panel label
+    const activePanelWatt = preferredPanelWattage || recommendedPanelWattage;
+    const panelText = `${recommendedPanelCount}x ${activePanelWatt}W Solar Panels (Total: ${((recommendedPanelCount * activePanelWatt) / 1000).toFixed(2)} kWp)`;
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 w-full overflow-x-hidden">
@@ -351,15 +318,9 @@ Please review and confirm availability.`;
                             <p className="text-lg font-bold md:text-xl text-blue-600">{Math.ceil(energyNeededWh)} Wh</p>
                         </div>
                     </div>
-
-                    <div className="mt-8 flex gap-4">
-                        <button onClick={onBack} className="px-6 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium transition-colors">
-                            Edit Inputs
-                        </button>
-                    </div>
                 </div>
 
-                {/* RIGHT COLUMN: Quote Card */}
+                {/* RIGHT COLUMN: Quote & Pricing Details */}
                 <div className="lg:col-span-1">
                     <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden sticky top-24">
                         <div className="px-6 py-4 flex justify-between items-center border-b border-gray-50">
@@ -373,163 +334,55 @@ Please review and confirm availability.`;
                         </div>
 
                         <div className="p-6">
-                            <div className="mb-6">
+                            <div className="mb-6 border-b pb-4">
                                 <h3 className="text-2xl font-bold text-gray-900">{customerName || "Customer"}</h3>
                                 <p className="text-sm text-gray-600">{customerPhone}</p>
                             </div>
 
+                            {/* READ-ONLY CONFIGURATION SUMMARY */}
                             <div className="space-y-6 mb-8">
-                                <h4 className="text-sm font-bold text-gray-900 uppercase tracking-widest border-b pb-2">Recommendation</h4>
+                                <h4 className="text-xs font-bold text-gray-900 uppercase tracking-widest border-b pb-2">
+                                    System Specifications
+                                </h4>
 
+                                {/* Inverter */}
                                 <div className="flex items-start gap-3">
-                                    <div className="p-2 bg-yellow-100 text-yellow-600 rounded-lg">
-                                        <Sun className="w-5 h-5" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-2">
-                                            <p className="text-sm font-medium text-gray-900 whitespace-nowrap">Solar Panels</p>
-                                            <select
-                                                value={preferredPanelWattage || recommendedPanelWattage}
-                                                onChange={(e) => setPreferredPanelWattage(Number(e.target.value))}
-                                                className="text-xs border border-gray-200 rounded p-1.5 bg-gray-50 max-w-full focus:ring-2 focus:ring-orange-500 outline-none"
-                                            >
-                                                <option value={200}>200W</option>
-                                                <option value={250}>250W</option>
-                                                <option value={300}>300W</option>
-                                                <option value={350}>350W</option>
-                                                <option value={400}>400W</option>
-                                                <option value={450}>450W</option>
-                                                <option value={500}>500W</option>
-                                                <option value={550}>550W</option>
-                                                <option value={600}>600W</option>
-                                            </select>
-                                        </div>
-
-                                        <div className="flex items-center gap-3">
-                                            <button
-                                                onClick={() => setManualPanelCount(Math.max(0, recommendedPanelCount - 1))}
-                                                className="w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-orange-100 text-gray-600 hover:text-orange-600 rounded transition"
-                                                title="Decrease Panels"
-                                            >
-                                                <Minus className="w-3 h-3" />
-                                            </button>
-
-                                            <p className="text-sm font-bold text-gray-900">{recommendedPanelCount}x <span className="text-gray-600 font-normal">{recommendedPanelWattage}W</span></p>
-
-                                            <button
-                                                onClick={() => setManualPanelCount(recommendedPanelCount + 1)}
-                                                className="w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-orange-100 text-gray-600 hover:text-orange-600 rounded transition"
-                                                title="Increase Panels"
-                                            >
-                                                <Plus className="w-3 h-3" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-start gap-3">
-                                    <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
-                                        <BatteryIcon className="w-5 h-5" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-2">
-                                            <p className="text-sm font-medium text-gray-900 whitespace-nowrap">Battery Bank</p>
-                                            <div className="flex items-center flex-wrap gap-2">
-                                                <select
-                                                    value={activeBatteryType}
-                                                onChange={(e) => setBatteryType(e.target.value)}
-                                                className="text-xs border rounded p-1 bg-gray-50 capitalize"
-                                            >
-                                                <option value="lithium">Lithium</option>
-                                                <option value="tubular">Tubular</option>
-                                                <option value="drycell">Dry Cell</option>
-                                            </select>
-
-                                            {/* Capacity Selector (Lithium Only) */}
-                                            {activeBatteryType === "lithium" && availableLithiumBatteries.length > 0 && setPreferredBatteryAh && (
-                                                <select
-                                                    value={preferredBatteryAh ?? recommendedBattery.battery?.ah ?? ""}
-                                                    onChange={(e) => setPreferredBatteryAh(Number(e.target.value) || null)}
-                                                    className="ml-2 text-xs border rounded p-1 bg-gray-50 focus:ring-2 focus:ring-orange-500 outline-none"
-                                                    title="Select Battery Capacity"
-                                                >
-                                                    {availableLithiumBatteries.map((b) => (
-                                                        <option key={b.sku} value={b.ah}>
-                                                            {b.ah}Ah
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            )}
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-center gap-2 mt-2 w-full">
-                                            <button
-                                                onClick={() => setManualBatteryCount(Math.max(1, manualBatteryCount - 1))}
-                                                className="shrink-0 w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-orange-100 text-gray-600 hover:text-orange-600 rounded transition"
-                                                title="Decrease Batteries"
-                                            >
-                                                <Minus className="w-3 h-3" />
-                                            </button>
-
-                                            <p className="text-sm text-gray-600 leading-tight flex-1 text-center">{batteryDisplay}</p>
-
-                                            <button
-                                                onClick={() => setManualBatteryCount(manualBatteryCount + 1)}
-                                                className="shrink-0 w-6 h-6 flex items-center justify-center bg-gray-100 hover:bg-orange-100 text-gray-600 hover:text-orange-600 rounded transition"
-                                                title="Increase Batteries"
-                                            >
-                                                <Plus className="w-3 h-3" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-start gap-3">
-                                    <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
+                                    <div className="p-2 bg-purple-50 text-purple-600 rounded-lg">
                                         <Zap className="w-5 h-5" />
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-2">
-                                            <p className="text-sm font-medium text-gray-900 whitespace-nowrap">Inverter</p>
-                                            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                                                <select
-                                                    value={manualInverterId ?? (recommendedInverter.units[0] ? `${recommendedInverter.units[0].kva}-${recommendedInverter.units[0].voltage}` : "")}
-                                                    onChange={(e) => setManualInverterId(e.target.value)}
-                                                    className="flex-1 sm:flex-none text-xs border border-gray-200 rounded p-1.5 bg-gray-50 max-w-full focus:ring-2 focus:ring-orange-500 outline-none"
-                                                >
-                                                    {availableInverters.map((inv) => (
-                                                        <option key={`${inv.kva}-${inv.voltage}`} value={`${inv.kva}-${inv.voltage}`}>
-                                                            {inv.kva}kVA ({inv.voltage}V) {inv.kva === originalRecommendedKva ? " (Rec)" : ""}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                                <select
-                                                    value={inverterType}
-                                                    onChange={(e) => setInverterType(e.target.value as "normal" | "hybrid")}
-                                                    className="text-xs border border-gray-200 rounded p-1 bg-gray-50 capitalize focus:ring-2 focus:ring-orange-500 outline-none"
-                                                >
-                                                    <option value="normal">Non-hybrid</option>
-                                                    <option value="hybrid">Hybrid</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <p className="text-sm text-gray-600">{inverterText}</p>
+                                    <div>
+                                        <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Inverter</span>
+                                        <p className="text-sm font-semibold text-gray-800">{inverterText}</p>
                                     </div>
                                 </div>
 
-                                {recommendedInverter.warnings.length > 0 && (
-                                    <div className="bg-orange-50 p-3 rounded text-xs text-orange-700">
-                                        {recommendedInverter.warnings.map((w, i) => (
-                                            <p key={i}>• {w}</p>
-                                        ))}
+                                {/* Solar Panels */}
+                                <div className="flex items-start gap-3">
+                                    <div className="p-2 bg-yellow-50 text-yellow-600 rounded-lg">
+                                        <Sun className="w-5 h-5" />
                                     </div>
-                                )}
+                                    <div>
+                                        <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Solar Array</span>
+                                        <p className="text-sm font-semibold text-gray-800">{panelText}</p>
+                                    </div>
+                                </div>
+
+                                {/* Battery Bank */}
+                                <div className="flex items-start gap-3">
+                                    <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                                        <BatteryIcon className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Battery Bank</span>
+                                        <p className="text-sm font-semibold text-gray-800 capitalize">{activeBatteryType} Storage</p>
+                                        <p className="text-xs text-gray-500 mt-0.5">{batteryDisplay}</p>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                                <p className="text-sm text-gray-600 mb-1">Estimated Cost</p>
-                                <p className="text-2xl font-bold text-gray-900">
+                            <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
+                                <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1">Estimated Cost</p>
+                                <p className="text-3xl font-extrabold text-gray-900">
                                     ₦{formatMoney(pricingTotal)}
                                 </p>
                             </div>
@@ -538,7 +391,7 @@ Please review and confirm availability.`;
                                 <button
                                     onClick={onSave}
                                     disabled={isSaving}
-                                    className="w-full bg-gray-800 hover:bg-[#110000] text-white font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2"
+                                    className="w-full bg-gray-800 hover:bg-[#110000] text-white font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2 cursor-pointer"
                                 >
                                     {isSaving ? (
                                         <span>Saving...</span>
@@ -552,7 +405,7 @@ Please review and confirm availability.`;
 
                                 <button
                                     onClick={handleProceedToCheckout}
-                                    className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2"
+                                    className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2 cursor-pointer"
                                 >
                                     <ShoppingCart className="w-5 h-5" />
                                     Proceed to Checkout
@@ -560,7 +413,7 @@ Please review and confirm availability.`;
 
                                 <button
                                     onClick={sendToWhatsApp}
-                                    className="w-full bg-[#25D366] hover:bg-[#20b85c] text-white font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2"
+                                    className="w-full bg-[#25D366] hover:bg-[#20b85c] text-white font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2 cursor-pointer"
                                 >
                                     <Share2 className="w-5 h-5" />
                                     Send to WhatsApp
@@ -568,7 +421,7 @@ Please review and confirm availability.`;
 
                                 <button
                                     onClick={downloadPdfQuote}
-                                    className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2"
+                                    className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-2 cursor-pointer"
                                 >
                                     <Download className="w-5 h-5" />
                                     Download PDF
@@ -577,6 +430,17 @@ Please review and confirm availability.`;
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Back Button */}
+            <div className="mt-8 flex justify-start">
+                <button
+                    onClick={onBack}
+                    className="flex items-center gap-1.5 px-6 py-3 border border-gray-300 hover:bg-gray-100 text-gray-700 rounded-xl font-bold text-xs shadow-sm transition-all"
+                >
+                    <ChevronLeft className="w-4 h-4" />
+                    Back to Selection
+                </button>
             </div>
         </div>
     );

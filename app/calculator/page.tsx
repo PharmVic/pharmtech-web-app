@@ -28,7 +28,8 @@ import { supabase } from "@/lib/supabaseClient";
 import Stepper from "./_components/Stepper";
 import Step1Customer from "./_components/Step1Customer";
 import Step2Appliances from "./_components/Step2Appliances";
-import Step3SizingAndQuote from "./_components/Step3SizingAndQuote";
+import Step3Selection from "./_components/Step3Selection";
+import Step4Quote from "./_components/Step4Quote";
 
 function generateQuoteNumber() {
     const d = new Date();
@@ -40,7 +41,7 @@ function generateQuoteNumber() {
 }
 
 export default function SolarCalculator() {
-    const [step, setStep] = useState<1 | 2 | 3>(1);
+    const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
 
     // State
     const [loads, setLoads] = useState<LoadInput[]>([
@@ -422,7 +423,42 @@ export default function SolarCalculator() {
                 )}
 
                 {step === 3 && (
-                    <Step3SizingAndQuote
+                    <Step3Selection
+                        recommendedInverter={activeInverter}
+                        inverterType={inverterType}
+                        setInverterType={setInverterType}
+                        originalRecommendedKva={recommendedInverter.units[0]?.kva}
+                        availableInverters={availableInverters}
+                        manualInverterId={manualInverterId}
+                        setManualInverterId={setManualInverterId}
+                        recommendedPanelCount={activePanelCount}
+                        setManualPanelCount={setManualPanelCount}
+                        recommendedPanelWattage={minPanelW}
+                        preferredPanelWattage={preferredPanelWattage}
+                        setPreferredPanelWattage={setPreferredPanelWattage}
+                        recommendedBattery={recommendedBattery}
+                        activeBatteryType={batteryType}
+                        setBatteryType={setBatteryType}
+                        availableLithiumBatteries={availableLithiumBatteries}
+                        preferredBatteryAh={preferredBatteryAh}
+                        setPreferredBatteryAh={setPreferredBatteryAh}
+                        manualBatteryCount={activeBatteryUnits}
+                        setManualBatteryCount={setManualBatteryCount}
+                        batteryDisplay={recommendedBattery.battery
+                            ? (recommendedBattery.battery.type === "lithium"
+                                ? `${activeBatteryUnits}x ${(recommendedBattery.battery.ah * recommendedBattery.battery.voltage / 1000).toFixed(2)}kWh ${recommendedBattery.battery.type} ${recommendedBattery.battery.ah}Ah (${recommendedBattery.battery.voltage}V) - System: ${activeSystemVoltage}V`
+                                : `${activeBatteryUnits}x ${recommendedBattery.battery.type} ${recommendedBattery.battery.ah}Ah (${recommendedBattery.battery.voltage}V) - System: ${activeSystemVoltage}V`)
+                            : "None"}
+                        totalRunningWatts={totalRunningWatts}
+                        totalSurgeWatts={totalPeakWatts}
+                        energyNeededWh={totalEnergyWh}
+                        onBack={() => setStep(2)}
+                        onNext={() => setStep(4)}
+                    />
+                )}
+
+                {step === 4 && (
+                    <Step4Quote
                         customerName={customerName}
                         customerPhone={customerPhone}
                         customerAddress={customerAddress}
@@ -430,44 +466,21 @@ export default function SolarCalculator() {
                         totalRunningWatts={totalRunningWatts}
                         totalSurgeWatts={totalPeakWatts}
                         energyNeededWh={totalEnergyWh}
-
                         recommendedInverter={activeInverter}
                         inverterType={inverterType}
-
-                        // Manual Inverter Selection Props
-                        originalRecommendedKva={recommendedInverter.units[0]?.kva}
-                        availableInverters={availableInverters}
-                        manualInverterId={manualInverterId}
-                        setManualInverterId={setManualInverterId}
-
-                        setInverterType={setInverterType}
                         recommendedPanelCount={activePanelCount}
-                        setManualPanelCount={setManualPanelCount}
-
                         recommendedPanelWattage={minPanelW}
                         preferredPanelWattage={preferredPanelWattage}
-                        setPreferredPanelWattage={setPreferredPanelWattage}
-
                         recommendedBattery={recommendedBattery}
                         activeBatteryType={batteryType}
-                        setBatteryType={setBatteryType}
-
-                        // New Battery Capacity Props
-                        availableLithiumBatteries={availableLithiumBatteries}
-                        preferredBatteryAh={preferredBatteryAh}
-                        setPreferredBatteryAh={setPreferredBatteryAh}
-
                         manualBatteryCount={activeBatteryUnits}
-                        setManualBatteryCount={setManualBatteryCount}
-
                         batteryDisplay={recommendedBattery.battery
                             ? (recommendedBattery.battery.type === "lithium"
                                 ? `${activeBatteryUnits}x ${(recommendedBattery.battery.ah * recommendedBattery.battery.voltage / 1000).toFixed(2)}kWh ${recommendedBattery.battery.type} ${recommendedBattery.battery.ah}Ah (${recommendedBattery.battery.voltage}V) - System: ${activeSystemVoltage}V`
                                 : `${activeBatteryUnits}x ${recommendedBattery.battery.type} ${recommendedBattery.battery.ah}Ah (${recommendedBattery.battery.voltage}V) - System: ${activeSystemVoltage}V`)
                             : "None"}
-
                         pricingTotal={pricingTotal}
-                        onBack={() => setStep(2)}
+                        onBack={() => setStep(3)}
                         onSave={saveQuoteToDb}
                         isSaving={isSaving}
                     />
