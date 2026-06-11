@@ -57,7 +57,7 @@ export default function SolarCalculator() {
 
     const [defaultHoursAtNight, setDefaultHoursAtNight] = useState(0);
     const [batteryType, setBatteryType] = useState<BatteryType>("lithium");
-    const [inverterType, setInverterType] = useState<"normal" | "hybrid">("normal");
+    const [inverterType, setInverterType] = useState<"normal" | "hybrid">("hybrid");
     const [sunHours, setSunHours] = useState(5);
     const [manualPanelCount, setManualPanelCount] = useState<number | null>(null);
     const [manualBatteryCount, setManualBatteryCount] = useState<number | null>(null);
@@ -305,8 +305,14 @@ export default function SolarCalculator() {
 
         // use total kva of system for panel sizing rule (auto logic)
         const totalKva = recommendedInverter.units.reduce((s, u) => s + u.kva, 0);
-        return minPanelWattForKva(totalKva);
-    }, [recommendedInverter, preferredPanelWattage]);
+        const autoWatt = minPanelWattForKva(totalKva);
+
+        // If inverter type is hybrid, panel wattage should be 500W and above
+        if (inverterType === "hybrid" && autoWatt < 500) {
+            return 500;
+        }
+        return autoWatt;
+    }, [recommendedInverter, preferredPanelWattage, inverterType]);
 
     const requiredSolarWatts = useMemo(() => {
         const bat = recommendedBattery.battery;
