@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
-import { User, FileText, LogOut, Award, Link as LinkIcon, Copy, ShoppingCart, CreditCard, Clock } from "lucide-react";
+import { User, FileText, LogOut, Award, Link as LinkIcon, Copy, ShoppingCart, CreditCard, Clock, GraduationCap } from "lucide-react";
 import dynamic from 'next/dynamic';
+import Link from "next/link";
 
 const PaystackCheckout = dynamic(() => import("@/components/PaystackCheckout"), { ssr: false });
 
@@ -39,6 +40,7 @@ export default function UserDashboard() {
     const [payments, setPayments] = useState<Payment[]>([]);
     const [schedules, setSchedules] = useState<any[]>([]);
     const [pendingApplications, setPendingApplications] = useState<any[]>([]);
+    const [apprenticeshipApps, setApprenticeshipApps] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
 
@@ -123,6 +125,25 @@ export default function UserDashboard() {
             .eq("status", "pending")
             .order("created_at", { ascending: false });
         if (pendingAppsData) setPendingApplications(pendingAppsData);
+
+        // Fetch user's apprenticeship applications
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            try {
+                const appRes = await fetch('/api/user-apprenticeships', {
+                    headers: { 'Authorization': `Bearer ${session.access_token}` },
+                    cache: 'no-store'
+                });
+                if (appRes.ok) {
+                    const json = await appRes.json();
+                    if (json.applications) {
+                        setApprenticeshipApps(json.applications);
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch apprenticeship applications:", err);
+            }
+        }
 
         setLoading(false);
     }
@@ -239,6 +260,104 @@ export default function UserDashboard() {
                             <span className="text-gray-600 shrink-0">Address</span>
                             <span className="font-medium text-gray-900 text-right truncate min-w-0">{user?.user_metadata?.address || "N/A"}</span>
                         </div>
+                    </div>
+                </div>
+
+                {/* Apprenticeship Status or Invitation Card */}
+                <div className="bg-white p-4 md:p-6 rounded-xl border shadow-sm overflow-hidden min-w-0 flex flex-col justify-between">
+                    <div>
+                        <div className="flex items-center gap-3 mb-4 text-green-700">
+                            <GraduationCap className="w-6 h-6" />
+                            <h2 className="font-semibold text-lg">Apprenticeship Program</h2>
+                        </div>
+                        {apprenticeshipApps.length > 0 ? (
+                            (() => {
+                                const latestApp = apprenticeshipApps[0];
+                                
+                                // Setup status display properties
+                                let badgeClass = "bg-gray-100 text-gray-800 border-gray-200";
+                                let statusLabel = "Pending Review";
+                                let description = "Your application is currently being reviewed by our team. We'll verify your documents and contact you soon.";
+                                
+                                switch (latestApp.status) {
+                                    case "selected":
+                                        badgeClass = "bg-green-100 text-green-800 border-green-200 font-bold";
+                                        statusLabel = "Accepted / Selected";
+                                        description = "Congratulations! You have been accepted and selected for the apprenticeship training program. Welcome to Pharmtech Inverter Multiconcept!";
+                                        break;
+                                    case "qualified":
+                                        badgeClass = "bg-blue-100 text-blue-800 border-blue-200 font-bold";
+                                        statusLabel = "Qualified";
+                                        description = "You have met our requirements and are marked as Qualified. Further training and scheduling details will follow.";
+                                        break;
+                                    case "on_hold":
+                                        badgeClass = "bg-amber-100 text-amber-800 border-amber-200 font-bold";
+                                        statusLabel = "On Hold";
+                                        description = "Your application is currently on hold. We will get back to you if vacancies open up in your selected department(s).";
+                                        break;
+                                    case "not_qualified":
+                                        badgeClass = "bg-red-100 text-red-800 border-red-200 font-bold";
+                                        statusLabel = "Rejected / Not Qualified";
+                                        description = "Thank you for your interest in our program. Unfortunately, after review, your application was not qualified at this time.";
+                                        break;
+                                }
+
+                                const displayPositions = latestApp.positions_applied?.map((pos: string) => 
+                                    pos === "Other" && latestApp.position_applied_other ? `Other (${latestApp.position_applied_other})` : pos.replace(" Apprentice", "")
+                                ).join(", ");
+
+                                return (
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-center flex-wrap gap-2">
+                                            <span className="text-xs text-gray-500">Applied: {new Date(latestApp.created_at).toLocaleDateString()}</span>
+                                            <span className={`px-2.5 py-0.5 rounded-full text-xs border uppercase ${badgeClass}`}>
+                                                {statusLabel}
+                                            </span>
+                                        </div>
+                                        
+                                        <div className="space-y-2 text-sm">
+                                            <div>
+                                                <span className="text-gray-500 font-medium">Position(s):</span>{" "}
+                                                <span className="font-semibold text-gray-800">{displayPositions || "N/A"}</span>
+                                            </div>
+                                            <p className="text-xs text-gray-600 leading-relaxed bg-gray-50 p-2.5 rounded border">
+                                                {description}
+                                            </p>
+                                        </div>
+
+                                        {latestApp.office_remarks && (
+                                            <div className="text-xs space-y-1">
+                                                <span className="font-bold text-gray-700 block">Reviewer Remarks:</span>
+                                                <div className="bg-yellow-50/50 text-yellow-800 border border-yellow-100 p-2.5 rounded italic">
+                                                    "{latestApp.office_remarks}"
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })()
+                        ) : (
+                            <div className="space-y-4 h-full flex flex-col justify-between">
+                                <div className="space-y-2">
+                                    <p className="text-xs text-gray-600 leading-relaxed">
+                                        Become a certified solar installation specialist, inverter technician, or electrical installation expert with our intensive hands-on training program!
+                                    </p>
+                                    <div className="flex flex-wrap gap-1 mt-2">
+                                        <span className="text-[10px] bg-green-50 text-green-800 border border-green-100 px-2 py-0.5 rounded font-bold">Solar Panels</span>
+                                        <span className="text-[10px] bg-green-50 text-green-800 border border-green-100 px-2 py-0.5 rounded font-bold">Inverters</span>
+                                        <span className="text-[10px] bg-green-50 text-green-800 border border-green-100 px-2 py-0.5 rounded font-bold">CCTV</span>
+                                    </div>
+                                </div>
+                                <div className="pt-4">
+                                    <Link 
+                                        href="/apprenticeship"
+                                        className="w-full inline-block text-center py-2.5 bg-green-800 hover:bg-green-700 text-white rounded-lg font-bold text-xs shadow transition-colors"
+                                    >
+                                        Apply for Apprenticeship
+                                    </Link>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 

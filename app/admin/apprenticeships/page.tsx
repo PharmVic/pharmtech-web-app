@@ -110,6 +110,52 @@ export default function AdminApprenticeshipsPage() {
     }
   };
 
+  const handleQuickStatusUpdate = async (newStatus: string) => {
+    if (!selectedApp) return;
+    
+    const statusLabel = newStatus === 'selected' ? 'Accept' : 'Reject';
+    if (!confirm(`Are you sure you want to ${statusLabel} this applicant?`)) return;
+
+    setSavingOffice(true);
+    try {
+      const todayStr = new Date().toISOString().split('T')[0];
+      const updateData: any = {
+        status: newStatus,
+        office_date_received: selectedApp.office_date_received || todayStr,
+        office_received_by: selectedApp.office_received_by || "Admin"
+      };
+
+      const { data, error } = await supabase
+        .from("apprenticeship_applications")
+        .update(updateData)
+        .eq("id", selectedApp.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Update local state list
+      setApplications(prev => prev.map(a => a.id === selectedApp.id ? data : a));
+      setSelectedApp(data);
+      
+      // Update form fields state
+      setOfficeFields({
+        office_date_received: data.office_date_received || todayStr,
+        office_received_by: data.office_received_by || "Admin",
+        office_interview_schedule: data.office_interview_schedule ? new Date(data.office_interview_schedule).toISOString().slice(0, 16) : "",
+        status: data.status,
+        office_remarks: data.office_remarks || ""
+      });
+
+      alert(`Applicant successfully ${newStatus === 'selected' ? 'Accepted' : 'Rejected'}!`);
+    } catch (err: any) {
+      console.error("Error doing quick status update:", err);
+      alert(`Failed to update status: ${err.message}`);
+    } finally {
+      setSavingOffice(false);
+    }
+  };
+
   // Filter application items
   const filteredApps = applications.filter(app => {
     const fullName = `${app.first_name} ${app.middle_name || ""} ${app.last_name}`.toLowerCase();
@@ -565,6 +611,34 @@ export default function AdminApprenticeshipsPage() {
                     <h4 className="text-sm font-black text-gray-800 border-b border-gray-300 pb-1 flex items-center gap-2 uppercase tracking-wide">
                       FOR OFFICE USE ONLY
                     </h4>
+
+                    {/* Quick Evaluation Decisions */}
+                    <div className="grid grid-cols-2 gap-3 border-b border-gray-300 pb-4">
+                      <button
+                        type="button"
+                        onClick={() => handleQuickStatusUpdate('selected')}
+                        disabled={savingOffice || selectedApp.status === 'selected'}
+                        className={`font-bold py-2.5 px-3 rounded-lg text-xs transition-all flex items-center justify-center gap-1 cursor-pointer disabled:cursor-not-allowed ${
+                          selectedApp.status === 'selected' 
+                            ? 'bg-green-100 text-green-800 border border-green-300 opacity-80' 
+                            : 'bg-green-800 hover:bg-green-700 text-white shadow hover:shadow-md'
+                        }`}
+                      >
+                        {selectedApp.status === 'selected' ? '✓ Accepted' : 'Accept Candidate'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleQuickStatusUpdate('not_qualified')}
+                        disabled={savingOffice || selectedApp.status === 'not_qualified'}
+                        className={`font-bold py-2.5 px-3 rounded-lg text-xs transition-all flex items-center justify-center gap-1 cursor-pointer disabled:cursor-not-allowed ${
+                          selectedApp.status === 'not_qualified' 
+                            ? 'bg-red-100 text-red-800 border border-red-300 opacity-80' 
+                            : 'bg-red-600 hover:bg-red-700 text-white shadow hover:shadow-md'
+                        }`}
+                      >
+                        {selectedApp.status === 'not_qualified' ? '✗ Rejected' : 'Reject Candidate'}
+                      </button>
+                    </div>
                     
                     <form onSubmit={handleSaveOfficeFields} className="space-y-3.5">
                       <div className="grid grid-cols-2 gap-3">
