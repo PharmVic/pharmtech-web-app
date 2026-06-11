@@ -328,8 +328,7 @@ export default function SolarCalculator() {
         const installCost = accessoriesInstallFeeForUnits(activeInverter.units, accessoriesCatalog);
 
         const subTotal = invCost + batCost + panelCost + installCost;
-        const vat = subTotal * 0.075;
-        return subTotal + vat;
+        return subTotal;
     }, [activeInverter, recommendedBattery, activePanelCount, minPanelW, activeBatteryUnits, panelsCatalog, accessoriesCatalog]);
 
     // Save Logic
