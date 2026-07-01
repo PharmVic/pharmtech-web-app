@@ -18,6 +18,7 @@ export default function AdminEmailPage() {
     const [base64Image, setBase64Image] = useState<string>("");
     const [compressing, setCompressing] = useState(false);
     const [dragActive, setDragActive] = useState(false);
+    const [imageSize, setImageSize] = useState("large"); // small, medium, large
 
     const handleDrag = (e: React.DragEvent) => {
         e.preventDefault();
@@ -85,6 +86,7 @@ export default function AdminEmailPage() {
         setImageFile(null);
         setImagePreview("");
         setBase64Image("");
+        setImageSize("large");
     };
 
     const handleSend = async (e: React.FormEvent) => {
@@ -107,7 +109,8 @@ export default function AdminEmailPage() {
                     subject,
                     message,
                     singleEmail: singleEmail.trim() || undefined,
-                    uploadedImage: base64Image || undefined
+                    uploadedImage: base64Image || undefined,
+                    imageSize: base64Image ? imageSize : undefined
                 })
             });
 
@@ -248,6 +251,23 @@ export default function AdminEmailPage() {
                         <p className="text-xs text-gray-500 mt-2">
                             To place this image inline inside your message, type <code className="bg-gray-100 px-1.5 py-0.5 rounded text-blue-600 font-mono font-bold">[IMAGE]</code>. If not specified, the image will be appended at the bottom of the email.
                         </p>
+                        
+                        {imagePreview && (
+                            <div className="mt-3">
+                                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                    Display Size in Email
+                                </label>
+                                <select
+                                    value={imageSize}
+                                    onChange={(e) => setImageSize(e.target.value)}
+                                    className="w-full md:w-64 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white"
+                                >
+                                    <option value="large">Large (Full Width - 600px)</option>
+                                    <option value="medium">Medium (Half Width - 350px)</option>
+                                    <option value="small">Small (Logo size - 150px)</option>
+                                </select>
+                            </div>
+                        )}
                     </div>
 
                     <div>

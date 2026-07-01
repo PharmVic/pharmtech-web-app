@@ -2,6 +2,24 @@ import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient";
 import nodemailer from "nodemailer";
 
+function formatEmailMessage(msg: string): string {
+    // Check if msg contains HTML tags. If yes, preserve it.
+    const hasHtml = /<\/?[a-z][\s\S]*>/i.test(msg);
+    if (hasHtml) {
+        return msg;
+    }
+    // Otherwise, replace double newlines with paragraphs and single newlines with br.
+    return msg
+        .split(/\n\s*\n/) // Split by double newlines (paragraphs)
+        .map(para => {
+            const cleanPara = para.trim().replace(/\n/g, "<br />");
+            if (!cleanPara) return "";
+            return `<p style="margin-bottom:16px; line-height:1.6; font-family:Arial, sans-serif; font-size:15px; color:#333;">${cleanPara}</p>`;
+        })
+        .filter(Boolean)
+        .join("");
+}
+
 export async function POST(req: Request) {
     try {
         // 1. Verify Admin Session via Token
@@ -29,7 +47,7 @@ export async function POST(req: Request) {
         }
 
         // 2. Parse payload
-        const { subject, message, singleEmail, uploadedImage } = await req.json();
+        const { subject, message, singleEmail, uploadedImage, imageSize } = await req.json();
 
         if (!subject || !message) {
             return NextResponse.json({ error: "Subject and Message are required" }, { status: 400 });
@@ -69,7 +87,7 @@ export async function POST(req: Request) {
 
         // 5. Prepare attachments & finalize HTML template
         const attachments: any[] = [];
-        let finalMessage = message;
+        let finalMessage = formatEmailMessage(message);
 
         if (uploadedImage) {
             const matches = uploadedImage.match(/^data:(image\/\w+);base64,(.+)$/);
@@ -84,7 +102,17 @@ export async function POST(req: Request) {
                     cid: "inline_uploaded_image"
                 });
 
-                const imgTag = `<img src="cid:inline_uploaded_image" alt="Embedded Image" style="max-width:100%; height:auto; border-radius:8px; margin:15px 0; display:block;" />`;
+                // Style the image based on size option chosen
+                let imgStyle = "max-width:100%; height:auto; border-radius:8px; margin:15px auto; display:block;";
+                if (imageSize === "small") {
+                    imgStyle = "width:150px; max-width:100%; height:auto; border-radius:4px; margin:15px auto; display:block;";
+                } else if (imageSize === "medium") {
+                    imgStyle = "width:350px; max-width:100%; height:auto; border-radius:6px; margin:15px auto; display:block;";
+                } else {
+                    imgStyle = "width:100%; max-width:600px; height:auto; border-radius:8px; margin:15px auto; display:block;";
+                }
+
+                const imgTag = `<img src="cid:inline_uploaded_image" alt="Embedded Image" style="${imgStyle}" />`;
                 
                 if (finalMessage.includes("[IMAGE]")) {
                     finalMessage = finalMessage.replaceAll("[IMAGE]", imgTag);
@@ -94,20 +122,14 @@ export async function POST(req: Request) {
             }
         }
 
-        // HTML Template with Logo Fallback
+        // HTML Template (Blank logo removed, header enhanced)
         const htmlContent = `
-            <div style="text-align:center; margin-bottom:20px;">
-              <img 
-                src="https://pharmtechsolar.com/logo.png" 
-                alt="Pharmtech Solar"
-                width="150"
-                style="display:block; margin:auto;"
-              />
-              <h2 style="font-family:Arial; color:#333;">
+            <div style="text-align:center; margin-bottom:25px; border-bottom:1px solid #eee; padding-bottom:15px;">
+              <h2 style="font-family:Arial, sans-serif; color:#1e3a8a; margin:0; font-size:24px; font-weight:bold; letter-spacing:0.5px;">
                 Pharmtech Solar
               </h2>
             </div>
-            <div style="font-family:Arial; color:#333; max-width:600px; margin:auto; line-height:1.6;">
+            <div style="font-family:Arial, sans-serif; color:#333; max-width:600px; margin:auto; line-height:1.6;">
                 ${finalMessage}
             </div>
         `;
