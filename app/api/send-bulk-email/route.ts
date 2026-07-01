@@ -29,7 +29,7 @@ export async function POST(req: Request) {
         }
 
         // 2. Parse payload
-        const { subject, message, singleEmail } = await req.json();
+        const { subject, message, singleEmail, uploadedImage } = await req.json();
 
         if (!subject || !message) {
             return NextResponse.json({ error: "Subject and Message are required" }, { status: 400 });
@@ -67,7 +67,34 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "No emails found to send to" }, { status: 400 });
         }
 
-        // 5. HTML Template with Logo Fallback
+        // 5. Prepare attachments & finalize HTML template
+        const attachments: any[] = [];
+        let finalMessage = message;
+
+        if (uploadedImage) {
+            const matches = uploadedImage.match(/^data:(image\/\w+);base64,(.+)$/);
+            if (matches) {
+                const contentType = matches[1];
+                const base64Data = matches[2];
+                const extension = contentType.split("/")[1] || "png";
+                
+                attachments.push({
+                    filename: `inline_image.${extension}`,
+                    content: Buffer.from(base64Data, "base64"),
+                    cid: "inline_uploaded_image"
+                });
+
+                const imgTag = `<img src="cid:inline_uploaded_image" alt="Embedded Image" style="max-width:100%; height:auto; border-radius:8px; margin:15px 0; display:block;" />`;
+                
+                if (finalMessage.includes("[IMAGE]")) {
+                    finalMessage = finalMessage.replaceAll("[IMAGE]", imgTag);
+                } else {
+                    finalMessage = `${finalMessage}<div style="margin-top:20px; text-align:center;">${imgTag}</div>`;
+                }
+            }
+        }
+
+        // HTML Template with Logo Fallback
         const htmlContent = `
             <div style="text-align:center; margin-bottom:20px;">
               <img 
@@ -81,7 +108,7 @@ export async function POST(req: Request) {
               </h2>
             </div>
             <div style="font-family:Arial; color:#333; max-width:600px; margin:auto; line-height:1.6;">
-                ${message}
+                ${finalMessage}
             </div>
         `;
 
@@ -102,6 +129,7 @@ export async function POST(req: Request) {
                         to: email,
                         subject: subject,
                         html: htmlContent,
+                        attachments: attachments,
                     }).then(() => { successCount++; }).catch(err => { 
                         console.error(`Failed sending to ${email}:`, err);
                         errorDetails.push(err.message || String(err));

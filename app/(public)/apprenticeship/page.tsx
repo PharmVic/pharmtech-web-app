@@ -302,23 +302,23 @@ Please review my application. Thank you!`;
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen py-8 px-4 font-sans text-gray-800">
+    <div className="bg-gray-100 min-h-screen py-4 px-2 sm:py-8 sm:px-4 font-sans text-gray-800">
       <div className="max-w-5xl mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden border border-gray-200">
         
         {/* HEADER SECTION */}
-        <div className="p-6 md:p-8 bg-white border-b border-gray-200">
+        <div className="p-4 sm:p-6 md:p-8 bg-white border-b border-gray-200">
           <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
             
             {/* Logo and Branding */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
               <img 
                 src="/logo.jpeg" 
                 alt="PIM Logo" 
-                className="h-20 w-auto object-contain shrink-0" 
+                className="h-16 w-auto sm:h-20 object-contain shrink-0" 
               />
-              <div>
-                <h1 className="text-2xl md:text-3xl font-extrabold text-green-800 tracking-tight leading-none">PHARMTECH</h1>
-                <span className="text-xs md:text-sm font-semibold text-gray-500 tracking-widest block uppercase mt-1">INVERTER MULTICONCEPT</span>
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-green-800 tracking-tight leading-none">PHARMTECH</h1>
+                <span className="text-[10px] sm:text-xs md:text-sm font-bold text-gray-500 tracking-wider sm:tracking-widest block uppercase mt-1 leading-tight break-words">INVERTER MULTICONCEPT</span>
               </div>
             </div>
 
@@ -346,11 +346,11 @@ Please review my application. Thank you!`;
 
           <div className="mt-8 border-t border-dashed border-gray-200 pt-6">
             <h4 className="text-xs font-bold uppercase tracking-wider text-green-800 mb-3 text-center md:text-left">OUR SERVICES INCLUDE:</h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-2">
               {servicesList.map((service, idx) => (
                 <div key={idx} className="flex items-center gap-1.5 text-xs text-gray-600">
                   <span className="w-3.5 h-3.5 rounded-full bg-green-100 text-green-700 flex items-center justify-center shrink-0">✓</span>
-                  <span className="truncate" title={service}>{service}</span>
+                  <span className="break-words font-medium">{service}</span>
                 </div>
               ))}
             </div>
@@ -358,11 +358,11 @@ Please review my application. Thank you!`;
         </div>
 
         {/* TITLE BANNER */}
-        <div className="bg-green-800 px-6 py-8 md:px-8 text-center text-white relative">
+        <div className="bg-green-800 px-4 py-6 sm:px-6 sm:py-8 text-center text-white relative">
           <div className="absolute top-0 right-0 bottom-0 left-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
-          <GraduationCap className="w-12 h-12 mx-auto mb-3 text-green-200 relative z-10" />
-          <h2 className="text-3xl font-extrabold tracking-tight relative z-10">APPRENTICE APPLICATION FORM</h2>
-          <p className="mt-2 text-green-100 text-sm max-w-2xl mx-auto relative z-10">
+          <GraduationCap className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 text-green-200 relative z-10" />
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight relative z-10">APPRENTICE APPLICATION FORM</h2>
+          <p className="mt-2 text-green-100 text-xs sm:text-sm max-w-2xl mx-auto relative z-10">
             Please fill out this form completely and accurately. All information provided will be treated confidentially and used strictly for apprentice selection and training purposes.
           </p>
         </div>
@@ -380,7 +380,7 @@ Please review my application. Thank you!`;
 
         {/* APPLICATION FORM */}
         {!successData ? (
-          <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-10">
+          <form onSubmit={handleSubmit} className="p-4 sm:p-6 md:p-8 space-y-10">
             
             {/* 1. PERSONAL INFORMATION */}
             <div className="space-y-6">
@@ -392,34 +392,34 @@ Please review my application. Thank you!`;
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="md:col-span-1">
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">First Name <span className="text-red-500">*</span></label>
-                  <input type="text" name="firstName" required value={formData.firstName} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="John" />
+                  <input type="text" name="firstName" required value={formData.firstName} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="John" />
                 </div>
                 <div className="md:col-span-1">
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Middle Name</label>
-                  <input type="text" name="middleName" value={formData.middleName} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Alabi" />
+                  <input type="text" name="middleName" value={formData.middleName} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Alabi" />
                 </div>
                 <div className="md:col-span-1">
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Last Name <span className="text-red-500">*</span></label>
-                  <input type="text" name="lastName" required value={formData.lastName} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Doe" />
+                  <input type="text" name="lastName" required value={formData.lastName} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Doe" />
                 </div>
                 <div className="md:col-span-1">
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Suffix</label>
-                  <input type="text" name="suffix" value={formData.suffix} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="e.g. Jr., III" />
+                  <input type="text" name="suffix" value={formData.suffix} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="e.g. Jr., III" />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Date of Birth <span className="text-red-500">*</span></label>
-                  <input type="date" name="dob" required value={formData.dob} onChange={handleDobChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" />
+                  <input type="date" name="dob" required value={formData.dob} onChange={handleDobChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Age (Auto)</label>
-                  <input type="text" name="age" readOnly value={formData.age} className="w-full p-2.5 border rounded-lg bg-gray-100 text-gray-600 text-sm outline-none font-semibold cursor-not-allowed" placeholder="Select DOB" />
+                  <input type="text" name="age" readOnly value={formData.age} className="w-full p-2.5 border rounded-lg bg-gray-100 text-gray-600 text-base md:text-sm outline-none font-semibold cursor-not-allowed" placeholder="Select DOB" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Gender <span className="text-red-500">*</span></label>
-                  <select name="gender" required value={formData.gender} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all">
+                  <select name="gender" required value={formData.gender} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all">
                     <option value="">Select Gender</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
@@ -428,7 +428,7 @@ Please review my application. Thank you!`;
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Civil Status <span className="text-red-500">*</span></label>
-                  <select name="civilStatus" required value={formData.civilStatus} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all">
+                  <select name="civilStatus" required value={formData.civilStatus} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all">
                     <option value="">Select Status</option>
                     <option value="Single">Single</option>
                     <option value="Married">Married</option>
@@ -441,43 +441,43 @@ Please review my application. Thank you!`;
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Nationality <span className="text-red-500">*</span></label>
-                  <input type="text" name="nationality" required value={formData.nationality} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" />
+                  <input type="text" name="nationality" required value={formData.nationality} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Religion <span className="text-red-500">*</span></label>
-                  <input type="text" name="religion" required value={formData.religion} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Christianity / Islam" />
+                  <input type="text" name="religion" required value={formData.religion} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Christianity / Islam" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">TIN (If Applicable)</label>
-                  <input type="text" name="tin" value={formData.tin} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Taxpayer Identification No." />
+                  <input type="text" name="tin" value={formData.tin} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Taxpayer Identification No." />
                 </div>
               </div>
 
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Home Address <span className="text-red-500">*</span></label>
-                  <input type="text" name="homeAddress" required value={formData.homeAddress} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Street Address, Block Name" />
+                  <input type="text" name="homeAddress" required value={formData.homeAddress} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Street Address, Block Name" />
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">City / Municipality <span className="text-red-500">*</span></label>
-                    <input type="text" name="cityMunicipality" required value={formData.cityMunicipality} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Ibadan" />
+                    <input type="text" name="cityMunicipality" required value={formData.cityMunicipality} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Ibadan" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">ZIP Code</label>
-                    <input type="text" name="zipCode" value={formData.zipCode} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="200213" />
+                    <input type="text" name="zipCode" value={formData.zipCode} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="200213" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Mobile Number <span className="text-red-500">*</span></label>
-                    <input type="tel" name="phone" required value={formData.phone} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="e.g. 08142111657" />
+                    <input type="tel" name="phone" required value={formData.phone} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="e.g. 08142111657" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Email Address <span className="text-red-500">*</span></label>
-                    <input type="email" name="email" required value={formData.email} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="john.doe@example.com" />
+                    <input type="email" name="email" required value={formData.email} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="john.doe@example.com" />
                   </div>
                 </div>
               </div>
@@ -493,20 +493,20 @@ Please review my application. Thank you!`;
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Full Name <span className="text-red-500">*</span></label>
-                  <input type="text" name="emergencyName" required value={formData.emergencyName} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Guardian or Next of Kin Name" />
+                  <input type="text" name="emergencyName" required value={formData.emergencyName} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Guardian or Next of Kin Name" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Relationship <span className="text-red-500">*</span></label>
-                  <input type="text" name="emergencyRelationship" required value={formData.emergencyRelationship} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="e.g. Father, Mother, Spouse" />
+                  <input type="text" name="emergencyRelationship" required value={formData.emergencyRelationship} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="e.g. Father, Mother, Spouse" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Phone Number <span className="text-red-500">*</span></label>
-                  <input type="tel" name="emergencyPhone" required value={formData.emergencyPhone} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="e.g. 080XXXXXXXX" />
+                  <input type="tel" name="emergencyPhone" required value={formData.emergencyPhone} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="e.g. 080XXXXXXXX" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Home Address <span className="text-red-500">*</span></label>
-                <input type="text" name="emergencyAddress" required value={formData.emergencyAddress} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Emergency Contact Full Address" />
+                <input type="text" name="emergencyAddress" required value={formData.emergencyAddress} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Emergency Contact Full Address" />
               </div>
             </div>
 
@@ -520,7 +520,7 @@ Please review my application. Thank you!`;
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Highest Educational Qualification <span className="text-red-500">*</span></label>
-                  <select name="educationalQualification" required value={formData.educationalQualification} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all">
+                  <select name="educationalQualification" required value={formData.educationalQualification} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all">
                     <option value="">Select Qualification</option>
                     <option value="Primary School">Primary School</option>
                     <option value="Secondary School">Secondary School</option>
@@ -532,7 +532,7 @@ Please review my application. Thank you!`;
                 {formData.educationalQualification === "Others" && (
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Specify Other Qualification <span className="text-red-500">*</span></label>
-                    <input type="text" name="educationalQualificationOther" required value={formData.educationalQualificationOther} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Enter qualification" />
+                    <input type="text" name="educationalQualificationOther" required value={formData.educationalQualificationOther} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Enter qualification" />
                   </div>
                 )}
               </div>
@@ -540,15 +540,15 @@ Please review my application. Thank you!`;
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Name of School <span className="text-red-500">*</span></label>
-                  <input type="text" name="schoolName" required value={formData.schoolName} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="University, Poly or High School" />
+                  <input type="text" name="schoolName" required value={formData.schoolName} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="University, Poly or High School" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Course / Department</label>
-                  <input type="text" name="courseDepartment" value={formData.courseDepartment} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="e.g. Electrical Engineering" />
+                  <input type="text" name="courseDepartment" value={formData.courseDepartment} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="e.g. Electrical Engineering" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Year Graduated / Level <span className="text-red-500">*</span></label>
-                  <input type="text" name="yearGraduated" required value={formData.yearGraduated} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="e.g. 2024" />
+                  <input type="text" name="yearGraduated" required value={formData.yearGraduated} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="e.g. 2024" />
                 </div>
               </div>
             </div>
@@ -589,7 +589,7 @@ Please review my application. Thank you!`;
                 {formData.positionsApplied.includes("Other") && (
                   <div className="mt-3">
                     <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Specify Other Position <span className="text-red-500">*</span></label>
-                    <input type="text" name="positionAppliedOther" required value={formData.positionAppliedOther} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Enter department" />
+                    <input type="text" name="positionAppliedOther" required value={formData.positionAppliedOther} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Enter department" />
                   </div>
                 )}
               </div>
@@ -616,14 +616,14 @@ Please review my application. Thank you!`;
                 {formData.hasExperience === "yes" && (
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Explain Briefly <span className="text-red-500">*</span></label>
-                    <textarea name="experienceDescription" required rows={3} value={formData.experienceDescription} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Describe your previous experience or training..."></textarea>
+                    <textarea name="experienceDescription" required rows={3} value={formData.experienceDescription} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Describe your previous experience or training..."></textarea>
                   </div>
                 )}
               </div>
 
               <div className="border-t border-gray-200 pt-4 space-y-3">
                 <label className="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wider">Technical Skills (Tick all that apply)</label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
                   {technicalSkillsList.map((skill) => (
                     <label key={skill} className="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-gray-50">
                       <input 
@@ -638,7 +638,7 @@ Please review my application. Thank you!`;
                 </div>
                 <div className="mt-3">
                   <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Other Technical Skills</label>
-                  <input type="text" name="technicalSkillsOther" value={formData.technicalSkillsOther} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Cabling, splicing, mechanical work, etc." />
+                  <input type="text" name="technicalSkillsOther" value={formData.technicalSkillsOther} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all" placeholder="Cabling, splicing, mechanical work, etc." />
                 </div>
               </div>
 
@@ -775,11 +775,11 @@ Please review my application. Thank you!`;
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Applicant's Signature (Type Full Name) <span className="text-red-500">*</span></label>
-                    <input type="text" name="signatureName" required value={formData.signatureName} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-sm bg-gray-50 focus:bg-white transition-all font-serif italic" placeholder="Your Digital Signature" />
+                    <input type="text" name="signatureName" required value={formData.signatureName} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-green-600 outline-none text-base md:text-sm bg-gray-50 focus:bg-white transition-all font-serif italic" placeholder="Your Digital Signature" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1 uppercase tracking-wider">Date of Application</label>
-                    <input type="text" readOnly value={new Date().toLocaleDateString()} className="w-full p-2.5 border rounded-lg bg-gray-100 text-gray-500 text-sm outline-none font-semibold cursor-not-allowed" />
+                    <input type="text" readOnly value={new Date().toLocaleDateString()} className="w-full p-2.5 border rounded-lg bg-gray-100 text-gray-500 text-base md:text-sm outline-none font-semibold cursor-not-allowed" />
                   </div>
                 </div>
               </div>
@@ -808,7 +808,7 @@ Please review my application. Thank you!`;
           </form>
         ) : (
           /* SUCCESS STATE */
-          <div className="p-8 md:p-12 text-center space-y-6">
+          <div className="p-4 sm:p-8 md:p-12 text-center space-y-6">
             <div className="w-20 h-20 bg-green-100 text-green-700 rounded-full flex items-center justify-center mx-auto shadow-sm">
               <CheckCircle className="w-12 h-12" />
             </div>
@@ -820,7 +820,7 @@ Please review my application. Thank you!`;
               </p>
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-5 border border-gray-200 max-w-lg mx-auto text-left text-sm space-y-2">
+            <div className="bg-gray-50 rounded-xl p-4 sm:p-5 border border-gray-200 max-w-lg mx-auto text-left text-sm space-y-2">
               <h4 className="font-bold text-gray-800 mb-3 border-b pb-1">Application Details Snapshot:</h4>
               <div><span className="text-gray-500 font-medium">Application ID:</span> <span className="font-mono text-xs">{successData.id}</span></div>
               <div><span className="text-gray-500 font-medium">Email:</span> {successData.email}</div>
