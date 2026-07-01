@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
-import { User, FileText, LogOut, Award, Link as LinkIcon, Copy, ShoppingCart, CreditCard, Clock, GraduationCap } from "lucide-react";
+import { User, FileText, LogOut, Award, Link as LinkIcon, Copy, ShoppingCart, CreditCard, Clock, GraduationCap, ShieldCheck } from "lucide-react";
 import dynamic from 'next/dynamic';
 import Link from "next/link";
 
@@ -358,6 +358,27 @@ export default function UserDashboard() {
                                 </div>
                             </div>
                         )}
+                    </div>
+                </div>
+
+                {/* Aftersales Support Card */}
+                <div className="bg-white p-4 md:p-6 rounded-xl border shadow-sm overflow-hidden min-w-0 flex flex-col justify-between">
+                    <div>
+                        <div className="flex items-center gap-3 mb-4 text-blue-600">
+                            <ShieldCheck className="w-6 h-6" />
+                            <h2 className="font-semibold text-lg">Aftersales Support</h2>
+                        </div>
+                        <p className="text-xs text-gray-600 leading-relaxed mb-4">
+                            Registered a product or solar installation with us? Fill out your purchase details to enjoy our premium warranty, maintenance, and technical aftersales support services.
+                        </p>
+                    </div>
+                    <div className="pt-2">
+                        <Link 
+                            href="/dashboard/aftersales"
+                            className="w-full inline-block text-center py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-xs shadow transition-colors"
+                        >
+                            Register for Aftersales Support
+                        </Link>
                     </div>
                 </div>
 

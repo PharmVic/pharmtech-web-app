@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Copy, Package, PlusSquare, FileText, Settings, Users, Folder, Star, Image as ImageIcon } from "lucide-react";
+import { Copy, Package, PlusSquare, FileText, Settings, Users, Folder, Star, Image as ImageIcon, ShieldCheck } from "lucide-react";
 
 export default function AdminDashboardPage() {
     return (
@@ -77,6 +77,20 @@ export default function AdminDashboardPage() {
                         </div>
                         <p className="text-gray-600 mb-4">Manage the photos displayed on the About Us page.</p>
                         <span className="text-emerald-600 font-medium text-sm group-hover:underline">Manage Photos &rarr;</span>
+                    </div>
+                </Link>
+
+                {/* Aftersales Support Card */}
+                <Link href="/admin/aftersales" className="group block">
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:border-emerald-500 hover:shadow-md transition-all h-full">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="p-3 bg-emerald-50 text-emerald-600 rounded-lg group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                                <ShieldCheck className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900">Aftersales Support</h3>
+                        </div>
+                        <p className="text-gray-600 mb-4">View and manage customer aftersales registrations and request statuses.</p>
+                        <span className="text-emerald-600 font-medium text-sm group-hover:underline">Manage Aftersales &rarr;</span>
                     </div>
                 </Link>
 
