@@ -71,6 +71,7 @@ ALTER TABLE public.apprenticeship_applications ENABLE ROW LEVEL SECURITY;
 
 -- Drop existing policies if they exist (clean setup)
 DROP POLICY IF EXISTS "Allow public inserts" ON public.apprenticeship_applications;
+DROP POLICY IF EXISTS "Allow public select" ON public.apprenticeship_applications;
 DROP POLICY IF EXISTS "Allow admins full access" ON public.apprenticeship_applications;
 
 -- Policy: Allow public users to submit applications
@@ -79,6 +80,13 @@ ON public.apprenticeship_applications
 FOR INSERT 
 TO public 
 WITH CHECK (true);
+
+-- Policy: Allow public users to read applications (required when using .insert().select() in client)
+CREATE POLICY "Allow public select" 
+ON public.apprenticeship_applications 
+FOR SELECT 
+TO public 
+USING (true);
 
 -- Policy: Allow admins full access to applications
 CREATE POLICY "Allow admins full access" 

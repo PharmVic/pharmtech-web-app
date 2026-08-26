@@ -4,7 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Mail, Lock, User, Loader2, Phone, MapPin, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, User, Loader2, Phone, MapPin, Eye, EyeOff, CheckCircle } from "lucide-react";
 
 export default function SignUpPage() {
     const router = useRouter();
@@ -17,6 +17,7 @@ export default function SignUpPage() {
     });
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
     const [error, setError] = useState("");
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,6 +26,7 @@ export default function SignUpPage() {
 
     const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
     const refCode = searchParams?.get('ref');
+    const redirectUrl = searchParams?.get('redirect') || '/';
 
     const handleSignUp = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -73,7 +75,6 @@ export default function SignUpPage() {
 
             if (authError) {
                 console.error("Supabase Error:", authError);
-                alert(`Sign Up Failed: ${authError.message}`);
                 setError(authError.message);
                 setLoading(false);
                 return;
@@ -81,23 +82,22 @@ export default function SignUpPage() {
 
             if (authData.user) {
                 console.log("Sign up successful, user:", authData.user);
-                // Check if session is established (if email confirmation is off)
+                setIsSuccess(true);
+                setLoading(false);
                 if (authData.session) {
-                    alert("Account created successfully! Redirecting...");
-                    router.push("/"); // or / depending on role
-                    router.refresh();
-                } else {
-                    alert("Account created! Please check your email to confirm your account before logging in.");
-                    setLoading(false);
+                    setTimeout(() => {
+                        router.push(redirectUrl);
+                        router.refresh();
+                    }, 2500);
                 }
             } else {
-                alert("Unknown error: No user returned.");
+                setError("Unknown error: No user returned.");
                 setLoading(false);
             }
 
         } catch (err: any) {
             console.error("Unexpected catch:", err);
-            alert(`Unexpected Error: ${err.message || err}`);
+            setError(`Unexpected Error: ${err.message || err}`);
             setLoading(false);
         }
     };
@@ -105,15 +105,42 @@ export default function SignUpPage() {
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
-                <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-                    Create a new account
-                </h2>
-                <p className="mt-2 text-center text-sm text-gray-600">
-                    Or{" "}
-                    <Link href="/auth/sign-in" className="font-medium text-blue-600 hover:text-blue-500">
-                        sign in to existing account
-                    </Link>
-                </p>
+                {isSuccess ? (
+                    <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 text-center space-y-5">
+                        <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto">
+                            <CheckCircle className="w-10 h-10" />
+                        </div>
+                        <span className="inline-block px-3 py-1 bg-green-100 text-green-800 font-bold text-xs uppercase tracking-wider rounded-full">
+                            Registration Successful
+                        </span>
+                        <h2 className="text-2xl font-extrabold text-gray-900">
+                            Registration Successful!
+                        </h2>
+                        <p className="text-gray-600 text-sm">
+                            Your account has been created. Redirecting you to the portal...
+                        </p>
+                        <div className="pt-2">
+                            <Link
+                                href="/auth/sign-in"
+                                className="inline-block w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow transition"
+                            >
+                                Continue to Sign In
+                            </Link>
+                        </div>
+                    </div>
+                ) : (
+                    <>
+                        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
+                            Create a new account
+                        </h2>
+                        <p className="mt-2 text-center text-sm text-gray-600">
+                            Or{" "}
+                            <Link href="/auth/sign-in" className="font-medium text-blue-600 hover:text-blue-500">
+                                sign in to existing account
+                            </Link>
+                        </p>
+                    </>
+                )}
             </div>
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">

@@ -14,6 +14,10 @@ export default function SignInPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    const redirectUrl = typeof window !== 'undefined'
+        ? new URLSearchParams(window.location.search).get('redirect') || '/'
+        : '/';
+
     async function handleSignIn(e: React.FormEvent) {
         e.preventDefault();
         setLoading(true);
@@ -28,7 +32,8 @@ export default function SignInPage() {
             if (signInError) throw signInError;
 
             // Redirect on success
-            router.push("/");
+            router.push(redirectUrl);
+            router.refresh();
 
         } catch (err: any) {
             setError(err.message);
@@ -111,7 +116,7 @@ export default function SignInPage() {
                 <div className="text-center text-sm pt-4 border-t">
                     <p className="text-gray-600">
                         Need an account?{' '}
-                        <Link href="/auth/sign-up" className="font-medium text-blue-600 hover:text-blue-500 hover:underline">
+                        <Link href={`/auth/sign-up${redirectUrl !== '/' ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`} className="font-medium text-blue-600 hover:text-blue-500 hover:underline">
                             Sign up here
                         </Link>
                     </p>

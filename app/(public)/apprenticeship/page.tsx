@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { 
   GraduationCap, 
@@ -18,6 +19,9 @@ import {
 } from "lucide-react";
 
 export default function ApprenticeshipPage() {
+  const router = useRouter();
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
   // Form State
   const [formData, setFormData] = useState({
     firstName: "",
@@ -65,6 +69,38 @@ export default function ApprenticeshipPage() {
     signatureName: "",
     agreedToTerms: false,
   });
+
+  useEffect(() => {
+    async function checkAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        router.push("/auth/sign-in?redirect=/apprenticeship");
+      } else {
+        const u = session.user;
+        const email = u.email || "";
+        const fullName = u.user_metadata?.full_name || u.user_metadata?.name || "";
+        const phone = u.user_metadata?.phone || "";
+        
+        let first = "";
+        let last = "";
+        if (fullName) {
+          const parts = fullName.trim().split(" ");
+          first = parts[0] || "";
+          last = parts.slice(1).join(" ") || "";
+        }
+
+        setFormData(prev => ({
+          ...prev,
+          email: prev.email || email,
+          firstName: prev.firstName || first,
+          lastName: prev.lastName || last,
+          phone: prev.phone || phone
+        }));
+        setCheckingAuth(false);
+      }
+    }
+    checkAuth();
+  }, [router]);
 
   // File Upload State
   const [passportFile, setPassportFile] = useState<File | null>(null);
@@ -300,6 +336,20 @@ Here are my registration details:
 Please review my application. Thank you!`;
     return `https://wa.me/${phoneNum}?text=${encodeURIComponent(text)}`;
   };
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-2xl shadow-md border border-gray-100 flex flex-col items-center space-y-4 max-w-sm text-center">
+          <Loader2 className="w-10 h-10 animate-spin text-green-700" />
+          <div>
+            <h3 className="font-bold text-gray-900 text-base">Verifying Account Access</h3>
+            <p className="text-gray-500 text-xs mt-1">Please wait while we check your login status...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-100 min-h-screen py-4 px-2 sm:py-8 sm:px-4 font-sans text-gray-800">
@@ -808,13 +858,18 @@ Please review my application. Thank you!`;
           </form>
         ) : (
           /* SUCCESS STATE */
-          <div className="p-4 sm:p-8 md:p-12 text-center space-y-6">
-            <div className="w-20 h-20 bg-green-100 text-green-700 rounded-full flex items-center justify-center mx-auto shadow-sm">
+          <div className="p-6 sm:p-10 md:p-14 text-center space-y-6">
+            <div className="w-20 h-20 bg-green-100 text-green-700 rounded-full flex items-center justify-center mx-auto shadow-sm animate-bounce">
               <CheckCircle className="w-12 h-12" />
             </div>
             
             <div className="space-y-2">
-              <h2 className="text-3xl font-extrabold text-green-800">Application Submitted!</h2>
+              <span className="inline-block px-4 py-1.5 bg-green-100 text-green-800 font-bold text-xs sm:text-sm uppercase tracking-widest rounded-full border border-green-200">
+                Registration Successful
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 pt-2">
+                Registration Successful!
+              </h2>
               <p className="text-gray-600 max-w-md mx-auto text-sm md:text-base">
                 Thank you, <span className="font-bold text-gray-800">{successData.first_name} {successData.last_name}</span>. Your application for <span className="font-bold text-gray-800">{successData.positions_applied?.map((p: string) => p === "Other" && successData.position_applied_other ? `Other (${successData.position_applied_other})` : p).join(", ")}</span> has been received and saved securely in our database.
               </p>
