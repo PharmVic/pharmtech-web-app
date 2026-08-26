@@ -9,12 +9,6 @@ import { supabase } from "@/lib/supabaseClient";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  // Fetch categories to display as services
-  const { data: categories } = await supabase
-    .from("product_categories")
-    .select("*")
-    .order("created_at", { ascending: true });
-
   // Fetch reviews for testimonials
   const { data: reviews } = await supabase
     .from("reviews")
@@ -22,7 +16,7 @@ export default async function Home() {
     .order("created_at", { ascending: false })
     .limit(6);
 
-  // Fetch all products for the search bar
+  // Fetch all products for the homepage showcase
   const { data: products } = await supabase
     .from("products")
     .select("*")
@@ -37,46 +31,13 @@ export default async function Home() {
     text: r.text
   }));
 
-  // Default images based on name or slug for aesthetics if no image exists
-  const getDefaultImage = (slug: string) => {
-    if (slug.includes('cctv')) return 'https://images.unsplash.com/photo-1557064619-2169b476c535';
-    if (slug.includes('networking')) return 'https://images.unsplash.com/photo-1544197150-b99a580bbcbf';
-    if (slug.includes('automation')) return 'https://images.unsplash.com/photo-1558002038-1091a086e98c';
-    if (slug.includes('access-control')) return 'https://images.unsplash.com/photo-1563249151-6923838020d6';
-    if (slug.includes('inverters')) return 'https://images.unsplash.com/photo-1592833159057-65a284572225';
-    return 'https://images.unsplash.com/photo-1509391366360-1e96f5b16e51'; // Default solar/generic image
-  };
-
-  const dynamicServices = (categories || []).map(c => ({
-    title: c.name,
-    img: c.image_url || getDefaultImage(c.slug),
-    link: c.slug,
-    desc: c.description || `Explore our high-quality ${c.name.toLowerCase()} solutions.`
-  })).sort((a, b) => {
-    // Force solar-shop to the top
-    if (a.link === 'solar-shop') return -1;
-    if (b.link === 'solar-shop') return 1;
-    return 0; // Keep original order for the rest
-  });
-
   return (
     <main className="min-h-screen bg-white">
       <HomepageHero />
 
-
-
-      {/* Services & Products Section */}
+      {/* Products Section */}
       <ServicesSection
         initialServices={[
-          ...dynamicServices.map(s => ({ ...s, isProduct: false })),
-          ...(dynamicServices.length === 0 ? [
-            { title: 'Solar Shop', img: 'https://images.unsplash.com/photo-1509391366360-1e96f5b16e51', link: 'solar', desc: 'Sustainable energy solutions for home and business.', isProduct: false },
-            { title: 'CCTV Systems', img: 'https://images.unsplash.com/photo-1557064619-2169b476c535', link: 'cctv-systems', desc: 'Advanced surveillance for 24/7 security monitoring.', isProduct: false },
-            { title: 'Networking', img: 'https://images.unsplash.com/photo-1544197150-b99a580bbcbf', link: 'networking', desc: 'High-speed, reliable enterprise networking infrastructure.', isProduct: false },
-            { title: 'Automation', img: 'https://images.unsplash.com/photo-1558002038-1091a086e98c', link: 'automation', desc: 'Smart automation for efficiency and control.', isProduct: false },
-            { title: 'Access Control', img: 'https://images.unsplash.com/photo-1563249151-6923838020d6', link: 'access-control', desc: 'Secure entry systems for restricted areas.', isProduct: false },
-            { title: 'Inverters', img: 'https://images.unsplash.com/photo-1592833159057-65a284572225', link: 'inverters', desc: 'Reliable power backup and conversion systems.', isProduct: false }
-          ] : []),
           ...(products || []).map(p => ({
             title: p.name,
             img: (p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : (p.image_url || 'https://images.unsplash.com/photo-1509391366360-1e96f5b16e51'),
