@@ -26,10 +26,10 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
         : 0;
 
     return (
-        <div className="group relative bg-white rounded-2xl p-3.5 sm:p-5 border border-gray-100/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full overflow-hidden">
+        <div className="group relative bg-white rounded-2xl p-3 sm:p-4 border border-gray-100/90 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between h-full overflow-hidden">
             <div>
-                {/* Top Image Frame - Landscape aspect ratio (reduces card vertical length) */}
-                <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full bg-slate-50/80 rounded-xl overflow-hidden flex items-center justify-center p-2 mb-3">
+                {/* Landscape Image Frame */}
+                <div className="relative aspect-[16/10] w-full bg-slate-50/70 rounded-xl overflow-hidden flex items-center justify-center p-2 mb-2.5">
                     {imageUrl && imageUrl !== "/placeholder-product.png" ? (
                         <Image
                             src={imageUrl}
@@ -40,20 +40,20 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
                         />
                     ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center text-gray-300">
-                            <Tag className="w-8 h-8 opacity-40 mb-1" />
-                            <span className="text-xs font-medium text-gray-400">Pharmtech</span>
+                            <Tag className="w-7 h-7 opacity-40 mb-1" />
+                            <span className="text-[10px] font-medium text-gray-400">Pharmtech</span>
                         </div>
                     )}
 
-                    {/* Prominent Discount & Featured Badges */}
+                    {/* Discount & Featured Badges */}
                     <div className="absolute top-2 left-2 flex flex-wrap gap-1 z-10 pointer-events-none">
                         {hasDiscount && (
-                            <span className="px-2 py-0.5 text-[10px] sm:text-xs font-extrabold uppercase rounded-full bg-emerald-600 text-white shadow-sm">
+                            <span className="px-2 py-0.5 text-[9px] sm:text-[10px] font-extrabold uppercase rounded-full bg-emerald-600 text-white shadow-xs">
                                 -{discountPercent}% OFF
                             </span>
                         )}
                         {product.is_featured && (
-                            <span className="px-2 py-0.5 text-[10px] sm:text-xs font-bold uppercase rounded-full bg-amber-500 text-white shadow-sm">
+                            <span className="px-2 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase rounded-full bg-amber-500 text-white shadow-xs">
                                 ★ Featured
                             </span>
                         )}
@@ -62,93 +62,92 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
                     {/* Out of Stock Overlay */}
                     {product.is_available === false && (
                         <div className="absolute inset-0 bg-white/80 backdrop-blur-[1px] z-20 flex items-center justify-center p-2">
-                            <span className="bg-red-600 text-white font-extrabold text-xs uppercase tracking-wider px-3 py-1 rounded-lg shadow-sm">
+                            <span className="bg-red-600 text-white font-extrabold text-[10px] sm:text-xs uppercase tracking-wider px-2.5 py-1 rounded-lg shadow-xs">
                                 Out of Stock
                             </span>
                         </div>
                     )}
 
-                    {/* Quick View Trigger */}
+                    {/* Quick View Button */}
                     {onQuickView && (
                         <button
                             onClick={() => onQuickView(product)}
-                            className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-white/90 shadow-md text-gray-700 hover:bg-gray-900 hover:text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 z-20"
+                            className="absolute bottom-2 right-2 w-7 h-7 rounded-full bg-white/90 shadow-md text-gray-700 hover:bg-gray-900 hover:text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 z-20"
                             title="Quick View"
                         >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="w-3.5 h-3.5" />
                         </button>
                     )}
                 </div>
 
-                {/* Star Ratings Visual */}
-                <div className="flex items-center gap-1.5 mb-1.5">
-                    <div className="flex text-amber-400">
-                        <Star className="w-3.5 h-3.5 fill-amber-400" />
-                        <Star className="w-3.5 h-3.5 fill-amber-400" />
-                        <Star className="w-3.5 h-3.5 fill-amber-400" />
-                        <Star className="w-3.5 h-3.5 fill-amber-400" />
-                        <Star className="w-3.5 h-3.5 fill-amber-400 opacity-80" />
+                {/* Rating Stars & Category */}
+                <div className="flex items-center justify-between gap-1 mb-1">
+                    <div className="flex items-center gap-1">
+                        <div className="flex text-amber-400">
+                            <Star className="w-3 h-3 fill-amber-400" />
+                            <Star className="w-3 h-3 fill-amber-400" />
+                            <Star className="w-3 h-3 fill-amber-400" />
+                            <Star className="w-3 h-3 fill-amber-400" />
+                            <Star className="w-3 h-3 fill-amber-400 opacity-80" />
+                        </div>
+                        <span className="text-[10px] font-bold text-amber-600">4.9</span>
                     </div>
-                    <span className="text-xs font-bold text-amber-600">4.9</span>
+
                     {product.product_categories?.name && (
-                        <span className="text-[10px] font-semibold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full ml-auto">
+                        <span className="text-[9px] font-semibold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full truncate max-w-[100px]">
                             {product.product_categories.name}
                         </span>
                     )}
                 </div>
 
-                {/* Primary Product Name (Clear & Legible lettering) */}
-                <h3 className="text-sm sm:text-base font-bold text-gray-900 line-clamp-2 leading-snug mb-1.5 group-hover:text-blue-600 transition-colors" title={product.name}>
+                {/* Compact Product Name (Reduced Size as requested) */}
+                <h3 className="text-xs sm:text-sm font-semibold text-gray-800 line-clamp-1 leading-snug mb-1 hover:text-blue-600 transition-colors" title={product.name}>
                     <Link href={`/product/${product.id}`}>
                         {product.name}
                     </Link>
                 </h3>
 
-                {/* Primary Description / Specs */}
-                <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed mb-3">
-                    {product.description || "High-quality, reliable solution for home & business."}
+                {/* Specs / Short Description snippet */}
+                <p className="text-[11px] text-gray-400 line-clamp-1 font-normal mb-2.5">
+                    {product.description || "High-quality solar & security solution."}
                 </p>
             </div>
 
-            {/* Price Breakdown & Actions */}
-            <div className="pt-2.5 border-t border-gray-100 flex items-center justify-between gap-2 mt-auto">
-                <div className="flex flex-col min-w-0">
+            {/* Prominent Price & Action Row (ALWAYS VISIBLE BEFORE CLICKING) */}
+            <div className="pt-2 border-t border-gray-100 flex items-center justify-between gap-1.5 mt-auto">
+                {/* Guaranteed Visible Price Box */}
+                <div className="flex flex-col justify-center">
                     {hasDiscount ? (
-                        <>
-                            <div className="flex items-center gap-1.5">
-                                <span className="text-xs line-through text-gray-400 font-medium">
-                                    ₦{product.price.toLocaleString("en-NG")}
-                                </span>
-                                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded">
-                                    Save ₦{(product.price - product.promo_price!).toLocaleString("en-NG")}
-                                </span>
-                            </div>
-                            <span className="text-base sm:text-lg font-black text-emerald-600 leading-none truncate">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] line-through text-gray-400 font-medium leading-none mb-0.5">
+                                ₦{product.price.toLocaleString("en-NG")}
+                            </span>
+                            <span className="text-sm sm:text-base font-extrabold text-emerald-600 leading-none">
                                 ₦{product.promo_price!.toLocaleString("en-NG")}
                             </span>
-                        </>
+                        </div>
                     ) : (
-                        <>
-                            <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">Price</span>
-                            <span className="text-base sm:text-lg font-black text-blue-600 leading-none truncate">
+                        <div className="flex flex-col">
+                            <span className="text-[9px] uppercase font-semibold text-gray-400 leading-none mb-0.5">Price</span>
+                            <span className="text-sm sm:text-base font-extrabold text-gray-900 leading-none">
                                 {product.price ? `₦${product.price.toLocaleString("en-NG")}` : "Contact Us"}
                             </span>
-                        </>
+                        </div>
                     )}
                 </div>
 
-                {/* Actions: Wishlist + Add to Cart */}
-                <div className="flex items-center gap-1.5 flex-shrink-0">
+                {/* Action Buttons */}
+                <div className="flex items-center gap-1 flex-shrink-0">
                     <button
                         onClick={() => setIsWishlisted(!isWishlisted)}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                        className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
                             isWishlisted
                                 ? "bg-red-50 text-red-500"
                                 : "text-gray-400 hover:text-red-500 hover:bg-gray-50"
                         }`}
                         title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                     >
-                        <Heart className={`w-4.5 h-4.5 ${isWishlisted ? "fill-red-500" : ""}`} />
+                        <Heart className={`w-3.5 h-3.5 ${isWishlisted ? "fill-red-500" : ""}`} />
                     </button>
 
                     <AddToCartButton
@@ -160,7 +159,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
                             is_available: product.is_available,
                         }}
                         showText={false}
-                        className="w-8 h-8 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-full p-0 flex items-center justify-center shadow-sm"
+                        className="w-7 h-7 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-full p-0 flex items-center justify-center shadow-xs"
                     />
                 </div>
             </div>
