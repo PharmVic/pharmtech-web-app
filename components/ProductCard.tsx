@@ -28,8 +28,8 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
     return (
         <div className="group relative bg-white rounded-2xl p-3 sm:p-4 border border-gray-100/90 shadow-xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between h-full overflow-hidden">
             <div>
-                {/* Landscape Image Frame */}
-                <div className="relative aspect-[16/10] w-full bg-slate-50/70 rounded-xl overflow-hidden flex items-center justify-center p-2 mb-2.5">
+                {/* Restored Normal Aspect Image Frame */}
+                <div className="relative h-36 sm:h-48 w-full bg-white rounded-xl overflow-hidden flex items-center justify-center p-2 mb-2.5">
                     {imageUrl && imageUrl !== "/placeholder-product.png" ? (
                         <Image
                             src={imageUrl}
@@ -100,36 +100,36 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
                     )}
                 </div>
 
-                {/* Compact Product Name (Reduced Size as requested) */}
-                <h3 className="text-xs sm:text-sm font-semibold text-gray-800 line-clamp-1 leading-snug mb-1 hover:text-blue-600 transition-colors" title={product.name}>
+                {/* Reduced Product Name Size */}
+                <h3 className="text-[11px] sm:text-xs font-bold text-gray-900 line-clamp-1 leading-snug mb-1 hover:text-blue-600 transition-colors" title={product.name}>
                     <Link href={`/product/${product.id}`}>
                         {product.name}
                     </Link>
                 </h3>
 
                 {/* Specs / Short Description snippet */}
-                <p className="text-[11px] text-gray-400 line-clamp-1 font-normal mb-2.5">
+                <p className="text-[10px] sm:text-[11px] text-gray-400 line-clamp-1 font-normal mb-2.5">
                     {product.description || "High-quality solar & security solution."}
                 </p>
             </div>
 
-            {/* Prominent Price & Action Row (ALWAYS VISIBLE BEFORE CLICKING) */}
+            {/* Prominent Price & Action Row (Visible Before Clicking) */}
             <div className="pt-2 border-t border-gray-100 flex items-center justify-between gap-1.5 mt-auto">
                 {/* Guaranteed Visible Price Box */}
-                <div className="flex flex-col justify-center">
+                <div className="flex flex-col justify-center min-w-0">
                     {hasDiscount ? (
                         <div className="flex flex-col">
-                            <span className="text-[10px] line-through text-gray-400 font-medium leading-none mb-0.5">
+                            <span className="text-[9px] line-through text-gray-400 font-medium leading-none mb-0.5">
                                 ₦{product.price.toLocaleString("en-NG")}
                             </span>
-                            <span className="text-sm sm:text-base font-extrabold text-emerald-600 leading-none">
+                            <span className="text-xs sm:text-sm font-extrabold text-emerald-600 leading-none truncate">
                                 ₦{product.promo_price!.toLocaleString("en-NG")}
                             </span>
                         </div>
                     ) : (
                         <div className="flex flex-col">
-                            <span className="text-[9px] uppercase font-semibold text-gray-400 leading-none mb-0.5">Price</span>
-                            <span className="text-sm sm:text-base font-extrabold text-gray-900 leading-none">
+                            <span className="text-[8px] uppercase font-semibold text-gray-400 leading-none mb-0.5">Price</span>
+                            <span className="text-xs sm:text-sm font-extrabold text-gray-900 leading-none truncate">
                                 {product.price ? `₦${product.price.toLocaleString("en-NG")}` : "Contact Us"}
                             </span>
                         </div>
