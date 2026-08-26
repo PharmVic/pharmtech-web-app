@@ -151,7 +151,7 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
                             </div>
 
                             {/* Product Title */}
-                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight mb-3">
+                            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 leading-snug mb-3">
                                 {product.name}
                             </h2>
 

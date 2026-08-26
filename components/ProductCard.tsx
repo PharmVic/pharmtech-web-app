@@ -100,36 +100,36 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
                     )}
                 </div>
 
-                {/* Reduced Product Name Size */}
-                <h3 className="text-[11px] sm:text-xs font-bold text-gray-900 line-clamp-1 leading-snug mb-1 hover:text-blue-600 transition-colors" title={product.name}>
+                {/* Optimized Product Name Display - Mobile & Desktop */}
+                <h3 className="text-[10.5px] sm:text-xs font-bold text-gray-900 line-clamp-2 min-h-[2rem] sm:min-h-[2.25rem] leading-tight mb-1 hover:text-blue-600 transition-colors" title={product.name}>
                     <Link href={`/product/${product.id}`}>
                         {product.name}
                     </Link>
                 </h3>
 
                 {/* Specs / Short Description snippet */}
-                <p className="text-[10px] sm:text-[11px] text-gray-400 line-clamp-1 font-normal mb-2.5">
+                <p className="text-[10px] sm:text-[11px] text-gray-400 line-clamp-1 font-normal mb-2 sm:mb-2.5">
                     {product.description || "High-quality solar & security solution."}
                 </p>
             </div>
 
-            {/* Prominent Price & Action Row (Visible Before Clicking) */}
-            <div className="pt-2 border-t border-gray-100 flex items-center justify-between gap-1.5 mt-auto">
-                {/* Guaranteed Visible Price Box */}
-                <div className="flex flex-col justify-center min-w-0">
+            {/* Prominent Price & Action Row (Guaranteed 100% Full Visible Price Before Clicking) */}
+            <div className="pt-2 border-t border-gray-100 flex flex-wrap xs:flex-nowrap items-center justify-between gap-1 mt-auto">
+                {/* Guaranteed Visible Full Price Box */}
+                <div className="flex flex-col justify-center shrink-0 min-w-0 pr-0.5">
                     {hasDiscount ? (
                         <div className="flex flex-col">
-                            <span className="text-[9px] line-through text-gray-400 font-medium leading-none mb-0.5">
+                            <span className="text-[8.5px] sm:text-[9px] line-through text-gray-400 font-medium leading-none mb-0.5 whitespace-nowrap">
                                 ₦{product.price.toLocaleString("en-NG")}
                             </span>
-                            <span className="text-xs sm:text-sm font-extrabold text-emerald-600 leading-none truncate">
+                            <span className="text-[11px] sm:text-sm font-extrabold text-emerald-600 leading-none whitespace-nowrap">
                                 ₦{product.promo_price!.toLocaleString("en-NG")}
                             </span>
                         </div>
                     ) : (
                         <div className="flex flex-col">
                             <span className="text-[8px] uppercase font-semibold text-gray-400 leading-none mb-0.5">Price</span>
-                            <span className="text-xs sm:text-sm font-extrabold text-gray-900 leading-none truncate">
+                            <span className="text-[11px] sm:text-sm font-extrabold text-gray-900 leading-none whitespace-nowrap">
                                 {product.price ? `₦${product.price.toLocaleString("en-NG")}` : "Contact Us"}
                             </span>
                         </div>
@@ -137,17 +137,17 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex items-center gap-1 flex-shrink-0">
+                <div className="flex items-center gap-1 flex-shrink-0 ml-auto">
                     <button
                         onClick={() => setIsWishlisted(!isWishlisted)}
-                        className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
+                        className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center transition-all ${
                             isWishlisted
                                 ? "bg-red-50 text-red-500"
                                 : "text-gray-400 hover:text-red-500 hover:bg-gray-50"
                         }`}
                         title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                     >
-                        <Heart className={`w-3.5 h-3.5 ${isWishlisted ? "fill-red-500" : ""}`} />
+                        <Heart className={`w-3 sm:w-3.5 h-3 sm:h-3.5 ${isWishlisted ? "fill-red-500" : ""}`} />
                     </button>
 
                     <AddToCartButton
@@ -159,7 +159,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
                             is_available: product.is_available,
                         }}
                         showText={false}
-                        className="w-7 h-7 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-full p-0 flex items-center justify-center shadow-xs"
+                        className="w-6 h-6 sm:w-7 sm:h-7 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-full p-0 flex items-center justify-center shadow-xs"
                     />
                 </div>
             </div>
