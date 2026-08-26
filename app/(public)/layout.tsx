@@ -1,6 +1,7 @@
 
 import Topbar from "@/components/Topbar";
 import Footer from "@/components/Footer";
+import ToastContainer from "@/components/ToastContainer";
 
 export default function PublicLayout({
     children,
@@ -12,6 +13,8 @@ export default function PublicLayout({
             <Topbar />
             <main className="flex-1">{children}</main>
             <Footer />
+            <ToastContainer />
         </div>
     );
 }
+
