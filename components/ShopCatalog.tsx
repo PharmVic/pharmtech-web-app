@@ -5,7 +5,7 @@ import { ProductType, default as QuickViewModal } from "./QuickViewModal";
 import ProductCard from "./ProductCard";
 import { 
     Search, Filter, Grid3X3, Grid2X2, List, Sparkles, 
-    ShieldCheck, Truck, Zap, X, Check, ArrowUpDown 
+    ShieldCheck, Truck, Zap, X, Check, ArrowUpDown, SlidersHorizontal 
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -201,24 +201,37 @@ export default function ShopCatalog({ initialProducts, categories }: ShopCatalog
                 <div className="bg-white rounded-3xl p-4 md:p-6 shadow-sm border border-gray-100/90 mb-8">
                     <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
                         
-                        {/* Search Bar */}
-                        <div className="relative flex-1 min-w-[280px]">
-                            <Search className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search products by name, specs, or keyword..."
-                                className="w-full pl-12 pr-10 py-3 rounded-2xl bg-gray-50 border border-gray-200 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
-                            />
-                            {searchQuery && (
-                                <button
-                                    onClick={() => setSearchQuery("")}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
-                                >
-                                    <X className="w-4 h-4" />
-                                </button>
-                            )}
+                        {/* Search Bar matching reference image */}
+                        <div className="flex items-center gap-2 flex-1 min-w-[280px]">
+                            <div className="relative flex-1">
+                                <Search className="w-5 h-5 text-amber-500 absolute left-4 top-1/2 -translate-y-1/2" />
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="Search for anything..."
+                                    className="w-full pl-12 pr-10 py-3 rounded-2xl bg-white border border-gray-200 text-sm text-gray-800 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500/20 shadow-xs"
+                                />
+                                {searchQuery && (
+                                    <button
+                                        onClick={() => setSearchQuery("")}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                )}
+                            </div>
+                            <button 
+                                onClick={() => setOnlyPromo(!onlyPromo)}
+                                className={`w-12 h-12 rounded-2xl border transition-all flex items-center justify-center flex-shrink-0 ${
+                                    onlyPromo
+                                        ? "bg-amber-500 text-white border-amber-500 shadow-md"
+                                        : "bg-white text-amber-500 border-gray-200 hover:bg-amber-50 shadow-xs"
+                                }`}
+                                title="Filter Promo Deals"
+                            >
+                                <SlidersHorizontal className="w-5 h-5" />
+                            </button>
                         </div>
 
                         {/* Filters & Toggles */}

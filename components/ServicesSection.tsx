@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search, ArrowRight, Sparkles } from "lucide-react";
+import { Search, ArrowRight, Sparkles, SlidersHorizontal } from "lucide-react";
 import ProductCard from "./ProductCard";
 import QuickViewModal, { ProductType } from "./QuickViewModal";
 
@@ -52,20 +52,26 @@ export default function ServicesSection({ initialServices }: { initialServices: 
                         hybrid inverters, and enterprise networking equipment.
                     </p>
 
-                    {/* Search Bar */}
-                    <div className="mt-8 max-w-md mx-auto relative">
-                        <div className="relative flex items-center w-full h-12 rounded-2xl bg-white shadow-sm border border-gray-200/80 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500/30">
-                            <div className="grid place-items-center h-full w-12 text-gray-400">
+                    {/* Search Bar matching reference image */}
+                    <div className="mt-8 max-w-md mx-auto flex items-center gap-2">
+                        <div className="relative flex-1 flex items-center w-full h-12 rounded-2xl bg-white shadow-xs border border-gray-200/80 overflow-hidden focus-within:ring-2 focus-within:ring-amber-500/20">
+                            <div className="grid place-items-center h-full w-12 text-amber-500">
                                 <Search className="w-5 h-5" />
                             </div>
                             <input
-                                className="h-full w-full outline-none text-xs md:text-sm text-gray-800 pr-4 placeholder-gray-400"
+                                className="h-full w-full outline-none text-xs md:text-sm text-gray-800 pr-4 placeholder-gray-300"
                                 type="text"
-                                placeholder="Search our products..."
+                                placeholder="Search for anything..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
+                        <button 
+                            className="w-12 h-12 rounded-2xl bg-white border border-gray-200 text-amber-500 hover:bg-amber-50 shadow-xs flex items-center justify-center flex-shrink-0 transition-colors"
+                            title="Filter Products"
+                        >
+                            <SlidersHorizontal className="w-5 h-5" />
+                        </button>
                     </div>
                 </div>
 
