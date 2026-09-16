@@ -7,6 +7,8 @@ import { User, FileText, LogOut, Award, Link as LinkIcon, Copy, ShoppingCart, Cr
 import dynamic from 'next/dynamic';
 import Link from "next/link";
 
+import { calculateInstalmentPenalty } from "@/lib/instalments";
+
 const PaystackCheckout = dynamic(() => import("@/components/PaystackCheckout"), { ssr: false });
 
 type Quote = {
@@ -538,15 +540,8 @@ export default function UserDashboard() {
                         <div className="space-y-4">
                             {schedules.filter(s => s.status === 'pending' && (s.instalment_applications?.status === 'active' || s.instalment_applications?.status === 'approved')).map((schedule) => {
                                 const dueDate = new Date(schedule.due_date);
-                                const now = new Date();
-                                const gracePeriodEnd = new Date(dueDate);
-                                gracePeriodEnd.setDate(gracePeriodEnd.getDate() + 7);
-                                
-                                const isLate = now > dueDate;
-                                const isPenaltyApplied = now > gracePeriodEnd;
-                                
-                                const baseAmount = Number(schedule.amount_due);
-                                const finalAmount = isPenaltyApplied ? baseAmount * 1.05 : baseAmount;
+                                const penaltyInfo = calculateInstalmentPenalty(schedule.due_date, schedule.amount_due);
+                                const { finalAmount, isLate, isPenaltyApplied, penaltyPercent, statusBadgeLabel } = penaltyInfo;
 
                                 return (
                                     <div key={schedule.id} className={`border p-5 rounded-xl shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ${isLate ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-white'}`}>
@@ -556,7 +551,7 @@ export default function UserDashboard() {
                                             </div>
                                             <div className="flex items-center gap-2 mb-2">
                                                 <span className={`text-xs font-bold px-2 py-1 rounded border ${isLate ? 'bg-red-100 text-red-700 border-red-200' : 'bg-blue-50 text-blue-700 border-blue-100'}`}>
-                                                    {isPenaltyApplied ? 'OVERDUE (+5% PENALTY)' : isLate ? 'OVERDUE (GRACE PERIOD)' : 'UPCOMING'}
+                                                    {statusBadgeLabel}
                                                 </span>
                                                 <span className="text-sm font-medium text-gray-600">
                                                     Due Date: {dueDate.toLocaleDateString()}
@@ -564,7 +559,11 @@ export default function UserDashboard() {
                                             </div>
                                             <div className="text-2xl font-extrabold text-blue-800 flex items-center flex-wrap gap-2">
                                                 ₦{finalAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                                                {isPenaltyApplied && <span className="text-sm font-semibold text-red-500 bg-red-100 px-2 py-0.5 rounded-full">+5% Late Fee</span>}
+                                                {isPenaltyApplied && (
+                                                    <span className="text-sm font-semibold text-red-500 bg-red-100 px-2 py-0.5 rounded-full">
+                                                        +{penaltyPercent}% Late Fee ({penaltyInfo.daysOverdue} days late)
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                         <div className="w-full sm:w-auto shrink-0 min-w-[200px]">

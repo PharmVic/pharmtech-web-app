@@ -439,7 +439,7 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                                                 <p className="mb-2">If a Client fails to meet payment obligations:</p>
                                                 <ul className="list-disc pl-5 space-y-1">
                                                     <li>A grace period of 3–7 days may be granted.</li>
-                                                    <li>After the grace period, a late payment penalty of 5% of the month's payment may apply.</li>
+                                                    <li>A late payment penalty of 5% of the month's payment is added for every 7 days of default.</li>
                                                     <li>Continued default may result in disconnection or repossession of the solar system without refund of previous payments.</li>
                                                 </ul>
                                             </div>

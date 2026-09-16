@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Loader2, Eye, X, CheckCircle, XCircle, FileText, Download } from "lucide-react";
+import { calculateInstalmentPenalty } from "@/lib/instalments";
 
 export default function AdminInstalmentsPage() {
     const [applications, setApplications] = useState<any[]>([]);
@@ -412,14 +413,28 @@ export default function AdminInstalmentsPage() {
                                                             )}
                                                         </div>
                                                         <div className="flex items-center gap-3">
-                                                            <span className="font-semibold text-gray-700">₦{Number(schedule.amount_due).toLocaleString()}</span>
-                                                            <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${
-                                                                schedule.status === 'paid' ? 'bg-green-100 text-green-700' :
-                                                                schedule.status === 'late' ? 'bg-red-100 text-red-700' :
-                                                                'bg-yellow-100 text-yellow-700'
-                                                            }`}>
-                                                                {schedule.status}
-                                                            </span>
+                                                            {(() => {
+                                                                const penalty = schedule.status === 'paid' 
+                                                                    ? { finalAmount: Number(schedule.amount_due), isPenaltyApplied: false, penaltyPercent: 0 }
+                                                                    : calculateInstalmentPenalty(schedule.due_date, schedule.amount_due);
+                                                                return (
+                                                                    <>
+                                                                        <div className="text-right">
+                                                                            <div className="font-semibold text-gray-700">₦{penalty.finalAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}</div>
+                                                                            {penalty.isPenaltyApplied && (
+                                                                                <div className="text-[10px] text-red-600 font-medium">Base: ₦{Number(schedule.amount_due).toLocaleString()} (+{penalty.penaltyPercent}%)</div>
+                                                                            )}
+                                                                        </div>
+                                                                        <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${
+                                                                            schedule.status === 'paid' ? 'bg-green-100 text-green-700' :
+                                                                            penalty.isPenaltyApplied ? 'bg-red-100 text-red-700' :
+                                                                            'bg-yellow-100 text-yellow-700'
+                                                                        }`}>
+                                                                            {schedule.status === 'paid' ? 'paid' : penalty.isPenaltyApplied ? `late (+${penalty.penaltyPercent}%)` : schedule.status}
+                                                                        </span>
+                                                                    </>
+                                                                );
+                                                            })()}
                                                             {schedule.status !== 'paid' && (
                                                                 <button
                                                                     onClick={() => markScheduleAsPaid(schedule.id, selectedApp.id)}
