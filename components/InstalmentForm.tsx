@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { Loader2, X, Upload } from "lucide-react";
+import { Loader2, X, Upload, Clock, Copy, Check, Building2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import imageCompression from 'browser-image-compression';
 import dynamic from 'next/dynamic';
@@ -25,6 +25,13 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
     const [showTerms, setShowTerms] = useState(false);
     const [acceptedGuarantorTerms, setAcceptedGuarantorTerms] = useState(false);
     const [showGuarantorTerms, setShowGuarantorTerms] = useState(false);
+    const [copiedBank, setCopiedBank] = useState(false);
+
+    const copyBank = () => {
+        navigator.clipboard.writeText("0893666939");
+        setCopiedBank(true);
+        setTimeout(() => setCopiedBank(false), 2000);
+    };
     
     // Static state for display consistency
     const [staticDownPayment, setStaticDownPayment] = useState<number | null>(null);
@@ -127,23 +134,36 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
             currentUserId = session.user.id;
         }
 
-        // Check for existing pending applications to skip upload phases
+        // Check for existing pending or approved applications
         try {
             const { data: existingApps } = await supabase
                 .from("instalment_applications")
-                .select("id, duration_months, down_payment_amount, monthly_payment_amount, product_name_snapshot")
+                .select("id, duration_months, down_payment_amount, monthly_payment_amount, product_name_snapshot, status")
                 .eq("product_id", product.id)
                 .eq("user_id", currentUserId)
-                .eq("status", "pending")
+                .in("status", ["pending", "approved", "active"])
                 .order("created_at", { ascending: false })
                 .limit(1);
 
             if (existingApps && existingApps.length > 0) {
-                setApplicationId(existingApps[0].id);
-                setDurationMonths(existingApps[0].duration_months);
-                setStaticDownPayment(existingApps[0].down_payment_amount);
-                setStaticMonthlyPayment(existingApps[0].monthly_payment_amount);
-                setStaticProductName(existingApps[0].product_name_snapshot);
+                const existing = existingApps[0];
+                if (existing.status === "active") {
+                    setLoading(false);
+                    alert("You already have an active instalment plan for this product! Please check your dashboard.");
+                    router.push("/dashboard");
+                    return;
+                }
+                if (existing.status === "approved") {
+                    setLoading(false);
+                    alert("Your application for this product has been approved! Please proceed to your dashboard to make your down payment.");
+                    router.push("/dashboard");
+                    return;
+                }
+                setApplicationId(existing.id);
+                setDurationMonths(existing.duration_months);
+                setStaticDownPayment(existing.down_payment_amount);
+                setStaticMonthlyPayment(existing.monthly_payment_amount);
+                setStaticProductName(existing.product_name_snapshot);
                 setStep(4);
             }
         } catch (e) {
@@ -435,11 +455,11 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                                             </div>
 
                                             <div>
-                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">7. Default & Repossession</h4>
+                                                <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">7. Default & Late Payment Penalty</h4>
                                                 <p className="mb-2">If a Client fails to meet payment obligations:</p>
                                                 <ul className="list-disc pl-5 space-y-1">
-                                                    <li>A grace period of 3–7 days may be granted.</li>
-                                                    <li>A late payment penalty of 5% of the month's payment is added for every 7 days of default.</li>
+                                                    <li>A grace period of 7 days is granted from the monthly payment due date.</li>
+                                                    <li>5% of the monthly payment will be added weekly on late payment after the 7 days grace period.</li>
                                                     <li>Continued default may result in disconnection or repossession of the solar system without refund of previous payments.</li>
                                                 </ul>
                                             </div>
@@ -602,7 +622,7 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                                                 <h4 className="font-bold text-gray-900 border-b pb-1 mb-2">4. Scope of Guarantee</h4>
                                                 <ul className="list-disc pl-5 space-y-1">
                                                     <li>The Guarantor agrees to fully cover any unpaid balance owed by the Client.</li>
-                                                    <li>This includes: Outstanding principal amount, Applicable interest or service charges, and Late payment penalties.</li>
+                                                    <li>This includes: Outstanding principal amount, Applicable interest or service charges, and Late payment penalties (5% of the monthly payment added weekly on late payment after the 7 days grace period).</li>
                                                     <li>The obligation remains valid until the Client completes full payment.</li>
                                                 </ul>
                                             </div>
@@ -740,14 +760,12 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
 
                             {step === 4 && (
                                 <div className="space-y-6 text-center py-8">
-                                    <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                                        <svg className="w-8 h-8 text-blue-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
+                                    <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+                                        <Clock className="w-8 h-8 text-amber-600 animate-pulse" />
                                     </div>
-                                    <h3 className="text-2xl font-bold text-gray-800">Application Submitted!</h3>
+                                    <h3 className="text-2xl font-bold text-gray-800">Application Paused for Approval</h3>
                                     <p className="text-gray-600 px-4">
-                                        Your application and KYC documents have been successfully submitted and are currently <strong>under review</strong>.
+                                        Your application and KYC documents have been successfully submitted and are currently <strong>paused for approval by the admin</strong>.
                                     </p>
                                     
                                     <div className="bg-gray-50 p-6 rounded-xl border mb-6 text-left">
@@ -765,14 +783,48 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                                         </div>
                                         <div className="flex justify-between border-t pt-2 mt-2">
                                             <span className="text-gray-600">Status:</span>
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                Under Review
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                                                PAUSED - AWAITING ADMIN APPROVAL
                                             </span>
                                         </div>
                                     </div>
 
-                                    <div className="text-sm text-gray-500 mb-6 px-4">
-                                        Once your application is approved by an administrator, you will be able to make the down payment of <strong className="text-green-600 font-bold">₦{Number(staticDownPayment != null ? staticDownPayment : product.instalment_down_payment).toLocaleString()}</strong> directly from your User Dashboard.
+                                    <div className="text-sm text-gray-600 mb-4 px-4 bg-amber-50 p-3.5 rounded-lg border border-amber-200">
+                                        Everyone who applies is paused for an approval from the admin. Once your application is reviewed and approved by the admin, you will be able to make your down payment of <strong className="text-green-700 font-bold">₦{Number(staticDownPayment != null ? staticDownPayment : product.instalment_down_payment).toLocaleString()}</strong> directly from your User Dashboard.
+                                    </div>
+
+                                    {/* Company Bank Account Info */}
+                                    <div className="bg-gradient-to-r from-orange-50 to-amber-50 p-3.5 rounded-xl border border-orange-200 text-left text-xs mb-6 mx-2">
+                                        <div className="flex justify-between items-center mb-2 font-bold text-orange-950">
+                                            <span className="flex items-center gap-1.5 uppercase text-[11px] tracking-wide">
+                                                <Building2 className="w-3.5 h-3.5 text-orange-600" /> Official Bank Account for Direct Transfers
+                                            </span>
+                                            <span className="bg-orange-200 text-orange-900 px-2 py-0.5 rounded text-[10px] font-extrabold">
+                                                GTBANK
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between items-center bg-white/90 p-2.5 rounded-lg border border-orange-100">
+                                            <div>
+                                                <div className="text-[10px] text-gray-500 uppercase font-semibold">Account Number</div>
+                                                <div className="font-mono font-extrabold text-sm text-gray-900 tracking-wider">0893666939</div>
+                                                <div className="text-[11px] font-medium text-gray-700 mt-0.5">Pharmtech Inverter Multiconcep</div>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={copyBank}
+                                                className="px-2.5 py-1 bg-orange-100 hover:bg-orange-200 text-orange-800 rounded font-semibold text-xs transition flex items-center gap-1 shrink-0"
+                                            >
+                                                {copiedBank ? (
+                                                    <span className="text-green-700 font-bold flex items-center gap-0.5">
+                                                        <Check className="w-3 h-3" /> Copied!
+                                                    </span>
+                                                ) : (
+                                                    <span className="flex items-center gap-0.5">
+                                                        <Copy className="w-3 h-3" /> Copy
+                                                    </span>
+                                                )}
+                                            </button>
+                                        </div>
                                     </div>
 
                                     <div className="flex flex-col sm:flex-row gap-3 justify-center px-4">
@@ -781,7 +833,7 @@ export default function InstalmentForm({ product, userId }: InstalmentFormProps)
                                                 closeModal();
                                                 router.push("/dashboard");
                                             }}
-                                            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5"
+                                            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
                                         >
                                             Go to Dashboard
                                         </button>

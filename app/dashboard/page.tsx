@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
-import { User, FileText, LogOut, Award, Link as LinkIcon, Copy, ShoppingCart, CreditCard, Clock, GraduationCap, ShieldCheck } from "lucide-react";
+import { User, FileText, LogOut, Award, Link as LinkIcon, Copy, Check, ShoppingCart, CreditCard, Clock, GraduationCap, ShieldCheck, Building2 } from "lucide-react";
 import dynamic from 'next/dynamic';
 import Link from "next/link";
 
@@ -45,6 +45,13 @@ export default function UserDashboard() {
     const [apprenticeshipApps, setApprenticeshipApps] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
+    const [copiedAccount, setCopiedAccount] = useState(false);
+
+    const copyBankAccount = () => {
+        navigator.clipboard.writeText("0893666939");
+        setCopiedAccount(true);
+        setTimeout(() => setCopiedAccount(false), 2000);
+    };
 
     useEffect(() => {
         checkUser();
@@ -124,7 +131,7 @@ export default function UserDashboard() {
             .from("instalment_applications")
             .select(`*, products (name, instalment_down_payment)`)
             .eq("user_id", userId)
-            .in("status", ["pending", "approved", "rejected"])
+            .in("status", ["pending", "approved", "active", "completed", "rejected"])
             .order("created_at", { ascending: false });
         if (pendingAppsData) setPendingApplications(pendingAppsData);
 
@@ -398,17 +405,23 @@ export default function UserDashboard() {
                             {pendingApplications.map((app) => {
                                 const isPending = app.status === "pending";
                                 const isApproved = app.status === "approved";
+                                const isActive = app.status === "active";
+                                const isCompleted = app.status === "completed";
                                 const isRejected = app.status === "rejected";
 
                                 return (
                                     <div 
                                         key={app.id} 
-                                        className={`border p-5 rounded-xl shadow-sm flex flex-col sm:flex-row justify-between items-start gap-4 transition-all duration-205 hover:shadow-md ${
+                                        className={`border p-5 rounded-xl shadow-sm flex flex-col sm:flex-row justify-between items-start gap-4 transition-all duration-200 hover:shadow-md ${
                                             isPending 
-                                                ? "border-yellow-200 bg-yellow-50/20" 
+                                                ? "border-amber-300 bg-amber-50/20" 
                                                 : isApproved 
-                                                ? "border-emerald-200 bg-emerald-50/20" 
-                                                : "border-red-205 bg-red-50/20"
+                                                ? "border-blue-300 bg-blue-50/20" 
+                                                : isActive
+                                                ? "border-green-300 bg-green-50/20"
+                                                : isCompleted
+                                                ? "border-purple-300 bg-purple-50/20"
+                                                : "border-red-200 bg-red-50/20"
                                         }`}
                                     >
                                         <div className="flex-1">
@@ -417,17 +430,28 @@ export default function UserDashboard() {
                                             </div>
                                             <div className="flex flex-wrap items-center gap-2 mb-3">
                                                 {isPending && (
-                                                    <span className="text-xs font-bold px-2.5 py-1 rounded-full border bg-yellow-100 text-yellow-800 border-yellow-300">
-                                                        UNDER REVIEW
+                                                    <span className="text-xs font-bold px-2.5 py-1 rounded-full border bg-amber-100 text-amber-800 border-amber-300 flex items-center gap-1.5">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse"></span>
+                                                        PAUSED - AWAITING ADMIN APPROVAL
                                                     </span>
                                                 )}
                                                 {isApproved && (
-                                                    <span className="text-xs font-bold px-2.5 py-1 rounded-full border bg-emerald-100 text-emerald-800 border-emerald-300">
+                                                    <span className="text-xs font-bold px-2.5 py-1 rounded-full border bg-blue-100 text-blue-800 border-blue-300">
                                                         APPROVED - AWAITING DOWN PAYMENT
                                                     </span>
                                                 )}
+                                                {isActive && (
+                                                    <span className="text-xs font-bold px-2.5 py-1 rounded-full border bg-green-100 text-green-800 border-green-300">
+                                                        PLAN ACTIVE - DOWN PAYMENT CONFIRMED
+                                                    </span>
+                                                )}
+                                                {isCompleted && (
+                                                    <span className="text-xs font-bold px-2.5 py-1 rounded-full border bg-purple-100 text-purple-800 border-purple-300">
+                                                        COMPLETED - FULLY PAID
+                                                    </span>
+                                                )}
                                                 {isRejected && (
-                                                    <span className="text-xs font-bold px-2.5 py-1 rounded-full border bg-red-100 text-red-850 border-red-300">
+                                                    <span className="text-xs font-bold px-2.5 py-1 rounded-full border bg-red-100 text-red-800 border-red-300">
                                                         REJECTED
                                                     </span>
                                                 )}
@@ -439,13 +463,70 @@ export default function UserDashboard() {
                                             {/* Informational Message */}
                                             <div className="text-sm mb-4">
                                                 {isPending && (
-                                                    <p className="text-yellow-800 bg-yellow-50 p-3 rounded-lg border border-yellow-100">
-                                                        Your application is currently under review by our admin. You will be able to make the down payment here once approved.
+                                                    <p className="text-amber-900 bg-amber-50 p-3 rounded-lg border border-amber-200">
+                                                        <strong>Application Paused:</strong> Your application is currently paused for admin review. Everyone who applies must be approved before payments can proceed.
                                                     </p>
                                                 )}
                                                 {isApproved && (
-                                                    <p className="text-emerald-800 bg-emerald-50 p-3 rounded-lg border border-emerald-100">
-                                                        Your application has been approved! Please make the down payment below to activate your instalment plan.
+                                                    <div className="space-y-3">
+                                                        <p className="text-blue-900 bg-blue-50 p-3 rounded-lg border border-blue-200">
+                                                            <strong>Approved by Admin!</strong> Please complete your down payment below to activate your plan. You can pay online via Paystack or make a direct bank transfer to our official GTBank account below for manual confirmation.
+                                                        </p>
+
+                                                        {/* Official Bank Account Details Card */}
+                                                        <div className="p-3.5 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl border border-orange-200 text-xs text-gray-800">
+                                                            <div className="flex items-center justify-between mb-2">
+                                                                <span className="font-bold text-orange-900 flex items-center gap-1.5 uppercase tracking-wide text-[11px]">
+                                                                    <Building2 className="w-3.5 h-3.5 text-orange-600" /> Company Bank Account for Direct Transfer
+                                                                </span>
+                                                                <span className="text-[10px] bg-orange-200 text-orange-900 font-extrabold px-2 py-0.5 rounded">
+                                                                    GTBANK
+                                                                </span>
+                                                            </div>
+                                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-white/90 p-2.5 rounded-lg border border-orange-100 mb-2">
+                                                                <div>
+                                                                    <div className="text-[10px] text-gray-500 uppercase font-semibold">Account Number</div>
+                                                                    <div className="flex items-center gap-2 mt-0.5">
+                                                                        <span className="font-mono font-extrabold text-sm text-gray-900 tracking-wider">0893666939</span>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={copyBankAccount}
+                                                                            className="px-2 py-0.5 bg-orange-100 hover:bg-orange-200 rounded text-orange-800 transition flex items-center gap-1 text-[11px] font-semibold"
+                                                                            title="Copy Account Number"
+                                                                        >
+                                                                            {copiedAccount ? (
+                                                                                <span className="text-green-700 font-bold flex items-center gap-0.5">
+                                                                                    <Check className="w-3 h-3" /> Copied!
+                                                                                </span>
+                                                                            ) : (
+                                                                                <span className="text-orange-800 flex items-center gap-0.5">
+                                                                                    <Copy className="w-3 h-3" /> Copy
+                                                                                </span>
+                                                                            )}
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <div>
+                                                                    <div className="text-[10px] text-gray-500 uppercase font-semibold">Account Name</div>
+                                                                    <div className="font-semibold text-gray-900 mt-0.5" title="Pharmtech Inverter Multiconcep">
+                                                                        Pharmtech Inverter Multiconcep
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="text-[11px] text-orange-950 leading-relaxed">
+                                                                <strong>Narration:</strong> Please use your <strong>Phone Number or Full Name</strong> as the transfer narration. Once paid, the admin will verify and manually confirm your down payment to activate your plan.
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {isActive && (
+                                                    <p className="text-green-900 bg-green-50 p-3 rounded-lg border border-green-200">
+                                                        <strong>Plan Active:</strong> Down payment confirmed! See your monthly repayments schedule below.
+                                                    </p>
+                                                )}
+                                                {isCompleted && (
+                                                    <p className="text-purple-900 bg-purple-50 p-3 rounded-lg border border-purple-200">
+                                                        <strong>Completed!</strong> All instalment repayments for this product have been completed in full.
                                                     </p>
                                                 )}
                                                 {isRejected && (
@@ -467,11 +548,11 @@ export default function UserDashboard() {
                                             </div>
                                             
                                             {/* Cancel application button only for pending or approved applications */}
-                                            {!isRejected && (
+                                            {(isPending || isApproved) && (
                                                 <div className="flex gap-2 max-w-xs">
                                                     <button 
                                                         onClick={() => handleCancelApplication(app.id)}
-                                                        className="w-full text-center px-4 py-2.5 bg-white border border-red-205 text-red-600 rounded-lg font-bold text-sm hover:bg-red-50 transition-colors"
+                                                        className="w-full text-center px-4 py-2.5 bg-white border border-red-205 text-red-600 rounded-lg font-bold text-xs hover:bg-red-50 transition-colors"
                                                     >
                                                         Cancel Application
                                                     </button>
@@ -480,42 +561,62 @@ export default function UserDashboard() {
                                         </div>
 
                                         {/* Action/Checkout Panel */}
-                                        <div className="w-full sm:w-auto shrink-0 min-w-[200px] flex flex-col gap-2">
+                                        <div className="w-full sm:w-auto shrink-0 min-w-[220px] flex flex-col gap-2">
                                             <div className="text-center sm:text-right mb-1">
-                                                <div className="text-xs text-gray-500">Required Down Payment</div>
-                                                <div className="text-xl font-extrabold text-blue-800">
+                                                <div className="text-xs text-gray-500">
+                                                    {isActive || isCompleted ? "Confirmed Down Payment" : "Required Down Payment"}
+                                                </div>
+                                                <div className="text-xl font-extrabold text-blue-900">
                                                     ₦{Number(app.down_payment_amount != null ? app.down_payment_amount : (app.products?.instalment_down_payment || 0)).toLocaleString()}
                                                 </div>
                                             </div>
 
                                             {isApproved && (
-                                                <PaystackCheckout 
-                                                    amount={Number(app.down_payment_amount != null ? app.down_payment_amount : (app.products?.instalment_down_payment || 0))}
-                                                    email={app.email || user?.email || ""}
-                                                    phone={app.phone || user?.user_metadata?.phone || "0000000000"}
-                                                    location={app.address || user?.user_metadata?.address || "N/A"}
-                                                    deliveryDate="N/A (Instalment)"
-                                                    items={[]}
-                                                    userId={user?.id || ""}
-                                                    applicationId={app.id}
-                                                    onSuccess={() => {
-                                                        alert("Payment successfully recorded! Your application is now active.");
-                                                        fetchDashboardData(user.id);
-                                                        router.refresh();
-                                                    }}
-                                                    onClose={() => {}}
-                                                />
+                                                <div className="space-y-2">
+                                                    <PaystackCheckout 
+                                                        amount={Number(app.down_payment_amount != null ? app.down_payment_amount : (app.products?.instalment_down_payment || 0))}
+                                                        email={app.email || user?.email || ""}
+                                                        phone={app.phone || user?.user_metadata?.phone || "0000000000"}
+                                                        location={app.address || user?.user_metadata?.address || "N/A"}
+                                                        deliveryDate="N/A (Instalment)"
+                                                        items={[]}
+                                                        userId={user?.id || ""}
+                                                        applicationId={app.id}
+                                                        onSuccess={() => {
+                                                            alert("Payment successfully recorded! Your application is now active.");
+                                                            fetchDashboardData(user.id);
+                                                            router.refresh();
+                                                        }}
+                                                        onClose={() => {}}
+                                                    />
+                                                    <div className="text-[11px] text-gray-700 text-center bg-orange-50/80 p-2 rounded border border-orange-200 leading-tight">
+                                                        Direct transfer: <strong className="text-gray-900">GTBank 0893666939</strong> (Pharmtech Inverter Multiconcep). Admin confirms manually.
+                                                    </div>
+                                                </div>
                                             )}
 
                                             {isPending && (
-                                                <div className="text-center py-2.5 px-3 bg-yellow-100/50 border border-yellow-200 text-yellow-800 text-xs font-semibold rounded-lg">
-                                                    Awaiting Admin Approval
+                                                <div className="text-center py-3 px-3 bg-amber-100/60 border border-amber-300 text-amber-900 text-xs font-bold rounded-lg flex items-center justify-center gap-1.5">
+                                                    <Clock className="w-4 h-4 text-amber-700" />
+                                                    Paused for Admin Approval
+                                                </div>
+                                            )}
+
+                                            {isActive && (
+                                                <div className="text-center py-2.5 px-3 bg-green-100 border border-green-300 text-green-800 text-xs font-bold rounded-lg">
+                                                    ✓ Down Payment Cleared
+                                                </div>
+                                            )}
+
+                                            {isCompleted && (
+                                                <div className="text-center py-2.5 px-3 bg-purple-100 border border-purple-300 text-purple-800 text-xs font-bold rounded-lg">
+                                                    ✓ Plan Completed in Full
                                                 </div>
                                             )}
 
                                             {isRejected && (
                                                 <div className="text-center py-2.5 px-3 bg-red-100/50 border border-red-200 text-red-800 text-xs font-semibold rounded-lg">
-                                                    Checkout Disabled
+                                                    Application Not Approved
                                                 </div>
                                             )}
                                         </div>
@@ -530,9 +631,9 @@ export default function UserDashboard() {
                 <div className="bg-white p-4 md:p-6 rounded-xl border border-blue-100 shadow-sm overflow-hidden min-w-0 md:col-span-2">
                     <div className="flex items-center gap-3 mb-4 text-blue-700">
                         <CreditCard className="w-6 h-6" />
-                        <h2 className="font-semibold text-lg">Active Instalments & Upcoming Bills</h2>
+                        <h2 className="font-semibold text-lg">Active Instalments & Monthly Repayments</h2>
                     </div>
-                    {schedules.filter(s => s.status === 'pending' && (s.instalment_applications?.status === 'active' || s.instalment_applications?.status === 'approved')).length === 0 ? (
+                    {schedules.filter(s => s.status === 'pending' && (s.instalment_applications?.status === 'active' || s.instalment_applications?.status === 'approved')).length === 0 && schedules.filter(s => s.status === 'paid').length === 0 ? (
                         <div className="text-center py-6 bg-blue-50/50 rounded-lg border border-dashed border-blue-200 text-blue-600 text-sm">
                             You have no pending instalment payments.
                         </div>
@@ -585,10 +686,49 @@ export default function UserDashboard() {
                                                     fetchDashboardData(user.id);
                                                 }}
                                             />
+                                            <div className="text-[11px] text-gray-700 text-center bg-orange-50/80 p-1.5 rounded border border-orange-200 mt-1 leading-tight">
+                                                Direct transfer: <strong className="text-gray-900">GTBank 0893666939</strong>. Admin confirms manually.
+                                            </div>
                                         </div>
                                     </div>
                                 );
                             })}
+
+                            {/* Paid Instalments History */}
+                            {schedules.filter(s => s.status === 'paid').length > 0 && (
+                                <div className="pt-4 border-t">
+                                    <div className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">
+                                        Paid Monthly Repayments History ({schedules.filter(s => s.status === 'paid').length})
+                                    </div>
+                                    <div className="space-y-2">
+                                        {schedules.filter(s => s.status === 'paid').map((paidSched) => (
+                                            <div key={paidSched.id} className="p-3 bg-gray-50 rounded-lg border flex flex-col sm:flex-row justify-between items-start sm:items-center text-xs gap-2">
+                                                <div>
+                                                    <span className="font-bold text-gray-800">
+                                                        {paidSched.instalment_applications?.product_name_snapshot || paidSched.instalment_applications?.products?.name || "Instalment"}
+                                                    </span>
+                                                    <span className="text-gray-500 ml-2">
+                                                        Due: {new Date(paidSched.due_date).toLocaleDateString()}
+                                                    </span>
+                                                    {paidSched.paid_at && (
+                                                        <span className="text-green-700 font-semibold ml-2">
+                                                            • Paid on {new Date(paidSched.paid_at).toLocaleDateString()}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-extrabold text-gray-900">
+                                                        ₦{Number(paidSched.amount_due).toLocaleString()}
+                                                    </span>
+                                                    <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded font-bold">
+                                                        CONFIRMED PAID
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

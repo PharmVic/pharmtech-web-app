@@ -39,6 +39,7 @@ export default function TermsAndConditionsPage() {
                             <li>A deposit may be required before work begins.</li>
                             <li>Full payment terms will be clearly stated in your invoice.</li>
                             <li>Failure to complete payment may delay service delivery.</li>
+                            <li><strong>Instalment Payments & Grace Period:</strong> For customers on instalment plans, a 7 days grace period is granted from the due date. 5% of the monthly payment will be added weekly on late payment after the 7 days grace period. Continued default may lead to system disconnection or repossession.</li>
                         </ul>
 
                         <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">3. Installation</h2>

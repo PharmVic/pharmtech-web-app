@@ -11,13 +11,13 @@ export interface InstalmentPenaltyResult {
 
 /**
  * Calculates the late fee for an instalment payment based on default duration.
- * Rule: 5% of the monthly payment is added for every 7 days of default payment.
+ * Rule: 5% of the monthly payment will be added weekly on late payment after the 7 days grace period.
  * 
- * - 0 - 6 days overdue: 0% penalty (Grace Period)
- * - 7 - 13 days overdue: 5% penalty (1 block of 7 days completed)
- * - 14 - 20 days overdue: 10% penalty (2 blocks of 7 days completed)
- * - 21 - 27 days overdue: 15% penalty (3 blocks of 7 days completed)
- * - 28+ days overdue: 20%+ penalty (4+ blocks of 7 days completed)
+ * - 0 - 6 days overdue: 0% penalty (7 Days Grace Period)
+ * - 7 - 13 days overdue: 5% penalty (Week 1 overdue after grace period)
+ * - 14 - 20 days overdue: 10% penalty (Week 2 overdue after grace period)
+ * - 21 - 27 days overdue: 15% penalty (Week 3 overdue after grace period)
+ * - 28+ days overdue: 20%+ penalty (Week 4+ overdue after grace period)
  */
 export function calculateInstalmentPenalty(
     dueDateInput: Date | string,
