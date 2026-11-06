@@ -34,26 +34,122 @@ export default function AdminInstalmentsPage() {
     }, []);
 
     async function getAuthHeader() {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) throw new Error("Not authenticated. Please sign in as admin.");
+        let { data: { session } } = await supabase.auth.getSession();
+        
+        // Check if session exists and whether it is expiring soon (within 5 minutes)
+        const now = Math.floor(Date.now() / 1000);
+        if (session && session.expires_at && (session.expires_at - now < 300)) {
+            try {
+                const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+                if (!refreshError && refreshData.session) {
+                    session = refreshData.session;
+                }
+            } catch (e) {
+                console.warn("Session refresh attempt failed:", e);
+            }
+        }
+
+        if (!session?.access_token) {
+            try {
+                const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+                if (!refreshError && refreshData.session) {
+                    session = refreshData.session;
+                }
+            } catch (e) {
+                console.warn("Secondary session refresh failed:", e);
+            }
+        }
+
+        if (!session?.access_token) {
+            throw new Error("Your session has expired. Please refresh the page or sign in again.");
+        }
+
         return {
             'Authorization': `Bearer ${session.access_token}`,
             'Content-Type': 'application/json'
         };
     }
 
+    async function callAdminApi(body: any) {
+        let headers = await getAuthHeader();
+        let res = await fetch("/api/admin/instalments", {
+            method: "POST",
+            headers,
+            body: JSON.stringify(body)
+        });
+
+        // If 401, auto-refresh session and retry once
+        if (res.status === 401) {
+            console.warn("Admin API returned 401, refreshing session and retrying...");
+            try {
+                const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+                if (!refreshError && refreshData.session?.access_token) {
+                    headers = {
+                        'Authorization': `Bearer ${refreshData.session.access_token}`,
+                        'Content-Type': 'application/json'
+                    };
+                    res = await fetch("/api/admin/instalments", {
+                        method: "POST",
+                        headers,
+                        body: JSON.stringify(body)
+                    });
+                }
+            } catch (retryErr) {
+                console.error("Retry refresh error:", retryErr);
+            }
+        }
+
+        const data = await res.json();
+        if (!res.ok || data.error) {
+            throw new Error(data.error || "Operation failed");
+        }
+        return data;
+    }
+
     async function fetchApplications() {
         setLoading(true);
         try {
-            const headers = await getAuthHeader();
-            const res = await fetch("/api/admin/instalments", { headers, cache: "no-store" });
-            const data = await res.json();
+            // Primary: fetch directly via Supabase client (handles session refresh automatically)
+            const { data, error } = await supabase
+                .from("instalment_applications")
+                .select(`
+                    *,
+                    products (
+                        id,
+                        name,
+                        price,
+                        instalment_down_payment
+                    ),
+                    instalment_schedules (
+                        id,
+                        status,
+                        due_date,
+                        amount_due,
+                        paid_at,
+                        paystack_reference,
+                        created_at
+                    )
+                `)
+                .order("created_at", { ascending: false });
 
-            if (!res.ok || data.error) {
-                throw new Error(data.error || "Failed to load instalment applications");
+            if (error) {
+                console.warn("Direct query failed, attempting via admin API fallback:", error);
+                const headers = await getAuthHeader();
+                const res = await fetch("/api/admin/instalments", { headers, cache: "no-store" });
+                const apiData = await res.json();
+                if (!res.ok || apiData.error) {
+                    throw new Error(apiData.error || error.message);
+                }
+                const apps = apiData.applications || [];
+                setApplications(apps);
+                if (selectedApp) {
+                    const refreshed = apps.find((a: any) => a.id === selectedApp.id);
+                    if (refreshed) setSelectedApp(refreshed);
+                }
+                return;
             }
 
-            const apps = data.applications || [];
+            const apps = data || [];
             setApplications(apps);
 
             // If selectedApp is open, refresh it with new data
@@ -63,7 +159,10 @@ export default function AdminInstalmentsPage() {
             }
         } catch (err: any) {
             console.error("Error fetching applications:", err);
-            alert(err.message || "Failed to load instalment applications.");
+            // Don't show disruptive token alert on initial load / refresh
+            if (!err.message?.toLowerCase().includes("token") && !err.message?.toLowerCase().includes("session")) {
+                alert(err.message || "Failed to load instalment applications.");
+            }
         } finally {
             setLoading(false);
         }
@@ -74,15 +173,7 @@ export default function AdminInstalmentsPage() {
         if (!confirm("Are you sure you want to APPROVE this applicant? They will then be eligible to pay their down payment.")) return;
         setActionLoading(true);
         try {
-            const headers = await getAuthHeader();
-            const res = await fetch("/api/admin/instalments", {
-                method: "POST",
-                headers,
-                body: JSON.stringify({ action: "approve", applicationId: appId })
-            });
-            const data = await res.json();
-            if (!res.ok || data.error) throw new Error(data.error || "Failed to approve application");
-
+            await callAdminApi({ action: "approve", applicationId: appId });
             alert("Application approved successfully! Customer can now proceed with down payment.");
             await fetchApplications();
         } catch (err: any) {
@@ -98,15 +189,7 @@ export default function AdminInstalmentsPage() {
         if (!confirm("Are you sure you want to REJECT this application?")) return;
         setActionLoading(true);
         try {
-            const headers = await getAuthHeader();
-            const res = await fetch("/api/admin/instalments", {
-                method: "POST",
-                headers,
-                body: JSON.stringify({ action: "reject", applicationId: appId })
-            });
-            const data = await res.json();
-            if (!res.ok || data.error) throw new Error(data.error || "Failed to reject application");
-
+            await callAdminApi({ action: "reject", applicationId: appId });
             alert("Application marked as rejected.");
             await fetchApplications();
         } catch (err: any) {
@@ -122,21 +205,13 @@ export default function AdminInstalmentsPage() {
         if (!downPaymentModalApp) return;
         setActionLoading(true);
         try {
-            const headers = await getAuthHeader();
-            const res = await fetch("/api/admin/instalments", {
-                method: "POST",
-                headers,
-                body: JSON.stringify({
-                    action: "confirm_down_payment",
-                    applicationId: downPaymentModalApp.id,
-                    paymentMethod: dpMethod,
-                    reference: dpReference || `MANUAL_${dpMethod.toUpperCase()}_${Date.now()}`,
-                    paidAt: dpDate ? new Date(dpDate).toISOString() : new Date().toISOString()
-                })
+            await callAdminApi({
+                action: "confirm_down_payment",
+                applicationId: downPaymentModalApp.id,
+                paymentMethod: dpMethod,
+                reference: dpReference || `MANUAL_${dpMethod.toUpperCase()}_${Date.now()}`,
+                paidAt: dpDate ? new Date(dpDate).toISOString() : new Date().toISOString()
             });
-            const data = await res.json();
-            if (!res.ok || data.error) throw new Error(data.error || "Failed to confirm down payment");
-
             alert("Down payment confirmed successfully! Payment schedules generated and plan is now active.");
             setDownPaymentModalApp(null);
             setDpReference("");
@@ -154,15 +229,7 @@ export default function AdminInstalmentsPage() {
         if (!confirm("Are you sure you want to revert this down payment? Status will return to 'approved' (awaiting down payment).")) return;
         setActionLoading(true);
         try {
-            const headers = await getAuthHeader();
-            const res = await fetch("/api/admin/instalments", {
-                method: "POST",
-                headers,
-                body: JSON.stringify({ action: "revert_down_payment", applicationId: appId })
-            });
-            const data = await res.json();
-            if (!res.ok || data.error) throw new Error(data.error || "Failed to revert down payment");
-
+            await callAdminApi({ action: "revert_down_payment", applicationId: appId });
             alert("Down payment reverted successfully.");
             await fetchApplications();
         } catch (err: any) {
@@ -178,22 +245,14 @@ export default function AdminInstalmentsPage() {
         if (!monthlyPaymentModal) return;
         setActionLoading(true);
         try {
-            const headers = await getAuthHeader();
-            const res = await fetch("/api/admin/instalments", {
-                method: "POST",
-                headers,
-                body: JSON.stringify({
-                    action: "confirm_monthly_payment",
-                    applicationId: monthlyPaymentModal.app.id,
-                    scheduleId: monthlyPaymentModal.schedule.id,
-                    paymentMethod: mpMethod,
-                    reference: mpReference || `MANUAL_${mpMethod.toUpperCase()}_${Date.now()}`,
-                    paidAt: mpDate ? new Date(mpDate).toISOString() : new Date().toISOString()
-                })
+            const data = await callAdminApi({
+                action: "confirm_monthly_payment",
+                applicationId: monthlyPaymentModal.app.id,
+                scheduleId: monthlyPaymentModal.schedule.id,
+                paymentMethod: mpMethod,
+                reference: mpReference || `MANUAL_${mpMethod.toUpperCase()}_${Date.now()}`,
+                paidAt: mpDate ? new Date(mpDate).toISOString() : new Date().toISOString()
             });
-            const data = await res.json();
-            if (!res.ok || data.error) throw new Error(data.error || "Failed to confirm monthly payment");
-
             alert(data.message || "Monthly payment confirmed successfully.");
             setMonthlyPaymentModal(null);
             setMpReference("");
@@ -211,19 +270,11 @@ export default function AdminInstalmentsPage() {
         if (!confirm("Are you sure you want to unmark this monthly payment? It will return to pending/unpaid.")) return;
         setActionLoading(true);
         try {
-            const headers = await getAuthHeader();
-            const res = await fetch("/api/admin/instalments", {
-                method: "POST",
-                headers,
-                body: JSON.stringify({
-                    action: "revert_monthly_payment",
-                    applicationId: appId,
-                    scheduleId: scheduleId
-                })
+            await callAdminApi({
+                action: "revert_monthly_payment",
+                applicationId: appId,
+                scheduleId: scheduleId
             });
-            const data = await res.json();
-            if (!res.ok || data.error) throw new Error(data.error || "Failed to revert monthly payment");
-
             alert("Monthly payment unmarked.");
             await fetchApplications();
         } catch (err: any) {
@@ -239,15 +290,7 @@ export default function AdminInstalmentsPage() {
         if (!confirm(`Generate ${app.duration_months} monthly schedules for this application?`)) return;
         setActionLoading(true);
         try {
-            const headers = await getAuthHeader();
-            const res = await fetch("/api/admin/instalments", {
-                method: "POST",
-                headers,
-                body: JSON.stringify({ action: "generate_schedules", applicationId: app.id })
-            });
-            const data = await res.json();
-            if (!res.ok || data.error) throw new Error(data.error || "Failed to generate schedules");
-
+            await callAdminApi({ action: "generate_schedules", applicationId: app.id });
             alert("Schedules generated successfully.");
             await fetchApplications();
         } catch (err: any) {

@@ -37,7 +37,11 @@ async function verifyAdmin(req: Request) {
     return { error: 'Missing authorization header', status: 401 };
   }
 
-  const token = authHeader.replace('Bearer ', '');
+  const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+  if (!token) {
+    return { error: 'Missing bearer token', status: 401 };
+  }
+
   const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
 
   if (userError || !user) {
